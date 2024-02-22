@@ -80,7 +80,7 @@ export default function Main() {
           {user ? (
             <>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                {user.username}님
+                {user.userName}님
               </Button>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
@@ -157,7 +157,7 @@ interface PagedProductList {
 
 interface User {
   userId: string;
-  username: string;
+  userName: string;
   email: string;
   login: boolean;
   auth: string;
