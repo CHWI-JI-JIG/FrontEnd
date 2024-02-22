@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { CardContent, Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/MA_input"
+import { CardContent, Card } from "@/components/ui/MA_card"
 import { JSX, SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
