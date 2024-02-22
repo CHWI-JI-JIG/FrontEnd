@@ -1,0 +1,12 @@
+{
+    "page": 1,
+    "size": 20,
+    "totalPage": 5,
+    "totalCount": 100,
+    "data": [
+       {"id": 1,"name": "상품1","imageUrl": "img1.png","price": 3234532},
+       {"id": 2,"name": "상품2","imageUrl": "img2.png","price": 231232},
+       {"id": 3,"name": "상품3","imageUrl": "img3.png","price": 543223},
+       {"id": 4,"name": "상품4","imageUrl": "img4.png","price": 123463}
+    ]
+  }
