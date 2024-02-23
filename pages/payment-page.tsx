@@ -1,5 +1,6 @@
 import { CardTitle, CardHeader, CardContent, Card, CardFooter } from "@/components/ui/PayP_card"
 import { Button } from "@/components/ui/PayP_button"
+import Link from "next/link"
 import { Label } from "@/components/ui/PayP_label"
 import { Input } from "@/components/ui/PayP_input"
 import { SVGProps } from "react"
@@ -84,7 +85,10 @@ export default function PaymentPage() {
         const points = Number(usePoints);
       
         setFinalPrice(price - points); // Update final price
-      }
+    }
+    const openPopup = () => {
+        window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
+      };
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -191,7 +195,7 @@ export default function PaymentPage() {
                 </CardContent>
                 <CardFooter>
                     <div>{finalPrice}</div>
-                    <Button className="ml-auto">Pay</Button>
+                        <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>
         </div>

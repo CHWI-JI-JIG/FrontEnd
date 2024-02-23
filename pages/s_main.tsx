@@ -1,6 +1,4 @@
-import Header from './header';
 import { Button } from "@/components/ui/MA_button"
-import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
 import { CardContent, Card } from "@/components/ui/MA_card"
 import { SVGProps } from "react"
@@ -68,7 +66,6 @@ export default function Seller_main({ userId }: { userId: string }) {
         return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
-    /*수정중*/
     const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
     const handleSellComplete = async (productId: string) => {
@@ -95,37 +92,6 @@ export default function Seller_main({ userId }: { userId: string }) {
 
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
-            <Header userId={userId}/>
-            <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
-                <ul className="flex space-x-4">
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="#">
-                            상품목록
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="#">
-                            주문조회
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="#">
-                            환불/반품조회
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="#">
-                            리뷰조회
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="#">
-                            문의조회
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
-
             <div className="flex justify-between items-center py-4 px-6">
                 <div className="flex space-x-4">
                     {/* 판매 중, 판매 완료 상태 선택 */}

@@ -14,6 +14,7 @@ export default function SignUp() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [name, setName] = useState("");
   const [brn, setBrn] = useState("");
+  const [bankAccount,setBankAccount] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
@@ -64,11 +65,12 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post("서버URL/signup", {
+      const response = await axios.post("서버URL/b_signup", {
         id,
         password,
         name,
         brn,
+        bankAccount,
         phone,
         email,
         address,
@@ -134,6 +136,11 @@ export default function SignUp() {
           <div className="space-y-2">
             <Label htmlFor="address">사업장 주소</Label>
             <Input id="address" required value={address} onChange={(e) => setAddress(e.target.value)}/>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bankAccount">사업자 통장</Label>
+            <Input id="bankAccount" required value={bankAccount} onChange={(e) => setBankAccount(e.target.value)}/>
           </div>
 
           <Button className="w-full" type="submit" onClick={handleSubmit}>

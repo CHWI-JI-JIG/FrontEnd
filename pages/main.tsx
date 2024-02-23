@@ -56,6 +56,7 @@ export default function Main({ userId }: { userId: string }) {
               <Card className="w-full" key={product.productId}>
                 <CardContent>
                   <div className="flex items-center justify-center">
+                    <a href={`/detail?productId=${product.productId}`}>
                     <img
                       alt={product.productName}
                       className="mb-2"
@@ -67,6 +68,7 @@ export default function Main({ userId }: { userId: string }) {
                       }}
                       width="200"
                     />
+                    </a>
                   </div>
                   <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
                   <div className="flex justify-between items-center">
