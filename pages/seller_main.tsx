@@ -13,17 +13,28 @@ export default function Seller_main() {
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [filter, setFilter] = useState<string>('selling'); // Default filter: selling
 
   //상품 데이터 가져오기 
   useEffect(() => {
     fetch(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/sproduct?userId=abc&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        setProducts(data.data);
+        // Filter products based on the selected option (filter)
+        const filteredProducts = data.data.filter(product => {
+          if (filter === 'selling') {
+            return product.selling === true;
+          } else if (filter === 'sold') {
+            return product.selling === false;
+          }
+          return true;
+        });
+
+        setProducts(filteredProducts);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [page]);
+  }, [page, filter]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -93,7 +104,7 @@ export default function Seller_main() {
             <div className="flex justify-between items-center py-4 px-6">
                 <div className="flex space-x-4">
                     {/* 판매 중, 판매 완료 상태 선택 */}
-                    <select className="border rounded-md py-1 px-2">
+                    <select className="border rounded-md py-1 px-2" value={filter} onChange={(e) => setFilter(e.target.value)}>
                         <option value="selling">판매중</option>
                         <option value="sold">판매완료</option>
                     </select>
@@ -135,11 +146,7 @@ export default function Seller_main() {
 
                         <div className="col-span-1">
                             <div className="flex items-center justify-end">
-                            <Button className="text-white bg-[#212121] h-full mr-2">수정</Button>
-                            <select className="border border-black rounded-md py-1 px-2 h-full">
-                                <option value="selling">판매중</option>
-                                <option value="sold">판매완료</option>
-                            </select>
+                            <Button className="text-white bg-[#212121] h-full mr-2">판매완료로<br/>상태변경</Button>
                             </div>
                         </div>
                         </CardContent>
