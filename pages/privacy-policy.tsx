@@ -321,12 +321,16 @@ export default function PrivacyPolicy() {
             </div>
           </div>
         </div>
-        <input 
-          type="button" 
-          className={`w-1/2 h-12 mt-6 text-white ${isNextButtonDisabled ? 'bg-gray-500' : 'bg-black'}`}
-          value="다음" 
-          disabled={isNextButtonDisabled} 
-        />
+        <Link href='/sign-up'>
+          <a>
+            <input
+              type="button"
+              className={`w-1/2 h-12 mt-6 text-white ${isNextButtonDisabled ? 'bg-gray-500' : 'bg-black'}`}
+              value="다음"
+              disabled={isNextButtonDisabled}
+            />
+          </a>
+        </Link>
       </div>
     </div>
   )

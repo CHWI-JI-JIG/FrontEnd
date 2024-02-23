@@ -1,3 +1,4 @@
+import Header from './header';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Label } from "@/components/ui/DE_label";
@@ -28,12 +29,12 @@ interface User {
   auth: string;
 }
 
-export default function Detail() {
+export default function Detail({ userId }: { userId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [qas, setQas] = useState<QA[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const { productid } = router.query;
+  const { productId } = router.query;
 
   // handlePurchase 함수 정의
   const handlePurchase = async () => {
@@ -79,13 +80,13 @@ export default function Detail() {
         setUser(sessionData.data); // 세션 정보 중에서 사용자 정보만 가져와 저장
 
         // 상세 페이지 url에서 파라미터로 productid 존재 유무 확인 후 상품, QA api 요청
-        if (productid && typeof productid === 'string') {
-          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productid=${productid}`);
+        if (productId && typeof productId === 'string') {
+          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
           const productData = await productResponse.json();
           const { product, QA } = productData;
           if (product && QA) {
             setProduct(product);
-            setQas(QA); 
+            setQas(QA);
           } else {
             // 에러 처리
           }
@@ -94,9 +95,9 @@ export default function Detail() {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
-  }, [productid]);  
+  }, [productId]);
 
   if (!product) {
     return <div>잘못된 접근입니다.</div>;
@@ -104,6 +105,7 @@ export default function Detail() {
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
+      <Header userId={userId}/>
       <div className="grid md:grid-cols-2 md:gap-6 items-start">
         <div>
           <img
@@ -149,7 +151,7 @@ export default function Detail() {
       <div className="grid gap-4">
         {qas.map((qa, index) => (
           <div key={index} className="text-sm">
-            <h3 className="font-medium">{qa.question}</h3> 
+            <h3 className="font-medium">{qa.question}</h3>
             <p>{qa.answer}</p>
           </div>
         ))}

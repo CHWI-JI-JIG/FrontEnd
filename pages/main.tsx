@@ -1,3 +1,4 @@
+import Header from './header';
 import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
@@ -10,17 +11,16 @@ import axios from "axios"
 import React, { useEffect, useState } from 'react';
 /*차콜색 212121*/
 
-export default function Main() {
+export default function Main({ userId }: { userId: string }) {
+
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [user, setUser] = useState<User | null>(null)
 
   //상품 데이터 가져오기 
   useEffect(() => {
     fetch(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/products?page=1`)
-      /*fetch('/api/products?page=${page}&size=20')*/
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -28,15 +28,6 @@ export default function Main() {
       })
       .catch(error => console.error('Error fetching data:', error));
   }, [page]);
-
-  //세션 데이터 가져오기
-  useEffect(() => {
-    axios.post(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session`, {})
-      .then(response => {
-        setUser(response.data.data); //세션 정보를 상태에 저장
-      })
-      .catch(error => console.error('Error fetching session:', error));
-  }, []);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -55,50 +46,9 @@ export default function Main() {
     return number.toLocaleString();
   };
 
-  const handleLogout = () => {
-  fetch('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/logout', {
-    method: 'POST',
-    })
-    .then(response => response.json())
-    .then(data => {
-      setUser(null); // 로그아웃 시 세션 정보를 초기화
-    })
-    .catch(error => console.error('Error logging out:', error));
-  };
-
   return (
     <div className="max-w-screen-xl mx-auto">
-      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-        <h1 className="text-3xl font-bold">취지직</h1>
-        <div className="flex items-center space-x-2">
-          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" />
-          <Button className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
-            <SearchIcon className="text-gray-700" />
-          </Button>
-        </div>
-        <div className="flex space-x-4">
-          {user ? (
-            <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                {user.username}님
-              </Button>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                로그아웃
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                로그인
-              </Button>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                회원가입
-              </Button>
-            </>
-          )}
-        </div>
-      </header>
-
+      <Header userId={userId}/>
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
@@ -106,18 +56,19 @@ export default function Main() {
               <Card className="w-full" key={product.productId}>
                 <CardContent>
                   <div className="flex items-center justify-center">
+                    <a href={`/detail?productId=${product.productId}`}>
                     <img
                       alt={product.productName}
                       className="mb-2"
                       height="200"
                       src={product.productImageUrl}
-                      /*src={'/product_images/${product.imageUrl}'}*/
                       style={{
                         aspectRatio: "200/200",
                         objectFit: "cover",
                       }}
                       width="200"
                     />
+                    </a>
                   </div>
                   <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
                   <div className="flex justify-between items-center">
@@ -157,7 +108,7 @@ interface PagedProductList {
 
 interface User {
   userId: string;
-  username: string;
+  userName: string;
   email: string;
   login: boolean;
   auth: string;
