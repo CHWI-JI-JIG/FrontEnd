@@ -55,6 +55,7 @@ export default function Main({ userId }: { userId: string }) {
             {products.map(product => (
               <Card className="w-full" key={product.productId}>
                 <CardContent>
+
                   <div className="flex items-center justify-center">
                     <a href={`/detail?productId=${product.productId}`}>
                     <img
