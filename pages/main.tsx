@@ -56,19 +56,21 @@ export default function Main() {
             {products.map(product => (
               <Card className="w-full" key={product.productId}>
                 <CardContent>
+
                   <div className="flex items-center justify-center">
-                    <img
-                      alt={product.productName}
-                      className="mb-2"
-                      height="200"
-                      src={product.productImageUrl}
-                      /*src={'/product_images/${product.imageUrl}'}*/
-                      style={{
-                        aspectRatio: "200/200",
-                        objectFit: "cover",
-                      }}
-                      width="200"
-                    />
+                    <a href={`/detail?productId=${product.productId}`}>
+                      <img
+                        alt={product.productName}
+                        className="mb-2"
+                        height="200"
+                        src={product.productImageUrl}
+                        style={{
+                          aspectRatio: "200/200",
+                          objectFit: "cover",
+                        }}
+                        width="200"
+                      />
+                    </a>
                   </div>
                   <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
                   <div className="flex justify-between items-center">

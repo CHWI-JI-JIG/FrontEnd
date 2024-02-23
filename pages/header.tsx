@@ -33,35 +33,35 @@ export default function Header() {
 
   return (
     <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-      <h1 className="text-3xl font-bold">취지직</h1>
-      <div className="flex items-center space-x-2">
-        <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" />
-        <Button className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
-          <SearchIcon className="text-gray-700" />
-        </Button>
-      </div>
-      <div className="flex space-x-4">
-        {user ? (
-          <>
-            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-              {user.userName}님
-            </Button>
-            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-              로그아웃
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-              로그인
-            </Button>
-            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-              회원가입
-            </Button>
-          </>
-        )}
-      </div>
-    </header>
+    <h1 className="text-3xl font-bold">취지직</h1>
+    <div className="flex items-center space-x-2">
+      <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" />
+      <Button className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+        <SearchIcon className="text-gray-700" />
+      </Button>
+    </div>
+    <div className="flex space-x-4">
+      {user ? (
+        <>
+          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+            {user.userName}님
+          </Button>
+          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+            로그아웃
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+            <Link href="/login">로그인</Link>
+          </Button>
+          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+            <Link href="/privacy-policy">회원가입</Link>
+          </Button>
+        </>
+      )}
+    </div>
+  </header>
   );
 }
 
