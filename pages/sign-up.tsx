@@ -132,7 +132,7 @@ export default function SignUp() {
           <Button className="w-full" type="submit" onClick={handleSubmit}>
             가입
           </Button>
-
+          <Link href="/b-sign-up">사업자로 가입하기</Link>
           <Separator className="my-8" />
           <div className="space-y-4">
             <Button className="w-full" variant="outline">

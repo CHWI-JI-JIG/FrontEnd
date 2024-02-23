@@ -89,10 +89,10 @@ export default function Main() {
           ) : (
             <>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                로그인
+                <Link href='/login'>로그인</Link>
               </Button>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                회원가입
+                <Link href='./privacy-policy'>회원가입</Link>
               </Button>
             </>
           )}
