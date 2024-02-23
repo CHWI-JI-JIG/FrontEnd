@@ -11,7 +11,7 @@ import axios from "axios"
 import React, { useEffect, useState } from 'react';
 /*차콜색 212121*/
 
-export default function Main() {
+export default function Main({ userId }: { userId: string }) {
 
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
@@ -48,7 +48,7 @@ export default function Main() {
 
   return (
     <div className="max-w-screen-xl mx-auto">
-      <Header />
+      <Header userId={userId}/>
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">

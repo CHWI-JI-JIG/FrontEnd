@@ -8,7 +8,7 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 
-export default function Seller_main() {
+export default function Seller_main({ userId }: { userId: string }) {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
@@ -68,9 +68,34 @@ export default function Seller_main() {
         return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
+    /*수정중*/
+    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+    const handleSellComplete = async (productId: string) => {
+        try {
+            // 서버로 상태 변경 요청 보내기
+            const response = await fetch(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/change-state`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({userId, productId, selling: false }),
+            });
+    
+            if (response.ok) {
+                // 판매 상태 변경이 성공하면 상품 목록에서 해당 상품 제거
+                setProducts(prevProducts => prevProducts.filter(product => product.productId !== productId));
+            } else {
+                console.error('Failed to change selling status.');
+            }
+        } catch (error) {
+            console.error('Error during sellComplete request:', error);
+        }
+    };
+
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
-            <Header />
+            <Header userId={userId}/>
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
                 <ul className="flex space-x-4">
                     <li>
@@ -146,7 +171,14 @@ export default function Seller_main() {
 
                         <div className="col-span-1">
                             <div className="flex items-center justify-end">
-                            <Button className="text-white bg-[#212121] h-full mr-2">판매완료로<br/>상태변경</Button>
+                            <Button className="text-white bg-[#212121] h-full mr-2"
+                                onClick={() => {
+                                setSelectedProductId(product.productId);
+                                handleSellComplete(product.productId);
+                                }}
+                            >
+                                판매완료로<br/>상태변경
+                            </Button>
                             </div>
                         </div>
                         </CardContent>
@@ -176,7 +208,7 @@ interface Product {
     selling:boolean;
   }
   
-  interface PagedProductList {
+interface PagedProductList {
     page: number;
     size: number;
     totalPage: number;

@@ -29,7 +29,7 @@ interface User {
   auth: string;
 }
 
-export default function Detail() {
+export default function Detail({ userId }: { userId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [qas, setQas] = useState<QA[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -105,7 +105,7 @@ export default function Detail() {
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
-      <Header />
+      <Header userId={userId}/>
       <div className="grid md:grid-cols-2 md:gap-6 items-start">
         <div>
           <img

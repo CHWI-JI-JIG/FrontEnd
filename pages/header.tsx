@@ -8,17 +8,19 @@ import axios from "axios";
 /* 추가 중 */
 import React, { useEffect, useState } from 'react';
 
-export default function Header() {
+export default function Header({ userId }: { userId: string }) {
     const [user, setUser] = useState<User | null>(null)
 
   // 세션 데이터 가져오기
   useEffect(() => {
-    axios.post(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session`, {})
-      .then(response => {
-        setUser(response.data.data); // 세션 정보를 상태에 저장
-      })
-      .catch(error => console.error('Error fetching session:', error));
-  }, []);
+    if (userId) {
+      axios.post(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session`, { userId })
+        .then(response => {
+          setUser(response.data.data); // 세션 정보를 상태에 저장
+        })
+        .catch(error => console.error('Error fetching session:', error));
+    }
+  }, [userId]);
 
   const handleLogout = () => {
     fetch('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/logout', {
