@@ -1,3 +1,4 @@
+import Header from './header';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Label } from "@/components/ui/DE_label";
@@ -85,7 +86,7 @@ export default function Detail() {
           const { product, QA } = productData;
           if (product && QA) {
             setProduct(product);
-            setQas(QA); 
+            setQas(QA);
           } else {
             // 에러 처리
           }
@@ -94,9 +95,9 @@ export default function Detail() {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
-  }, [productid]);  
+  }, [productid]);
 
   if (!product) {
     return <div>잘못된 접근입니다.</div>;
@@ -104,6 +105,7 @@ export default function Detail() {
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
+      <Header />
       <div className="grid md:grid-cols-2 md:gap-6 items-start">
         <div>
           <img
@@ -149,7 +151,7 @@ export default function Detail() {
       <div className="grid gap-4">
         {qas.map((qa, index) => (
           <div key={index} className="text-sm">
-            <h3 className="font-medium">{qa.question}</h3> 
+            <h3 className="font-medium">{qa.question}</h3>
             <p>{qa.answer}</p>
           </div>
         ))}
