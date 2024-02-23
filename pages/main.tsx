@@ -21,7 +21,6 @@ export default function Main() {
   //상품 데이터 가져오기 
   useEffect(() => {
     fetch(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/products?page=1`)
-      /*fetch('/api/products?page=${page}&size=20')*/
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -62,7 +61,6 @@ export default function Main() {
                       className="mb-2"
                       height="200"
                       src={product.productImageUrl}
-                      /*src={'/product_images/${product.imageUrl}'}*/
                       style={{
                         aspectRatio: "200/200",
                         objectFit: "cover",

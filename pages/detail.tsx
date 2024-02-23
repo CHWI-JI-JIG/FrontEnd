@@ -34,7 +34,7 @@ export default function Detail() {
   const [qas, setQas] = useState<QA[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const { productid } = router.query;
+  const { productId } = router.query;
 
   // handlePurchase 함수 정의
   const handlePurchase = async () => {
@@ -80,8 +80,8 @@ export default function Detail() {
         setUser(sessionData.data); // 세션 정보 중에서 사용자 정보만 가져와 저장
 
         // 상세 페이지 url에서 파라미터로 productid 존재 유무 확인 후 상품, QA api 요청
-        if (productid && typeof productid === 'string') {
-          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productid=${productid}`);
+        if (productId && typeof productId === 'string') {
+          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
           const productData = await productResponse.json();
           const { product, QA } = productData;
           if (product && QA) {
@@ -97,7 +97,7 @@ export default function Detail() {
     };
 
     fetchData();
-  }, [productid]);
+  }, [productId]);
 
   if (!product) {
     return <div>잘못된 접근입니다.</div>;
