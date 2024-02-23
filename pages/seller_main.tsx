@@ -1,3 +1,4 @@
+import Header from './header';
 import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
@@ -14,25 +15,7 @@ export default function Seller_main() {
 
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
-            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-                <h1 className="text-3xl font-bold">취지직</h1>
-                <div className="flex items-center space-x-2">
-                <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" />
-                <Button className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
-                    <SearchIcon className="text-gray-700" />
-                </Button>
-                </div>
-
-                <div className="flex space-x-4">
-                    <Button className="text-black bg-[#F1F5F9]" variant="ghost">
-                        로그인
-                    </Button>
-                    <Button className="text-black bg-[#F1F5F9]" variant="ghost">
-                        회원가입
-                    </Button>
-                </div>
-            </header>
-
+            <Header />
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
                 <ul className="flex space-x-4">
                     <li>
@@ -107,9 +90,9 @@ export default function Seller_main() {
                   
                             <div className="col-span-1">
                                 <div className="flex items-center justify-end">
-                                    <Button className="text-white bg-[#212121] mr-2">수정</Button>
+                                    <Button className="text-white bg-[#212121] h-full mr-2">수정</Button>
                                     {/*<Button className="bg-red-500 hover:bg-red-700 text-white">버튼2</Button>*/}
-                                    <select className="border rounded-md py-1 px-2">
+                                    <select className="border rounded-md py-1 px-2 h-full">
                                         <option value="selling">판매중</option>
                                         <option value="sold">판매완료</option>
                                     </select>
