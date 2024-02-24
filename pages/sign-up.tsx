@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/SU_button"
 import { Separator } from "@/components/ui/SUseparator"
 import { useState } from 'react';
 import axios from "axios";
-import Link from "next/link"
+import Link from "next/link";
+import { useRouter } from "next/router";
 import "@/app/globals.css"
 
 export default function SignUp() {
-
+  const router = useRouter();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -74,6 +75,7 @@ export default function SignUp() {
 
       if (response.data.success) {
         alert("회원가입이 완료되었습니다.");
+        router.push('/login');
       } else {
         alert("회원가입에 실패하였습니다.");
       }
