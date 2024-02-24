@@ -27,13 +27,13 @@ export default function PaymentPage() {
     const [finalPrice, setFinalPrice] = useState(0);
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://192.168.0.132:9988/c_user', {});
+            const result = await axios.post('http://192.168.0.132:9988/api/c-user', {});
             setUserData(result.data);
             console.log(result.data)
         };
 
         const fetchProductData = async () => {
-            const response = await axios.post('http://192.168.0.132:9988/product_trans');
+            const response = await axios.post('http://192.168.0.132:9988/api/product-trans');
             setProduct(response.data);
             setFinalPrice(response.data.productPrice)
             console.log(response.data)

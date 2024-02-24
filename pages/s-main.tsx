@@ -18,17 +18,7 @@ export default function Seller_main({ userId }: { userId: string }) {
     fetch(`http://192.168.0.132:9988/api/sproduct?userId=abc&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        // Filter products based on the selected option (filter)
-        const filteredProducts = data.data.filter(product => {
-          if (filter === 'selling') {
-            return product.selling === true;
-          } else if (filter === 'sold') {
-            return product.selling === false;
-          }
-          return true;
-        });
-
-        setProducts(filteredProducts);
+        setProducts(data.data);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
@@ -66,35 +56,10 @@ export default function Seller_main({ userId }: { userId: string }) {
         return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
-    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
-    const handleSellComplete = async (productId: string) => {
-        try {
-            // 서버로 상태 변경 요청 보내기
-            const response = await fetch(`http://192.168.0.132:9988/api/change-state`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({userId, productId, selling: false }),
-            });
-    
-            if (response.ok) {
-                // 판매 상태 변경이 성공하면 상품 목록에서 해당 상품 제거
-                setProducts(prevProducts => prevProducts.filter(product => product.productId !== productId));
-            } else {
-                console.error('Failed to change selling status.');
-            }
-        } catch (error) {
-            console.error('Error during sellComplete request:', error);
-        }
-    };
-
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
             <div className="flex justify-between items-center py-4 px-6">
                 <div className="flex space-x-4">
-                    {/* 판매 중, 판매 완료 상태 선택 */}
                     <select className="border rounded-md py-1 px-2" value={filter} onChange={(e) => setFilter(e.target.value)}>
                         <option value="selling">판매중</option>
                         <option value="sold">판매완료</option>
@@ -113,6 +78,7 @@ export default function Seller_main({ userId }: { userId: string }) {
                 <div className="grid grid-cols-1 gap-4">
                     {products.map(product => (
                     <Card className="w-full" key={product.productId}>
+                        <a href={`/detail?productId=${product.productId}`}>
                         <CardContent className="grid grid-cols-10 items-center">
                         <div className="col-span-1 mr-4">
                             <img
@@ -137,17 +103,13 @@ export default function Seller_main({ userId }: { userId: string }) {
 
                         <div className="col-span-1">
                             <div className="flex items-center justify-end">
-                            <Button className="text-white bg-[#212121] h-full mr-2"
-                                onClick={() => {
-                                setSelectedProductId(product.productId);
-                                handleSellComplete(product.productId);
-                                }}
-                            >
-                                판매완료로<br/>상태변경
+                            <Button className="text-white bg-[#212121] h-full mr-2">
+                                판매중
                             </Button>
                             </div>
                         </div>
                         </CardContent>
+                        </a>
                     </Card>
                     ))}
                 </div>
