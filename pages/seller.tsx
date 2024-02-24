@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Header from './header';
-import Smain from './s_main'; //상품목록
-import Sorder from './s_order'; //주문조회
-import Sreturn from './s_return'; //환불/반품조회
-import Sreview from './s_review'; //리뷰
-import Sqa from './s_qa'; //문의
+import Smain from './s-main'; //상품목록
+import Sorder from './s-order'; //주문조회
+import Sreturn from './s-return'; //환불/반품조회
+import Sreview from './s-review'; //리뷰
+import Sqa from './s-qa'; //문의
 import Link from "next/link"
 import { useRouter } from 'next/router';  // useRouter 추가
 
@@ -15,15 +15,15 @@ export default function Seller({ userId }: { userId: string }) {
 
     const renderSection = () => {
         switch (selectedSection) {
-            case 's_main':
+            case 's-main':
                 return <Smain userId={userId} />;
-            case 's_order':
+            case 's-order':
                 return <Sorder userId={userId} />;
-            case 's_return':
+            case 's-return':
                 return <Sreturn userId={userId} />;
-            case 's_review':
+            case 's-review':
                 return <Sreview userId={userId} />;
-            case 's_qa':
+            case 's-qa':
                 return <Sqa userId={userId} />;
         
             default:
@@ -40,30 +40,30 @@ export default function Seller({ userId }: { userId: string }) {
                         <a
                         className="text-gray-700 hover:text-gray-900"
                         onClick={() => {
-                            setSelectedSection('s_main');
-                            router.push('/s_main');  // 페이지 변경
+                            setSelectedSection('s-main');
+                            router.push('/s-main');  // 페이지 변경
                         }}> 상품목록</a>
                         {/* <Link className="text-gray-700 hover:text-gray-900" href="/s_main">
                             상품목록
                         </Link> */}
                     </li>
                     <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/s_order">
+                        <Link className="text-gray-700 hover:text-gray-900" href="/s-order">
                             주문조회
                         </Link>
                     </li>
                     <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/s_return">
+                        <Link className="text-gray-700 hover:text-gray-900" href="/s-return">
                             환불/반품조회
                         </Link>
                     </li>
                     <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/s_review">
+                        <Link className="text-gray-700 hover:text-gray-900" href="/s-review">
                             리뷰조회
                         </Link>
                     </li>
                     <li>
-                        <Link className="text-gray-700 hover:text-gray-900" href="/s_qa">
+                        <Link className="text-gray-700 hover:text-gray-900" href="/s-qa">
                             문의조회
                         </Link>
                     </li>

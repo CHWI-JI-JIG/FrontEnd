@@ -73,7 +73,7 @@ export default function Detail({ userId }: { userId: string }) {
     const fetchData = async () => {
       try {
         // 세션 정보 요청
-        const sessionResponse = await axios.post('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session', {});
+        const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
         const sessionData = sessionResponse.data;
         console.log(sessionData);
 
@@ -81,7 +81,7 @@ export default function Detail({ userId }: { userId: string }) {
 
         // 상세 페이지 url에서 파라미터로 productid 존재 유무 확인 후 상품, QA api 요청
         if (productId && typeof productId === 'string') {
-          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
+          const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
           const productData = await productResponse.json();
           const { product, QA } = productData;
           if (product && QA) {

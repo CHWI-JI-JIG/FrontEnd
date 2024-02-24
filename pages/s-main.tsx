@@ -15,7 +15,7 @@ export default function Seller_main({ userId }: { userId: string }) {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/sproduct?userId=abc&page=${page}`)
+    fetch(`http://192.168.0.132:9988/api/sproduct?userId=abc&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         // Filter products based on the selected option (filter)

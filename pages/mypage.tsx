@@ -1,37 +1,13 @@
 import Link from "next/link"
 import { Input } from "@/components/ui/MP_input"
 import { SVGProps } from "react"
+import Header from './header';
+import "@/app/globals.css"
 
-export function mypage() {
+export default function Mypage({ userId }: { userId: string }) {
   return (
     <div className="bg-white">
-      <header className="border-b">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center">
-            <button className="text-gray-500 focus:outline-none lg:hidden">
-              <MenuIcon className="h-6 w-6" />
-            </button>
-            <div className="hidden lg:flex space-x-8">
-              <Link className="text-gray-900 hover:text-gray-900" href="#">
-                카테고리
-              </Link>
-              <Link className="text-gray-500 hover:text-gray-900" href="#">
-                브랜드
-              </Link>
-              <Link className="text-gray-500 hover:text-gray-900" href="#">
-                카테고리
-              </Link>
-            </div>
-          </div>
-          <div className="flex items-center">
-            <span className="text-green-500 font-bold text-xl">INSBIZMALL</span>
-          </div>
-          <div className="flex items-center">
-            <Input placeholder="검색어를 입력해 주세요." type="search" />
-            <SearchIcon className="h-6 w-6 text-gray-500 ml-2" />
-          </div>
-        </div>
-      </header>
+      <Header userId={userId}/>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-4 sm:px-0">
           <div className="grid grid-cols-4 gap-4">
