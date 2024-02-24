@@ -55,7 +55,7 @@ export default function Detail({ userId }: { userId: string }) {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
+      const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
       const productData = await productResponse.json();
       const { product, QA } = productData;
       if (product && QA) {
@@ -81,7 +81,7 @@ export default function Detail({ userId }: { userId: string }) {
       if (!product) {
         return;
       }
-      const sessionResponse = await axios.post('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session', {});
+      const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
       const sessionData = sessionResponse.data;
       setUser(sessionData.data);
       console.log("userid=", user.userId);
@@ -95,7 +95,7 @@ export default function Detail({ userId }: { userId: string }) {
         productPrice: product.productPrice,
         userId: userId
       };
-      const purchaseResponse = await axios.post('https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/temppayment', purchaseData);
+      const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
       console.log("구매 요청:", purchaseResponse.data);
     } catch (error) {
       console.error('Error purchasing product:', error);
@@ -109,10 +109,10 @@ export default function Detail({ userId }: { userId: string }) {
 
   // 모달 열기 함수
   const openModal = () => {
-    if(!user){
+    /*if(!user){
       router.push('/login');
       return;
-    }
+    }*/
     setIsModalOpen(true);
   };
 
@@ -180,7 +180,7 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
-      {isModalOpen && <QaModal closeModal={closeModal} />} {/* 모달 */}
+      {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
     </div>
   );
 }

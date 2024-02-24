@@ -4,10 +4,11 @@ import { Label } from "@/components/ui/Lo_label"
 import { Input } from "@/components/ui/Lo_input"
 import Link from "next/link"
 import { Button } from "@/components/ui/Lo_button"
+import { useRouter } from "next/router";
 import "@/app/globals.css"
 
 export default function Login() {
-
+  const router  = useRouter();
   // 입력값 상태 관리
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -16,13 +17,14 @@ export default function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // 로그인 요청
     try {
-      const response = await axios.post("서버URL/login", {
+      const response = await axios.post("http://192.168.0.132:9988/api/login", {
         id,
         password,
       });
 
       if (response.data.success) {
         alert("로그인에 성공하였습니다.");
+        router.push('/main');
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
       } else {
         alert("로그인에 실패하였습니다.");
