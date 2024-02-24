@@ -32,35 +32,35 @@ export default function payPopup() {
             1
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            7
-          </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             2
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            0
+            3
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             4
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+            5
+          </button>
+          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             6
+          </button>
+          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+            7
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             8
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            5
-          </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            3
+            9
           </button>
           <div className="flex items-center justify-center">
             <FingerprintIcon className="text-white h-6 w-6" />
             <span className="sr-only">Fingerprint authentication</span>
           </div>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            9
+            0
           </button>
           <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             <DeleteIcon className="h-6 w-6" />
