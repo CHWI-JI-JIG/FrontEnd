@@ -6,6 +6,7 @@ import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@
 import axios from 'axios';
 import { Button } from "@/components/ui/DE_button";
 import "@/app/globals.css";
+import QaModal from './qa-modal'; // qa-modal 컴포넌트를 불러옵니다.
 
 interface Product {
   productId: string;
@@ -20,7 +21,6 @@ interface QA {
   question: string;
   answer: string;
 }
-
 interface User {
   userId: string;
   userName: string;
@@ -29,78 +29,105 @@ interface User {
   auth: string;
 }
 
+// 가격 포맷 함수
+const numberWithCommas = (number: number) => {
+  return number.toLocaleString();
+};
+
 export default function Detail({ userId }: { userId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [qas, setQas] = useState<QA[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
+  const [selectedProductCount, setSelectedProductCount] = useState<string>("1");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // 모달 상태 추가 
   const router = useRouter();
   const { productId } = router.query;
 
-  // handlePurchase 함수 정의
+  useEffect(() => {
+    if (!productId) {
+      console.log("잘못된 접근...");
+      return;
+    }
+    fetchData();
+  }, [productId]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
+      const productData = await productResponse.json();
+      const { product, QA } = productData;
+      if (product && QA) {
+        setProduct(product);
+        setQas(QA);
+      } else {
+        // 에러 처리
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePurchase = async () => {
     try {
-      if (!user || !product) { // product가 null인 경우 처리
-        // 사용자가 로그인하지 않은 경우 처리
+      if(!user){
+        //로그인 페이지로 이동
+        router.push('/login');
         return;
       }
-
-      // 수량 정보 가져오기
-      const quantity = document.getElementById("quantity") as HTMLSelectElement;
-      const selectedQuantity = parseInt(quantity.value);
-
-      // 구매 정보 준비
+      if (!product) {
+        return;
+      }
+      const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
+      const sessionData = sessionResponse.data;
+      setUser(sessionData.data);
+      console.log("userid=", user.userId);
+      if (!userId) {
+        return;
+      }
       const purchaseData = {
         productId: product.productId,
         productName: product.productName,
-        quantity: selectedQuantity,
+        productCount: parseInt(selectedProductCount),
         productPrice: product.productPrice,
-        userId: user.userId,
-        userName: user.userName
+        userId: userId
       };
-
-      // 서버에 구매 요청 보내기
-      const purchaseResponse = await axios.post('https://your-server-url/purchase', purchaseData);
-
-      // 구매 요청 결과 처리
-      console.log(purchaseResponse.data); // 구매 요청 결과 출력 또는 다른 작업 수행
-
+      const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
+      console.log("구매 요청:", purchaseResponse.data);
     } catch (error) {
       console.error('Error purchasing product:', error);
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 세션 정보 요청
-        const sessionResponse = await axios.post('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session', {});
-        const sessionData = sessionResponse.data;
-        console.log(sessionData);
+  const handleSelectChange = (selectedValue: string) => {
+    setSelectedProductCount(selectedValue);
+    console.log("Selected product count:", selectedValue);
+  };
 
-        setUser(sessionData.data); // 세션 정보 중에서 사용자 정보만 가져와 저장
+  // 모달 열기 함수
+  const openModal = () => {
+    if(!user){
+      router.push('/login');
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
-        // 상세 페이지 url에서 파라미터로 productid 존재 유무 확인 후 상품, QA api 요청
-        if (productId && typeof productId === 'string') {
-          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
-          const productData = await productResponse.json();
-          const { product, QA } = productData;
-          if (product && QA) {
-            setProduct(product);
-            setQas(QA);
-          } else {
-            // 에러 처리
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  // 모달 닫기 함수
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    fetchData();
-  }, [productId]);
+  if (loading) {
+    console.log("로딩 중...");
+    return <div>로딩 중...</div>;
+  }
 
   if (!product) {
-    return <div>잘못된 접근입니다.</div>;
+    return null;
   }
 
   return (
@@ -118,7 +145,7 @@ export default function Detail({ userId }: { userId: string }) {
         </div>
         <div className="flex flex-col gap-4 md:gap-8">
           <h1 className="font-bold text-2xl sm:text-3xl">{product.productName}</h1>
-          <div className="text-4xl font-bold">{product.productPrice}</div>
+          <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}</div> {/* 가격 포맷 */}
           <p>{product.productDescription}</p>
           <div className="grid gap-4 md:gap-8">
             <form className="grid gap-4 md:gap-8">
@@ -126,27 +153,24 @@ export default function Detail({ userId }: { userId: string }) {
                 <Label className="text-base" htmlFor="quantity">
                   수량
                 </Label>
-                <Select defaultValue="1">
-                  <SelectTrigger className="w-24">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                    <SelectItem value="5">5</SelectItem>
-                  </SelectContent>
-                </Select>
+                <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
               </div>
+
               <Button size="lg" onClick={handlePurchase}>구매하기</Button>
             </form>
           </div>
         </div>
       </div>
-      <div className="mt-6 flex justify-between items-center">
+      <hr className="my-6 border-gray-300 dark:border-gray-600"/> {/* 구분선 */}
+      <div className="flex justify-between items-center">
         <h2 className="font-bold text-lg mb-2">Q&A</h2>
-        <Button>Q&A 작성</Button>
+        <Button onClick={openModal}>Q&A 작성</Button> {/* Q&A 작성 버튼 */}
       </div>
       <div className="grid gap-4">
         {qas.map((qa, index) => (
@@ -156,7 +180,7 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
+      {isModalOpen && <QaModal closeModal={closeModal} />} {/* 모달 */}
     </div>
   );
 }
-

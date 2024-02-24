@@ -68,6 +68,14 @@ export default function Seller({ userId }: { userId: string }) {
                     </li>
                     <li>
                         <a
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_qa' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s_qa')}
+                        >
+                            문의조회
+                        </a>
+                    </li>
+                    <li>
+                        <a
                             className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_return' && 'font-bold'}`}
                             onClick={() => handleSectionChange('s_return')}
                         >
@@ -80,15 +88,6 @@ export default function Seller({ userId }: { userId: string }) {
                             onClick={() => handleSectionChange('s_review')}
                         >
                             리뷰조회
-                        </a>
-                    </li>
-
-                    <li>
-                        <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_qa' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_qa')}
-                        >
-                            문의조회
                         </a>
                     </li>
                 </ul>
