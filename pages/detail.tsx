@@ -44,48 +44,11 @@ export default function Detail({ userId }: { userId: string }) {
   const router = useRouter();
   const { productId } = router.query;
 
-  useEffect(() => {
-    if (!productId) {
-      console.log("잘못된 접근...");
-      return;
-    }
-    fetchData();
-  }, [productId]);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
-      const productData = await productResponse.json();
-      const { product, QA } = productData;
-      if (product && QA) {
-        setProduct(product);
-        setQas(QA);
-      } else {
-        // 에러 처리
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // handlePurchase 함수 정의
   const handlePurchase = async () => {
     try {
-      if(!user){
-        //로그인 페이지로 이동
-        router.push('/login');
-        return;
-      }
-      if (!product) {
-        return;
-      }
-      const sessionResponse = await axios.post('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session', {});
-      const sessionData = sessionResponse.data;
-      setUser(sessionData.data);
-      console.log("userid=", user.userId);
-      if (!userId) {
+      if (!user || !product) { // product가 null인 경우 처리
+        // 사용자가 로그인하지 않은 경우 처리
         return;
       }
       const purchaseData = {
@@ -95,36 +58,47 @@ export default function Detail({ userId }: { userId: string }) {
         productPrice: product.productPrice,
         userId: userId
       };
-      const purchaseResponse = await axios.post('https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/temppayment', purchaseData);
-      console.log("구매 요청:", purchaseResponse.data);
+
+      // 서버에 구매 요청 보내기
+      const purchaseResponse = await axios.post('https://your-server-url/purchase', purchaseData);
+
+      // 구매 요청 결과 처리
+      console.log(purchaseResponse.data); // 구매 요청 결과 출력 또는 다른 작업 수행
+
     } catch (error) {
       console.error('Error purchasing product:', error);
     }
   };
 
-  const handleSelectChange = (selectedValue: string) => {
-    setSelectedProductCount(selectedValue);
-    console.log("Selected product count:", selectedValue);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 세션 정보 요청
+        const sessionResponse = await axios.post('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session', {});
+        const sessionData = sessionResponse.data;
+        console.log(sessionData);
 
-  // 모달 열기 함수
-  const openModal = () => {
-    if(!user){
-      router.push('/login');
-      return;
-    }
-    setIsModalOpen(true);
-  };
+        setUser(sessionData.data); // 세션 정보 중에서 사용자 정보만 가져와 저장
 
-  // 모달 닫기 함수
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+        // 상세 페이지 url에서 파라미터로 productid 존재 유무 확인 후 상품, QA api 요청
+        if (productId && typeof productId === 'string') {
+          const productResponse = await fetch(`https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/detail?productId=${productId}`);
+          const productData = await productResponse.json();
+          const { product, QA } = productData;
+          if (product && QA) {
+            setProduct(product);
+            setQas(QA);
+          } else {
+            // 에러 처리
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-  if (loading) {
-    console.log("로딩 중...");
-    return <div>로딩 중...</div>;
-  }
+    fetchData();
+  }, [productId]);
 
   if (!product) {
     return null;
@@ -180,7 +154,6 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
-      {isModalOpen && <QaModal closeModal={closeModal} />} {/* 모달 */}
     </div>
   );
 }
