@@ -43,16 +43,14 @@ export default function Seller({ userId }: { userId: string }) {
                     <li>
                         <a
                             className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-main' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s-main')}
-                        >
+                            onClick={() => handleSectionChange('s-main')}>
                             상품목록
                         </a>
                     </li>
                     <li>
                         <a
                             className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-order' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s-order')}
-                        >
+                            onClick={() => handleSectionChange('s-order')}>
                             주문조회
                         </a>
                     </li>

@@ -109,10 +109,10 @@ export default function Detail({ userId }: { userId: string }) {
 
   // 모달 열기 함수
   const openModal = () => {
-    if(!user){
+    /*if(!user){
       router.push('/login');
       return;
-    }
+    }*/
     setIsModalOpen(true);
   };
 
@@ -180,7 +180,7 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
-      {isModalOpen && <QaModal closeModal={closeModal} />} {/* 모달 */}
+      {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
     </div>
   );
 }

@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/SU_button"
 import { Separator } from "@/components/ui/SUseparator"
 import { useState } from 'react';
 import axios from "axios";
-import Link from "next/link"
+import Link from "next/link";
+import { useRouter } from "next/router";
+
 import "@/app/globals.css"
 
 export default function SignUp() {
 
+  const router = useRouter()
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -22,7 +25,7 @@ export default function SignUp() {
   // 아이디 중복 검사
   const checkId = async () => {
     try {
-      const response = await axios.get(`서버URL/checkId?id=${id}`);
+      const response = await axios.get(`http://192.168.0.132:9988/api/check-id?id=${id}`);
       if (response.data.duplicated) {
         alert("중복된 아이디입니다.");
       } else {
@@ -65,7 +68,7 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post("서버URL/b-signup", {
+      const response = await axios.post("http://192.168.0.132:9988/api/b-signup", {
         id,
         password,
         name,
@@ -78,6 +81,7 @@ export default function SignUp() {
 
       if (response.data.success) {
         alert("회원가입이 완료되었습니다.");
+        router.push('/login');
       } else {
         alert("회원가입에 실패하였습니다.");
       }

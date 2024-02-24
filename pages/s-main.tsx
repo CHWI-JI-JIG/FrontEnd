@@ -5,13 +5,14 @@ import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
+import ProductRegistration from './product-registration';
 
 export default function Seller_main({ userId }: { userId: string }) {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [filter, setFilter] = useState<string>('selling'); // Default filter: selling
+  const [showProductModal, setShowProductModal] = useState(false);
 
   //상품 데이터 가져오기 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function Seller_main({ userId }: { userId: string }) {
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [page, filter]);
+  }, [page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -56,11 +57,35 @@ export default function Seller_main({ userId }: { userId: string }) {
         return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
+    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+    const handleSellComplete = async (productId: string) => {
+        try {
+            // 서버로 상태 변경 요청 보내기
+            const response = await fetch(`http://192.168.0.132:9988/api/change-state`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({userId, productId, selling: false }),
+            });
+    
+            if (response.ok) {
+                // 판매 상태 변경이 성공하면 상품 목록에서 해당 상품 제거
+                setProducts(prevProducts => prevProducts.filter(product => product.productId !== productId));
+            } else {
+                console.error('Failed to change selling status.');
+            }
+        } catch (error) {
+            console.error('Error during sellComplete request:', error);
+        }
+    };
+
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
             <div className="flex justify-between items-center py-4 px-6">
                 <div className="flex space-x-4">
-                    <select className="border rounded-md py-1 px-2" value={filter} onChange={(e) => setFilter(e.target.value)}>
+                    <select className="border rounded-md py-1 px-2">
                         <option value="selling">판매중</option>
                         <option value="sold">판매완료</option>
                     </select>
@@ -70,8 +95,11 @@ export default function Seller_main({ userId }: { userId: string }) {
                     </Button>
                 </div>
 
-                <Button className="text-white bg-[#212121]">상품 등록</Button>
+                <Button className="text-white bg-[#212121]" onClick={() => setShowProductModal(true)}>상품 등록</Button>
             </div>
+
+            {/* 상품 등록 모달 */}
+            {showProductModal && <ProductRegistration onClose={() => setShowProductModal(false)} />}
 
             <main className="py-6 px-6">
                 <section className="mb-6">
@@ -83,13 +111,12 @@ export default function Seller_main({ userId }: { userId: string }) {
                         <div className="col-span-1 mr-4">
                             <img
                             alt={product.productName}
-                            height="100"
+                            height="150"
                             src={product.productImageUrl}
                             style={{
-                                aspectRatio: "200/200",
                                 objectFit: "cover",
                             }}
-                            width="100"
+                            width="150"
                             />
                         </div>
 
@@ -133,7 +160,6 @@ interface Product {
     productImageUrl: string;
     productPrice: number;
     regDate:Date;
-    selling:boolean;
   }
   
 interface PagedProductList {
