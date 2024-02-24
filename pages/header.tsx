@@ -23,7 +23,7 @@ export default function Header({ userId }: { userId: string }) {
   }, [userId]);
 
   const handleLogout = () => {
-    fetch('http://localhost:9988/api/logout', {
+    fetch('http://192.168.0.132:9988/api/logout', {
       method: 'POST',
     })
       .then(response => response.json())
