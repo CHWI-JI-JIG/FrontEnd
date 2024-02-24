@@ -180,7 +180,7 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         ))}
       </div>
-      {isModalOpen && <QaModal closeModal={closeModal} />} {/* 모달 */}
+      {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
     </div>
   );
 }

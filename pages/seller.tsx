@@ -2,10 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Header from './header';
 import Smain from './s-main'; //상품목록
 import Sorder from './s-order'; //주문조회
-import Sreturn from './s-return'; //환불/반품조회
-import Sreview from './s-review'; //리뷰
-//import Sqa from './s-qa'; //문의
-import Link from "next/link"
 import { useRouter } from 'next/router';  // useRouter 추가
 
 
@@ -34,12 +30,6 @@ export default function Seller({ userId }: { userId: string }) {
                 return <Smain userId={userId} />;
             case 's-order':
                 return <Sorder userId={userId} />;
-            case 's-return':
-                return <Sreturn userId={userId} />;
-            case 's-review':
-                return <Sreview userId={userId} />;
-            //case 's-qa':
-            //    return <Sqa userId={userId} />;
             default:
                 return null;
         }
@@ -64,30 +54,6 @@ export default function Seller({ userId }: { userId: string }) {
                             onClick={() => handleSectionChange('s-order')}
                         >
                             주문조회
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-qa' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s-qa')}
-                        >
-                            문의조회
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-return' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s-return')}
-                        >
-                            환불/반품조회
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-review' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s-review')}
-                        >
-                            리뷰조회
                         </a>
                     </li>
                 </ul>

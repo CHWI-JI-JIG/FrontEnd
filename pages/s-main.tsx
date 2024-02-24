@@ -5,6 +5,7 @@ import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
+import ProductRegistration from './product-registration';
 
 export default function Seller_main({ userId }: { userId: string }) {
   /*상품정보 받는 중*/
@@ -12,6 +13,7 @@ export default function Seller_main({ userId }: { userId: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [filter, setFilter] = useState<string>('selling'); // Default filter: selling
+  const [showProductModal, setShowProductModal] = useState(false);
 
   //상품 데이터 가져오기 
   useEffect(() => {
@@ -105,8 +107,11 @@ export default function Seller_main({ userId }: { userId: string }) {
                     </Button>
                 </div>
 
-                <Button className="text-white bg-[#212121]">상품 등록</Button>
+                <Button className="text-white bg-[#212121]" onClick={() => setShowProductModal(true)}>상품 등록</Button>
             </div>
+
+            {/* 상품 등록 모달 */}
+            {showProductModal && <ProductRegistration onClose={() => setShowProductModal(false)} />}
 
             <main className="py-6 px-6">
                 <section className="mb-6">
@@ -161,7 +166,9 @@ export default function Seller_main({ userId }: { userId: string }) {
                 </div>
                 </section>
             </main>
+            
         </div>
+        
     )
 }
 
