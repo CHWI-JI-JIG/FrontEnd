@@ -26,7 +26,7 @@ const QaModal: React.FC<QaFormProps> = ({ closeModal }) => {
       };
 
       // 서버에 POST 요청 보내기
-      await axios.post('https://be077830-e9ba-4396-b4e7-287ed4373b7b.mock.pstmn.io/api/qa-submit', dataToSend);
+      await axios.post('http://192.168.0.132:9988/api/qa-submit', dataToSend);
 
       // 요청이 성공적으로 처리되면 상태 초기화 또는 필요한 동작 수행
       setInputValue('');

@@ -14,7 +14,7 @@ export default function Header({ userId }: { userId: string }) {
   // 세션 데이터 가져오기
   useEffect(() => {
     if (userId) {
-      axios.post(`https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/get-session`, { userId })
+      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
         .then(response => {
           setUser(response.data.data); // 세션 정보를 상태에 저장
         })
@@ -23,7 +23,7 @@ export default function Header({ userId }: { userId: string }) {
   }, [userId]);
 
   const handleLogout = () => {
-    fetch('https://796d83ff-369b-4a37-a58b-7b99853ce898.mock.pstmn.io/api/logout', {
+    fetch('http://192.168.0.132:9988/api/logout', {
       method: 'POST',
     })
       .then(response => response.json())

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Header from './header';
-import Smain from './s_main'; //상품목록
-import Sorder from './s_order'; //주문조회
-import Sreturn from './s_return'; //환불/반품조회
-import Sreview from './s_review'; //리뷰
-import Sqa from './s_qa'; //문의
+import Smain from './s-main'; //상품목록
+import Sorder from './s-order'; //주문조회
+import Sreturn from './s-return'; //환불/반품조회
+import Sreview from './s-review'; //리뷰
+//import Sqa from './s-qa'; //문의
 import Link from "next/link"
 import { useRouter } from 'next/router';  // useRouter 추가
 
 
 export default function Seller({ userId }: { userId: string }) {
-    const [selectedSection, setSelectedSection] = useState<string>('s_main');
+    const [selectedSection, setSelectedSection] = useState<string>('s-main');
     const router = useRouter();
 
     const handleSectionChange = (section: string) => {
@@ -25,21 +25,21 @@ export default function Seller({ userId }: { userId: string }) {
     // 해시 변경에 따라 섹션 선택
     useEffect(() => {
         const hash = window.location.hash.substr(1);
-        setSelectedSection(hash || 's_main');
+        setSelectedSection(hash || 's-main');
     }, [router.asPath]); // 페이지 이동 시에도 반응
 
     const renderSection = () => {
         switch (selectedSection) {
-            case 's_main':
+            case 's-main':
                 return <Smain userId={userId} />;
-            case 's_order':
+            case 's-order':
                 return <Sorder userId={userId} />;
-            case 's_return':
+            case 's-return':
                 return <Sreturn userId={userId} />;
-            case 's_review':
+            case 's-review':
                 return <Sreview userId={userId} />;
-            case 's_qa':
-                return <Sqa userId={userId} />;
+            //case 's-qa':
+            //    return <Sqa userId={userId} />;
             default:
                 return null;
         }
@@ -52,43 +52,42 @@ export default function Seller({ userId }: { userId: string }) {
                 <ul className="flex space-x-4">
                     <li>
                         <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_main' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_main')}
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-main' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s-main')}
                         >
                             상품목록
                         </a>
                     </li>
                     <li>
                         <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_order' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_order')}
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-order' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s-order')}
                         >
                             주문조회
                         </a>
                     </li>
                     <li>
                         <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_return' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_return')}
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-qa' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s-qa')}
+                        >
+                            문의조회
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-return' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s-return')}
                         >
                             환불/반품조회
                         </a>
                     </li>
                     <li>
                         <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_review' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_review')}
+                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's-review' && 'font-bold'}`}
+                            onClick={() => handleSectionChange('s-review')}
                         >
                             리뷰조회
-                        </a>
-                    </li>
-
-                    <li>
-                        <a
-                            className={`text-gray-700 hover:text-gray-900 ${selectedSection === 's_qa' && 'font-bold'}`}
-                            onClick={() => handleSectionChange('s_qa')}
-                        >
-                            문의조회
                         </a>
                     </li>
                 </ul>

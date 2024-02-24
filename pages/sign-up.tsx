@@ -63,7 +63,7 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post("서버URL/signup", {
+      const response = await axios.post("서버URL/api/signup", {
         id,
         password,
         name,
