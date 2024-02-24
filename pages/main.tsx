@@ -23,7 +23,6 @@ export default function Main({ userId }: { userId: string }) {
     fetch(`http://192.168.0.132:9988/api/products?page=1`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        console.log(data);
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
@@ -57,9 +56,7 @@ export default function Main({ userId }: { userId: string }) {
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
                 <CardContent>
-
-                  <div className="flex items-center justify-center">
-                    <a href={`/detail?productId=${product.productId}`}>
+                  <div className="flex items-center justify-center">                  
                     <img
                       alt={product.productName}
                       className="mb-2"
