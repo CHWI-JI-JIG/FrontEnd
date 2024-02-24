@@ -21,26 +21,26 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
         setErrorMessage('문의 내용을 입력해주세요.');
         return;
       }
-
+  
       // 서버로 보낼 데이터 구성
       const dataToSend = {
         userId: userId,
         productId: productId,
         question: question // textarea에 입력된 내용
       };
-
+  
       // 서버에 POST 요청 보내기
       const qaResponse= await axios.post('http://192.168.0.132:9988/api/qa-submit', dataToSend);
       const qaData = qaResponse.data;
       console.log(qaData);
-
+  
       // 모달 닫기
       closeModal();
-
+  
       // 요청이 성공적으로 처리되면 상태 초기화 또는 필요한 동작 수행
       setQuestion('');
       setErrorMessage('');
-
+  
       // 페이지 새로고침
       window.location.reload();
     } catch (error) {
