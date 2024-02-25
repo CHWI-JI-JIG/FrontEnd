@@ -37,7 +37,7 @@ export default function Seller({ userId }: { userId: string }) {
 
     return (
         <>
-            <Header userId={userId}/>
+            <Header userId={userId} onSearch={() => {}}/>
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
                 <ul className="flex space-x-4">
                     <li>

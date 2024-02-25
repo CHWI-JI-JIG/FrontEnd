@@ -9,6 +9,7 @@ import "@/app/globals.css"
 import axios from "axios"
 /*추가 중*/
 import React, { useEffect, useState } from 'react';
+import router from 'next/router';
 /*차콜색 212121*/
 
 export default function Main({ userId }: { userId: string }) {
@@ -18,9 +19,30 @@ export default function Main({ userId }: { userId: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
 
+  const [searchResults, setSearchResults] = useState<Product[]>([]); // 추가: 검색 결과 상태 추가
+  const [searchQuery, setSearchQuery] = useState<string>(''); // 추가: 검색어 상태 추가
+
+  const handleSearch = async (keyword: string) => {
+    // 라우터 라이브러리를 사용하여 URL 업데이트
+    await router.push(`/search?keyword=${keyword}&page=1`);
+  
+    // 검색 결과를 가져오기 위해 새로운 페이지를 1로 초기화하고, 검색 요청을 수행합니다.
+    setPage(1);
+  
+    // 실제 검색 요청 로직을 수행하고, 검색 결과를 setProducts로 업데이트합니다.
+    // 이 로직은 검색 엔진이나 서버에 맞게 구현되어야 합니다.
+    fetch(`http://172.30.1.32:9988/api/search?keyword=${keyword}&page=1`)
+      .then(response => response.json())
+      .then((data: PagedProductList) => {
+        setProducts(data.data);
+        setTotalPages(data.totalPage);
+      })
+      .catch(error => console.error('Error searching:', error));
+  };
+
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/products?page=1`)
+    fetch(`http://172.30.1.32:9988/api/products?page=1`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -48,7 +70,7 @@ export default function Main({ userId }: { userId: string }) {
 
   return (
     <div className="max-w-screen-xl mx-auto">
-      <Header userId={userId}/>
+      <Header userId={userId} onSearch={handleSearch}/>
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
@@ -104,12 +126,4 @@ interface PagedProductList {
   totalPage: number;
   totalCount: number;
   data: Product[];
-}
-
-interface User {
-  userId: string;
-  userName: string;
-  email: string;
-  login: boolean;
-  auth: string;
 }
