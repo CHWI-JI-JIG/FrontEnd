@@ -17,7 +17,7 @@ export default function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // 로그인 요청
     try {
-      const response = await axios.post("http://192.168.0.132:9988/api/login", {
+      const response = await axios.post("http://172.30.1.32:9988/api/login", {
         id,
         password,
       });

@@ -7,7 +7,7 @@ import "@/app/globals.css"
 export default function Mypage({ userId }: { userId: string }) {
   return (
     <div className="bg-white">
-      <Header userId={userId}/>
+      <Header userId={userId} onSearch={() => {}}/>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-4 sm:px-0">
           <div className="grid grid-cols-4 gap-4">
