@@ -54,30 +54,30 @@ export default function Main({ userId }: { userId: string }) {
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
             {products.map(product => (
               <Card className="w-full" key={product.productId}>
+                <a href={`/detail?productId=${product.productId}`}>
                 <CardContent>
-                  <div className="flex items-center justify-center">
-                    <a href={`/detail?productId=${product.productId}`}>
+                  <div className="flex items-center justify-center">                  
                     <img
                       alt={product.productName}
                       className="mb-2"
-                      height="200"
                       src={product.productImageUrl}
                       style={{
-                        aspectRatio: "200/200",
+                        height:"200",
+                        width:"200",
                         objectFit: "cover",
                       }}
-                      width="200"
                     />
-                    </a>
                   </div>
                   <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
                   </div>
                 </CardContent>
+                </a>
               </Card>
             ))}
           </div>
+
           <div className="flex flex-col items-center mt-4">
             <div className="flex">
               <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
@@ -112,24 +112,4 @@ interface User {
   email: string;
   login: boolean;
   auth: string;
-}
-
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  )
 }
