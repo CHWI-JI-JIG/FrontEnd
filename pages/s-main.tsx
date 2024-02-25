@@ -16,7 +16,7 @@ export default function Seller_main({ userId }: { userId: string }) {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/sproduct?userId=abc&page=${page}`)
+    fetch(`http://172.30.1.32:9988/api/sproduct?userId=abc&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
