@@ -191,13 +191,13 @@ export default function Detail({ userId }: { userId: string }) {
       <div className="my-6 mx-6">
         <div className="grid md:grid-cols-2 md:gap-6 items-start">
           <div>
-          <img
-            alt="Product Image"
-            className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
-            height={200}
-            src={product.productImageUrl}
-            width={200}
-          />
+            <img
+              alt="Product Image"
+              className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
+              height={200}
+              src={product.productImageUrl}
+              width={200}
+            />
           </div>
           <div className="flex flex-col gap-4 md:gap-8">
             <h1 className="font-bold text-2xl sm:text-3xl">{product.productName}</h1>
@@ -225,19 +225,25 @@ export default function Detail({ userId }: { userId: string }) {
         </div>
 
         <hr className="my-6 border-gray-300 dark:border-gray-600"/> {/* 구분선 */}
-        <div className="flex justify-between items-center">
-          <h2 className="font-bold text-lg mb-2">Q&A</h2>
-          <Button onClick={openModal}>Q&A 작성</Button> {/* Q&A 작성 버튼 */}
-        </div>
+        <div className="flex justify-between items-center mb-8">
+  <h2 className="font-bold text-4xl mb-2">Q&A</h2>
+  <Button onClick={openModal}>Q&A 작성</Button>
+</div>
 
-        <div className="grid gap-4">
-          {qas.map((qa, index) => (
-            <div key={index} className="text-sm">
-              <h3 className="font-medium">{qa.question}</h3>
-              <p>{qa.answer}</p>
-            </div>
-          ))}
-        </div>
+<div>
+  {qas.map((qa, index) => (
+    <div key={index} className="text-sm" style={{ margin: '10px 0' }}>
+      <div className="border-b border-gray-300 pb-4">
+        <h3 className="font-medium text-lg">Q. {qa.question}</h3>
+        {qa.answer !== "" && (
+          <p className="text-gray-500">A. {qa.answer}</p>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+
         {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
       </div>
     </div>
