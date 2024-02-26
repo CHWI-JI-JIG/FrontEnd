@@ -1,4 +1,3 @@
-import Header from './header';
 import { useState, useEffect, SVGProps } from 'react';
 import { useRouter } from 'next/router';
 import { Input } from "@/components/ui/MA_input"
