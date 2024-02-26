@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/MA_button";
-import Link from "next/link";
 import { Input } from "@/components/ui/MA_input";
+import Link from "next/link";
 import { JSX, SVGProps } from "react";
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css";
@@ -35,30 +35,17 @@ export default function Header({ userId, onSearch }: HeaderProps) {
       .catch(error => console.error('Error logging out:', error));
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // 폼 제출의 기본 동작 막기
-    onSearch(searchQuery);
-
-    // 라우터 라이브러리를 사용하여 URL 업데이트
-    router.push(`/search?keyword=${searchQuery}&page=1`);
-  };
-
   return (
     <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
       <Link href="/">
         <a className="text-3xl font-bold">취지직</a>
       </Link>
-      <form onSubmit={handleSearch} className="flex items-center space-x-2">
-        <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" 
-          value={searchQuery} onChange={handleSearchChange} />
+      <div className="flex items-center space-x-2">
+        <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
         <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
           <SearchIcon className="text-gray-700" />
         </Button>
-      </form>
+      </div>
       <div className="flex space-x-4">
         {user ? (
           <>

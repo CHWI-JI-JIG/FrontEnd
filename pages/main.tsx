@@ -1,4 +1,3 @@
-import Header from './header';
 import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
@@ -9,36 +8,38 @@ import "@/app/globals.css"
 import axios from "axios"
 /*추가 중*/
 import React, { useEffect, useState } from 'react';
-import router from 'next/router';
 /*차콜색 212121*/
 
 export default function Main({ userId }: { userId: string }) {
+  /*헤더...*/
+  const [user, setUser] = useState<User | null>(null);
+
+  // 세션 데이터 가져오기
+  useEffect(() => {
+    if (userId) {
+      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
+        .then(response => {
+          setUser(response.data.data); // 세션 정보를 상태에 저장
+        })
+        .catch(error => console.error('Error fetching session:', error));
+    }
+  }, [userId]);
+
+  const handleLogout = () => {
+    fetch('http://192.168.0.132:9988/api/logout', {
+      method: 'POST',
+    })
+      .then(response => response.json())
+      .then(data => {
+        setUser(null); // 로그아웃 시 세션 정보를 초기화
+      })
+      .catch(error => console.error('Error logging out:', error));
+  };
 
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-
-  const [searchResults, setSearchResults] = useState<Product[]>([]); // 추가: 검색 결과 상태 추가
-  const [searchQuery, setSearchQuery] = useState<string>(''); // 추가: 검색어 상태 추가
-
-  const handleSearch = async (keyword: string) => {
-    // 라우터 라이브러리를 사용하여 URL 업데이트
-    await router.push(`/search?keyword=${keyword}&page=1`);
-  
-    // 검색 결과를 가져오기 위해 새로운 페이지를 1로 초기화하고, 검색 요청을 수행합니다.
-    setPage(1);
-  
-    // 실제 검색 요청 로직을 수행하고, 검색 결과를 setProducts로 업데이트합니다.
-    // 이 로직은 검색 엔진이나 서버에 맞게 구현되어야 합니다.
-    fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}&page=1`)
-      .then(response => response.json())
-      .then((data: PagedProductList) => {
-        setProducts(data.data);
-        setTotalPages(data.totalPage);
-      })
-      .catch(error => console.error('Error searching:', error));
-  };
 
   //상품 데이터 가져오기 
   useEffect(() => {
@@ -70,7 +71,40 @@ export default function Main({ userId }: { userId: string }) {
 
   return (
     <div className="max-w-screen-xl mx-auto">
-      <Header userId={userId} onSearch={handleSearch}/>
+      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
+        <Link href="/">
+          <a className="text-3xl font-bold">취지직</a>
+        </Link>
+        <div className="flex items-center space-x-2">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+            <SearchIcon className="text-gray-700" />
+          </Button>
+        </div>
+        <div className="flex space-x-4">
+          {user ? (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/mypage">{user.userName}님</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                로그아웃
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/login">로그인</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/privacy-policy">회원가입</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
+
+      
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
@@ -113,6 +147,14 @@ export default function Main({ userId }: { userId: string }) {
   )
 }
 
+interface User {
+  userId: string;
+  userName: string;
+  email: string;
+  login: boolean;
+  auth: string;
+}
+
 interface Product {
   productId: string;
   productName: string;
@@ -126,4 +168,24 @@ interface PagedProductList {
   totalPage: number;
   totalCount: number;
   data: Product[];
+}
+
+function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
 }
