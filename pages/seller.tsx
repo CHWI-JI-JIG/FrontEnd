@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Header from './header';
+import React, { SVGProps, useEffect, useState } from 'react';
 import Smain from './s-main'; //상품목록
 import Sorder from './s-order'; //주문조회
 import { useRouter } from 'next/router';  // useRouter 추가
+import Link from "next/link"
+import { Button } from "@/components/ui/MA_button";
+import { Input } from "@/components/ui/MA_input";
+import axios from 'axios';
 
 
 export default function Seller({ userId }: { userId: string }) {
@@ -35,9 +38,65 @@ export default function Seller({ userId }: { userId: string }) {
         }
     };
 
+    /*헤더...*/
+    const [user, setUser] = useState<User | null>(null);
+
+    // 세션 데이터 가져오기
+    useEffect(() => {
+        if (userId) {
+        axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
+            .then(response => {
+            setUser(response.data.data); // 세션 정보를 상태에 저장
+            })
+            .catch(error => console.error('Error fetching session:', error));
+        }
+    }, [userId]);
+
+    const handleLogout = () => {
+        fetch('http://192.168.0.132:9988/api/logout', {
+        method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            setUser(null); // 로그아웃 시 세션 정보를 초기화
+        })
+        .catch(error => console.error('Error logging out:', error));
+    };
+
     return (
         <>
-            <Header userId={userId}/>
+            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
+                <Link href="/">
+                <a className="text-3xl font-bold">취지직</a>
+                </Link>
+                <div className="flex items-center space-x-2">
+                <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
+                <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+                    <SearchIcon className="text-gray-700" />
+                </Button>
+                </div>
+                <div className="flex space-x-4">
+                {user ? (
+                    <>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                        <Link href="/mypage">{user.userName}님</Link>
+                    </Button>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                        로그아웃
+                    </Button>
+                    </>
+                ) : (
+                    <>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                        <Link href="/login">로그인</Link>
+                    </Button>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                        <Link href="/privacy-policy">회원가입</Link>
+                    </Button>
+                    </>
+                )}
+                </div>
+            </header>
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
                 <ul className="flex space-x-4">
                     <li>
@@ -62,4 +121,32 @@ export default function Seller({ userId }: { userId: string }) {
             </div>
         </>
     );
+
+    interface User {
+        userId: string;
+        userName: string;
+        email: string;
+        login: boolean;
+        auth: string;
+    }
+
+    function SearchIcon(props: SVGProps<SVGSVGElement>) {
+        return (
+          <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+    );
+    }
 }

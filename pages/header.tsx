@@ -1,20 +1,22 @@
 import { Button } from "@/components/ui/MA_button";
-import Link from "next/link";
 import { Input } from "@/components/ui/MA_input";
+import Link from "next/link";
 import { JSX, SVGProps } from "react";
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css";
 import axios from "axios";
 /* 추가 중 */
 import React, { useEffect, useState } from 'react';
+import router from "next/router";
 
-export default function Header({ userId }: { userId: string }) {
-    const [user, setUser] = useState<User | null>(null)
+export default function Header({ userId, onSearch }: HeaderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // 세션 데이터 가져오기
   useEffect(() => {
     if (userId) {
-      axios.post(`http://172.30.1.32:9988/api/get-session`, { userId })
+      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
         .then(response => {
           setUser(response.data.data); // 세션 정보를 상태에 저장
         })
@@ -23,7 +25,7 @@ export default function Header({ userId }: { userId: string }) {
   }, [userId]);
 
   const handleLogout = () => {
-    fetch('http://172.30.1.32:9988/api/logout', {
+    fetch('http://192.168.0.132:9988/api/logout', {
       method: 'POST',
     })
       .then(response => response.json())
@@ -35,10 +37,12 @@ export default function Header({ userId }: { userId: string }) {
 
   return (
     <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-      <h1 className="text-3xl font-bold">취지직</h1>
+      <Link href="/">
+        <a className="text-3xl font-bold">취지직</a>
+      </Link>
       <div className="flex items-center space-x-2">
-        <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요" />
-        <Button className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+        <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
+        <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
           <SearchIcon className="text-gray-700" />
         </Button>
       </div>
@@ -46,7 +50,7 @@ export default function Header({ userId }: { userId: string }) {
         {user ? (
           <>
             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-              {user.userName}님
+              <Link href="/mypage">{user.userName}님</Link>
             </Button>
             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
               로그아웃
@@ -65,6 +69,11 @@ export default function Header({ userId }: { userId: string }) {
       </div>
     </header>
   );
+}
+
+interface HeaderProps {
+  userId: string;
+  onSearch: (keyword: string) => void;
 }
 
 interface User {
