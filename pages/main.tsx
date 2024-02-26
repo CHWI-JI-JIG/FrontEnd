@@ -78,9 +78,7 @@ export default function Main({ userId }: { userId: string }) {
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
                 <CardContent>
-
                   <div className="flex items-center justify-center">
-                    <a href={`/detail?productId=${product.productId}`}>
                     <img
                       alt={product.productName}
                       className="mb-2"
