@@ -154,17 +154,17 @@ export default function Detail({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="max-w-screen-xl mx-auto">
-      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
+    <div className="bg-white">
+      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
         <Link href="/">
           <a className="text-3xl font-bold">취지직</a>
         </Link>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
           <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
             <SearchIcon className="text-gray-700" />
           </Button>
-        </div>
+        </div> */}
         <div className="flex space-x-4">
           {user ? (
             <>
