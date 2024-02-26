@@ -6,9 +6,9 @@ import { JSX, SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import axios from "axios"
+
 /*추가 중*/
 import React, { useEffect, useState } from 'react';
-/*차콜색 212121*/
 
 export default function Main({ userId }: { userId: string }) {
   /*헤더...*/
@@ -69,15 +69,32 @@ export default function Main({ userId }: { userId: string }) {
     return number.toLocaleString();
   };
 
+  //검색창
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+
+  const handleSearch = async () => {
+    try {
+      console.log('Keyword:', keyword);
+      const response = await fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}`);
+      const data = await response.json();
+      setSearchResults(data.data);
+      
+      console.log('Search Results:', data.data);
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
+  };
+
+
   return (
-    <div className="max-w-screen-xl mx-auto">
-      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-        <Link href="/">
-          <a className="text-3xl font-bold">취지직</a>
-        </Link>
+    <div className="bg-white">
+      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
+        <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
         <div className="flex items-center space-x-2">
-          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
-          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+          value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={handleSearch}>
             <SearchIcon className="text-gray-700" />
           </Button>
         </div>
@@ -103,32 +120,31 @@ export default function Main({ userId }: { userId: string }) {
           )}
         </div>
       </header>
-
       
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
-            {products.map(product => (
+            {(searchResults.length > 0 ? searchResults : products).map(product => (
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
-                <CardContent>
-                  <div className="flex items-center justify-center">
-                    <img
-                      alt={product.productName}
-                      className="mb-2"
-                      src={product.productImageUrl}
-                      style={{
-                        height:"200",
-                        width:"200",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
-                  </div>
-                </CardContent>
+                  <CardContent>
+                    <div className="flex items-center justify-center">
+                      <img
+                        alt={product.productName}
+                        className="mb-2"
+                        src={product.productImageUrl}
+                        style={{
+                          height: "200",
+                          width: "200",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
+                    </div>
+                  </CardContent>
                 </a>
               </Card>
             ))}

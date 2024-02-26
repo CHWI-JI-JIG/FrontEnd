@@ -65,16 +65,11 @@ export default function Seller({ userId }: { userId: string }) {
 
     return (
         <>
-            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
+            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
                 <Link href="/">
                 <a className="text-3xl font-bold">취지직</a>
                 </Link>
-                <div className="flex items-center space-x-2">
-                <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
-                <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
-                    <SearchIcon className="text-gray-700" />
-                </Button>
-                </div>
+                
                 <div className="flex space-x-4">
                 {user ? (
                     <>
@@ -128,25 +123,5 @@ export default function Seller({ userId }: { userId: string }) {
         email: string;
         login: boolean;
         auth: string;
-    }
-
-    function SearchIcon(props: SVGProps<SVGSVGElement>) {
-        return (
-          <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-    );
     }
 }
