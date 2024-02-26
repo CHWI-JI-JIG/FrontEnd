@@ -30,7 +30,7 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
       };
 
       // 서버에 POST 요청 보내기
-      const qaResponse= await axios.post('http://192.168.0.132:9988/api/qa-submit', dataToSend);
+      const qaResponse= await axios.post('http://192.168.0.132:9988/api/qa-question-submit', dataToSend);
       const qaData = qaResponse.data;
       console.log(qaData);
 

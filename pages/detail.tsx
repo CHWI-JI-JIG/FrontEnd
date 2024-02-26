@@ -225,24 +225,30 @@ export default function Detail({ userId }: { userId: string }) {
         </div>
 
         <hr className="my-6 border-gray-300 dark:border-gray-600"/> {/* 구분선 */}
-        <div className="flex justify-between items-center">
-          <h2 className="font-bold text-lg mb-2">Q&A</h2>
-          <Button onClick={openModal}>Q&A 작성</Button> {/* Q&A 작성 버튼 */}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="font-bold text-4xl mb-2">Q&A</h2>
+          <Button onClick={openModal}>Q&A 작성</Button>
         </div>
 
-        <div className="grid gap-4">
+        <div>
           {qas.map((qa, index) => (
-            <div key={index} className="text-sm">
-              <h3 className="font-medium">{qa.question}</h3>
-              <p>{qa.answer}</p>
+            <div key={index} className="text-sm" style={{ margin: '10px 0' }}>
+              <div className="border-b border-gray-300 pb-4">
+                <h3 className="font-medium text-lg">Q. {qa.question}</h3>
+                {qa.answer !== "" && (
+                  <p className="text-gray-500">A. {qa.answer}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
+
+
         {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
       </div>
     </div>
   );
-  
+
   function SearchIcon(props: SVGProps<SVGSVGElement>) {
     return (
       <svg
