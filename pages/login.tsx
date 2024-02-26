@@ -24,8 +24,14 @@ export default function Login() {
 
       if (response.data.success) {
         alert("로그인에 성공하였습니다.");
-        router.push('/main');
+        
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
+
+        const {auth, certification} = response.data;
+        sessionStorage.setItem('auth', auth);
+        sessionStorage.setItem('certification', certification);
+        router.push('/main');
+
       } else {
         alert("로그인에 실패하였습니다.");
       }

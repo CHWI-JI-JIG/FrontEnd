@@ -1,13 +1,70 @@
 import Link from "next/link"
 import { Input } from "@/components/ui/MP_input"
-import { SVGProps } from "react"
-import Header from './header';
+import { SVGProps, useEffect, useState } from "react"
+import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
+import axios from "axios";
 
 export default function Mypage({ userId }: { userId: string }) {
+   /*헤더...*/
+   const [user, setUser] = useState<User | null>(null);
+
+   // 세션 데이터 가져오기
+   useEffect(() => {
+     if (userId) {
+       axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
+         .then(response => {
+           setUser(response.data.data); // 세션 정보를 상태에 저장
+         })
+         .catch(error => console.error('Error fetching session:', error));
+     }
+   }, [userId]);
+ 
+   const handleLogout = () => {
+     fetch('http://192.168.0.132:9988/api/logout', {
+       method: 'POST',
+     })
+       .then(response => response.json())
+       .then(data => {
+         setUser(null); // 로그아웃 시 세션 정보를 초기화
+       })
+       .catch(error => console.error('Error logging out:', error));
+  };
+
   return (
     <div className="bg-white">
-      <Header userId={userId}/>
+      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
+        <Link href="/">
+          <a className="text-3xl font-bold">취지직</a>
+        </Link>
+        {/* <div className="flex items-center space-x-2">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"/>
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost">
+            <SearchIcon className="text-gray-700" />
+          </Button>
+        </div> */}
+        <div className="flex space-x-4">
+          {user ? (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/mypage">{user.userName}님</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                로그아웃
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/login">로그인</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/privacy-policy">회원가입</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-4 sm:px-0">
           <div className="grid grid-cols-4 gap-4">
@@ -185,6 +242,13 @@ function UserIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+interface User {
+  userId: string;
+  userName: string;
+  email: string;
+  login: boolean;
+  auth: string;
+}
 
 function BoxIcon(props:SVGProps<SVGSVGElement>) {
   return (
@@ -207,6 +271,12 @@ function BoxIcon(props:SVGProps<SVGSVGElement>) {
   )
 }
 
+interface Product {
+  productId: string;
+  productName: string;
+  productImageUrl: string;
+  productPrice: number;
+}
 
 function MessageCircleIcon(props:SVGProps<SVGSVGElement>) {
   return (

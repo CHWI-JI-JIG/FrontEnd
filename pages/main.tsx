@@ -1,4 +1,3 @@
-import Header from './header';
 import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
@@ -7,11 +6,35 @@ import { JSX, SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import axios from "axios"
+
 /*추가 중*/
 import React, { useEffect, useState } from 'react';
-/*차콜색 212121*/
 
 export default function Main({ userId }: { userId: string }) {
+  /*헤더...*/
+  const [user, setUser] = useState<User | null>(null);
+
+  // 세션 데이터 가져오기
+  useEffect(() => {
+    if (userId) {
+      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
+        .then(response => {
+          setUser(response.data.data); // 세션 정보를 상태에 저장
+        })
+        .catch(error => console.error('Error fetching session:', error));
+    }
+  }, [userId]);
+
+  const handleLogout = () => {
+    fetch('http://192.168.0.132:9988/api/logout', {
+      method: 'POST',
+    })
+      .then(response => response.json())
+      .then(data => {
+        setUser(null); // 로그아웃 시 세션 정보를 초기화
+      })
+      .catch(error => console.error('Error logging out:', error));
+  };
 
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
@@ -46,33 +69,82 @@ export default function Main({ userId }: { userId: string }) {
     return number.toLocaleString();
   };
 
+  //검색창
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+
+  const handleSearch = async () => {
+    try {
+      console.log('Keyword:', keyword);
+      const response = await fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}`);
+      const data = await response.json();
+      setSearchResults(data.data);
+      
+      console.log('Search Results:', data.data);
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
+  };
+
+
   return (
-    <div className="max-w-screen-xl mx-auto">
-      <Header userId={userId}/>
+    <div className="bg-white">
+      <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
+        <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+        <div className="flex items-center space-x-2">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+          value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={handleSearch}>
+            <SearchIcon className="text-gray-700" />
+          </Button>
+        </div>
+        <div className="flex space-x-4">
+          {user ? (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/mypage">{user.userName}님</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                로그아웃
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/login">로그인</Link>
+              </Button>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                <Link href="/privacy-policy">회원가입</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
+      
       <main className="py-6 px-6">
         <section className="mb-6">
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
-            {products.map(product => (
+            {(searchResults.length > 0 ? searchResults : products).map(product => (
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
-                <CardContent>
-                  <div className="flex items-center justify-center">                  
-                    <img
-                      alt={product.productName}
-                      className="mb-2"
-                      src={product.productImageUrl}
-                      style={{
-                        height:"200",
-                        width:"200",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
-                  </div>
-                </CardContent>
+                  <CardContent>
+                    <div className="flex items-center justify-center">
+                      <img
+                        alt={product.productName}
+                        className="mb-2"
+                        src={product.productImageUrl}
+                        style={{
+                          height: "200",
+                          width: "200",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
+                    </div>
+                  </CardContent>
                 </a>
               </Card>
             ))}
@@ -91,6 +163,14 @@ export default function Main({ userId }: { userId: string }) {
   )
 }
 
+interface User {
+  userId: string;
+  userName: string;
+  email: string;
+  login: boolean;
+  auth: string;
+}
+
 interface Product {
   productId: string;
   productName: string;
@@ -106,10 +186,22 @@ interface PagedProductList {
   data: Product[];
 }
 
-interface User {
-  userId: string;
-  userName: string;
-  email: string;
-  login: boolean;
-  auth: string;
+function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
 }

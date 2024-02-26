@@ -4,6 +4,44 @@ import axios from "axios"
 import { SVGProps } from "react"
 
 export default function payPopup() {
+
+  const [password, setPassword] = useState(Array(6).fill(null));
+
+  const handleNumButtonClick = (num: number) => {
+    const nextPassword = [...password];
+    const firstEmptyIndex = nextPassword.indexOf(null);
+
+    console.log('Num Button Clicked:', num); // 확인을 위한 로그
+    
+    if (firstEmptyIndex !== -1) {
+      nextPassword[firstEmptyIndex] = num;
+      setPassword(nextPassword);
+
+      console.log('Password Updated:', nextPassword); // 확인을 위한 로그
+    }
+  };
+
+  const handleDeleteButtonClick = () => {
+    const nextPassword = [...password];
+    let lastNotEmptyIndex = -1;
+  
+    for (let i = nextPassword.length - 1; i >= 0; i--) {
+      if (nextPassword[i] !== null) {
+        lastNotEmptyIndex = i;
+        break;
+      }
+    }
+  
+    if (lastNotEmptyIndex !== -1) {
+      nextPassword[lastNotEmptyIndex] = null;
+      setPassword(nextPassword);
+    }
+  };
+
+  const handleFingerprintButtonClick = () => {
+    // 지문 인증 버튼을 누르면 수행하는 로직을 여기에 작성하세요.
+  };
+
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center">
       <div className="w-full max-w-md p-4 bg-white">
@@ -18,53 +56,52 @@ export default function payPopup() {
           <div className="mb-2 w-24 h-2 bg-[#1ec800] rounded-full" />
           <h2 className="text-lg font-semibold mb-2">비밀번호 입력</h2>
           <div className="flex items-center justify-center mb-4">
-            <div className="w-2.5 h-2.5 bg-gray-300 rounded-full mx-1" />
-            <div className="w-2.5 h-2.5 bg-gray-300 rounded-full mx-1" />
-            <div className="w-2.5 h-2.5 bg-gray-300 rounded-full mx-1" />
-            <div className="w-2.5 h-2.5 bg-gray-300 rounded-full mx-1" />
+            {password.map((digit, index) => (
+              <div
+                key={index}
+                className={`w-2.5 h-2.5 rounded-full mx-1 ${digit !== null ? 'bg-[#1ec800]' : 'bg-gray-300'}`}
+              />
+            ))}
           </div>
-          <a className="text-sm text-[#1ec800]" href="#">
-            {`비밀번호 재설정 >`}
-          </a>
         </div>
         <div className="mt-6 bg-gray-200 p-4 grid grid-cols-3 gap-4 rounded-lg">
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(1)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             1
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(2)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             2
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(3)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             3
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(4)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             4
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(5)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             5
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(6)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             6
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(7)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             7
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(8)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             8
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <button onClick={() => handleNumButtonClick(9)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             9
           </button>
-          <div className="flex items-center justify-center">
-            <FingerprintIcon className="text-white h-6 w-6" />
-            <span className="sr-only">Fingerprint authentication</span>
-          </div>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+          <div onClick={handleFingerprintButtonClick} className="flex items-center justify-center">
+           <FingerprintIcon className="text-white h-6 w-6" />
+           <span className="sr-only">Fingerprint authentication</span>
+         </div>
+          <button onClick={() => handleNumButtonClick(0)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             0
           </button>
-          <button className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            <DeleteIcon className="h-6 w-6" />
-          </button>
+          <button onClick={handleDeleteButtonClick} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
+           <DeleteIcon className="h-6 w-6" />
+         </button>
         </div>
       </div>
     </div>
