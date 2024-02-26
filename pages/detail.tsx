@@ -55,7 +55,7 @@ export default function Detail({ userId }: { userId: string }) {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
+      const productResponse = await fetch(`http://172.30.1.32:9988/api/detail?productId=${productId}`);
       const productData = await productResponse.json();
       const { product, QA } = productData;
       if (product && QA) {
@@ -73,7 +73,7 @@ export default function Detail({ userId }: { userId: string }) {
 
   const handlePurchase = async () => {
     try {
-      if(!user){
+      if (!user) {
         //로그인 페이지로 이동
         router.push('/login');
         return;
@@ -81,7 +81,7 @@ export default function Detail({ userId }: { userId: string }) {
       if (!product) {
         return;
       }
-      const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
+      const sessionResponse = await axios.post('http://172.30.1.32:9988/api/get-session', {});
       const sessionData = sessionResponse.data;
       setUser(sessionData.data);
       console.log("userid=", user.userId);
@@ -95,7 +95,7 @@ export default function Detail({ userId }: { userId: string }) {
         productPrice: product.productPrice,
         userId: userId
       };
-      const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
+      const purchaseResponse = await axios.post('http://172.30.1.32:9988/api/temppayment', purchaseData);
       console.log("구매 요청:", purchaseResponse.data);
     } catch (error) {
       console.error('Error purchasing product:', error);
@@ -132,7 +132,7 @@ export default function Detail({ userId }: { userId: string }) {
 
   return (
     <div className="grid gap-6 lg:gap-12 max-w-6xl mx-auto px-4 py-6">
-      <Header userId={userId}/>
+      <Header userId={userId} />
       <div className="grid md:grid-cols-2 md:gap-6 items-start">
         <div>
           <img
@@ -145,7 +145,7 @@ export default function Detail({ userId }: { userId: string }) {
         </div>
         <div className="flex flex-col gap-4 md:gap-8">
           <h1 className="font-bold text-2xl sm:text-3xl">{product.productName}</h1>
-          <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}</div> {/* 가격 포맷 */}
+          <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}원</div> {/* 가격 포맷 */}
           <p>{product.productDescription}</p>
           <div className="grid gap-4 md:gap-8">
             <form className="grid gap-4 md:gap-8">
@@ -167,19 +167,26 @@ export default function Detail({ userId }: { userId: string }) {
           </div>
         </div>
       </div>
-      <hr className="my-6 border-gray-300 dark:border-gray-600"/> {/* 구분선 */}
+      <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
       <div className="flex justify-between items-center">
-        <h2 className="font-bold text-lg mb-2">Q&A</h2>
-        <Button onClick={openModal}>Q&A 작성</Button> {/* Q&A 작성 버튼 */}
+  <h1 className="font-bold text-2xl mb-2">Q&A</h1>
+  <Button onClick={openModal}>Q&A 작성</Button> {/* Q&A 작성 버튼 */}
+</div>
+<div className="grid gap-4">
+  {qas.map((qa, index) => (
+    <div key={index} className="text-sm">
+      <div className="border-b border-gray-300 dark:border-gray-600 pb-4">
+        <h3 className="font-medium text-lg mb-2">Q. {qa.question}</h3>
+        {qa.answer !== "" && (
+          <p className="text-gray-600">A. {qa.answer}</p>
+        )}
       </div>
-      <div className="grid gap-4">
-        {qas.map((qa, index) => (
-          <div key={index} className="text-sm">
-            <h3 className="font-medium">{qa.question}</h3>
-            <p>{qa.answer}</p>
-          </div>
-        ))}
-      </div>
+    </div>
+  ))}
+</div>
+
+
+
       {isModalOpen && <QaModal closeModal={closeModal} userId={userId} productId={productId as string} />}
     </div>
   );
