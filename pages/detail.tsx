@@ -81,7 +81,7 @@ export default function Detail({ userId }: { userId: string }) {
       if (!product) {
         return;
       }
-      const sessionResponse = await axios.post('http://172.30.1.32:9988/api/get-session', {});
+      const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
       const sessionData = sessionResponse.data;
       setUser(sessionData.data);
       console.log("userid=", user.userId);
@@ -95,7 +95,7 @@ export default function Detail({ userId }: { userId: string }) {
         productPrice: product.productPrice,
         userId: userId
       };
-      const purchaseResponse = await axios.post('http://172.30.1.32:9988/api/temppayment', purchaseData);
+      const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
       console.log("구매 요청:", purchaseResponse.data);
     } catch (error) {
       console.error('Error purchasing product:', error);
