@@ -31,7 +31,7 @@ export default function Main({ userId }: { userId: string }) {
   
     // 실제 검색 요청 로직을 수행하고, 검색 결과를 setProducts로 업데이트합니다.
     // 이 로직은 검색 엔진이나 서버에 맞게 구현되어야 합니다.
-    fetch(`http://172.30.1.32:9988/api/search?keyword=${keyword}&page=1`)
+    fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}&page=1`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -42,7 +42,7 @@ export default function Main({ userId }: { userId: string }) {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://172.30.1.32:9988/api/products?page=1`)
+    fetch(`http://192.168.0.132:9988/api/products?page=1`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);

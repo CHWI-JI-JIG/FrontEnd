@@ -16,7 +16,7 @@ export default function Header({ userId, onSearch }: HeaderProps) {
   // 세션 데이터 가져오기
   useEffect(() => {
     if (userId) {
-      axios.post(`http://172.30.1.32:9988/api/get-session`, { userId })
+      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
         .then(response => {
           setUser(response.data.data); // 세션 정보를 상태에 저장
         })
@@ -25,7 +25,7 @@ export default function Header({ userId, onSearch }: HeaderProps) {
   }, [userId]);
 
   const handleLogout = () => {
-    fetch('http://172.30.1.32:9988/api/logout', {
+    fetch('http://192.168.0.132:9988/api/logout', {
       method: 'POST',
     })
       .then(response => response.json())

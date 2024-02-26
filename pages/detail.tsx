@@ -55,7 +55,7 @@ export default function Detail({ userId }: { userId: string }) {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const productResponse = await fetch(`http://172.30.1.32:9988/api/detail?productId=${productId}`);
+      const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
       const productData = await productResponse.json();
       const { product, QA } = productData;
       if (product && QA) {
@@ -81,7 +81,7 @@ export default function Detail({ userId }: { userId: string }) {
       if (!product) {
         return;
       }
-      const sessionResponse = await axios.post('http://172.30.1.32:9988/api/get-session', {});
+      const sessionResponse = await axios.post('http://192.168.0.132:9988/api/get-session', {});
       const sessionData = sessionResponse.data;
       setUser(sessionData.data);
       console.log("userid=", user.userId);

@@ -16,7 +16,7 @@ export default function Seller_main({ userId }: { userId: string }) {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://172.30.1.32:9988/api/sproduct?userId=abc&page=${page}`)
+    fetch(`http://192.168.0.132:9988/api/sproduct?userId=abc&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -62,7 +62,7 @@ export default function Seller_main({ userId }: { userId: string }) {
     const handleSellComplete = async (productId: string) => {
         try {
             // 서버로 상태 변경 요청 보내기
-            const response = await fetch(`http://172.30.1.32:9988/api/change-state`, {
+            const response = await fetch(`http://192.168.0.132:9988/api/change-state`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
