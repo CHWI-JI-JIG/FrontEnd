@@ -5,40 +5,37 @@ import { CardContent, Card } from "@/components/ui/MA_card"
 import { JSX, SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
-import axios from "axios"
-
-/*추가 중*/
 import React, { useEffect, useState } from 'react';
+
+const getSessionData = () => {
+  // sessionStorage가 있는지 확인
+  if (typeof sessionStorage !== 'undefined') {
+    // 세션 데이터를 어디서든 가져오는 논리를 구현합니다.
+    // 예를 들어 다음과 같이 사용할 수 있습니다.
+    const sessionData = {
+      auth: sessionStorage.getItem('auth'),
+      certification: sessionStorage.getItem('certification'),
+      key: sessionStorage.getItem('key'),
+      name: sessionStorage.getItem('name'),
+    };
+
+    return sessionData;
+  } else {
+    // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
+    return { auth: null, certification: null, key: null, name: null };
+  }
+};
 
 export default function Main() {
   // 세션 데이터 가져오기
-  const [name, setName] = useState<string | null>(null);
-  const [certification, setCertification] = useState<string | null>(null);
-  useEffect(() => {
-    const storedName  = sessionStorage.getItem('name');
-    const storedCertification = sessionStorage.getItem('certification');
-    if (storedCertification) {
-      setCertification(storedCertification);
-    }
-    if (storedName) {
-      console.log('Name from sessionStorage:', storedName);
-      setName(storedName)
-    }
-  }, []); // 빈 배열을 전달하여 최초 렌더링 시에만 실행되도록 설정
-
+  const { auth, certification, key, name } = getSessionData();
+  
   const handleLogout = () => {
-    fetch('http://192.168.0.132:9988/api/logout', {
-      method: 'POST',
-    })
-      .then(response => response.json())
-      .then(data => {
-        // 세션 정보 초기화
-        sessionStorage.removeItem('auth');
-        sessionStorage.removeItem('certification');
-        sessionStorage.removeItem('name');
-        sessionStorage.removeItem('key');
-      })
-      .catch(error => console.error('Error logging out:', error));
+    // sessionStorage 초기화
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+      window.location.reload();
+    }
   };
 
   /*상품정보 받는 중*/

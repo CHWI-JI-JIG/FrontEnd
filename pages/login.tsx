@@ -29,8 +29,8 @@ export default function Login() {
         const {auth, certification, name, key} = response.data;
         sessionStorage.setItem('auth', auth);
         sessionStorage.setItem('certification', certification);
-        sessionStorage.setItem('name', name);
         sessionStorage.setItem('key', key);
+        sessionStorage.setItem('name', name);
 
         //auth에 따른 페이지 이동
         if (auth === 'BUYER') {

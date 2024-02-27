@@ -5,46 +5,67 @@ import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
 import axios from "axios";
 
-export default function Mypage({ userId }: { userId: string }) {
-   /*헤더...*/
-   const [user, setUser] = useState<User | null>(null);
+const getSessionData = () => {
+  // sessionStorage가 있는지 확인
+  if (typeof sessionStorage !== 'undefined') {
+    // 세션 데이터를 어디서든 가져오는 논리를 구현합니다.
+    // 예를 들어 다음과 같이 사용할 수 있습니다.
+    const sessionData = {
+      auth: sessionStorage.getItem('auth'),
+      certification: sessionStorage.getItem('certification'),
+      key: sessionStorage.getItem('key'),
+      name: sessionStorage.getItem('name'),
+    };
+
+    return sessionData;
+  } else {
+    // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
+    return { auth: null, certification: null, key: null, name: null };
+  }
+};
+
+export default function Mypage() {
+  // 세션 데이터 가져오기
+  const { certification, name } = getSessionData();
+  
+  const handleLogout = () => {
+    // sessionStorage 초기화
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+    }
+  };
+
    const [orderHistory, setOrderHistory] = useState<Order[]>([]);
 
-   // 세션 데이터 가져오기
-   useEffect(() => {
-    if (userId) {
-      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
-        .then(response => {
-          setUser(response.data.data); // 세션 정보 저장
-          setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
-        })
-        .catch(error => console.error('세션 가져오기 오류:', error));
-    }
-  }, [userId]);
+  // //주문내역 
+  // useEffect(() => {
+  //   if (userId) {
+  //     // 서버 API 호출
+  //     axios.post(`http://192.168.0.132:9988/api/order-history`, { userId })
+  //       .then(response => {
+  //         setUser(response.data.data); // 세션 정보 저장
+  //         setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
+  //       })
+  //       .catch(error => console.error('주문 내역 가져오기 오류:', error));
+  //   }
+  // }, [userId]);
 
-  //주문내역 
   useEffect(() => {
+    // 여기서 userId를 어떻게 가져올지에 대한 로직이 필요합니다.
+    // userId가 없으면 주문 내역을 가져오지 않도록 처리하거나,
+    // userId를 세션에서 가져오는 방식으로 수정해야 합니다.
+    const userId = ""; // 여기에 userId 가져오는 로직을 추가해야 합니다.
+
     if (userId) {
       // 서버 API 호출
       axios.post(`http://192.168.0.132:9988/api/order-history`, { userId })
         .then(response => {
-          setUser(response.data.data); // 세션 정보 저장
+          // setUser(response.data.data); // setUser 함수가 어디서 정의되었는지 확인 필요
           setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
         })
         .catch(error => console.error('주문 내역 가져오기 오류:', error));
     }
-  }, [userId]);
- 
-  const handleLogout = () => {
-    fetch('http://192.168.0.132:9988/api/logout', {
-      method: 'POST',
-    })
-      .then(response => response.json())
-      .then(data => {
-        setUser(null); // 로그아웃 시 세션 정보 초기화
-      })
-      .catch(error => console.error('로그아웃 오류:', error));
-  };
+  }, []);
 
   /*날짜 형식*/
   function formatDate(dateString: string | number | Date) {
@@ -70,10 +91,10 @@ export default function Mypage({ userId }: { userId: string }) {
         </Link>
         
         <div className="flex space-x-4">
-          {user ? (
+          {certification ? (
             <>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{user.userName}님</Link>
+                <Link href="/mypage">{name}님</Link>
               </Button>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
@@ -198,14 +219,6 @@ function UserIcon(props: SVGProps<SVGSVGElement>) {
       <circle cx="12" cy="7" r="4" />
     </svg>
   )
-}
-
-interface User {
-  userId: string;
-  userName: string;
-  email: string;
-  login: boolean;
-  auth: string;
 }
 
 function BoxIcon(props:SVGProps<SVGSVGElement>) {
