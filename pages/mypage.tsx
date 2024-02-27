@@ -126,7 +126,7 @@ export default function Mypage({ userId }: { userId: string }) {
                   <div className="bg-white p-4">
                     <BoxIcon className="h-6 w-6 text-gray-500" />
                     <h4 className="mt-2 text-base font-medium text-gray-900">주문</h4>
-                    <p className="mt-1 text-sm text-gray-500">고정값: 5 건</p>
+                    <p className="mt-1 text-sm text-gray-500">{orderHistory.length}건</p>
                   </div>
                   <div className="bg-white p-4">
                     <MessageCircleIcon className="h-6 w-6 text-gray-500" />
@@ -137,6 +137,9 @@ export default function Mypage({ userId }: { userId: string }) {
               </div>
               <div className="bg-gray-200 p-4 mt-4">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">주문내역</h3>
+                {orderHistory.length === 0 ? (
+                  <p>주문 내역이 없습니다</p>
+                ) : (
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {orderHistory.map((order, index) => (
                     <div key={index} className="bg-white p-4">
@@ -158,8 +161,8 @@ export default function Mypage({ userId }: { userId: string }) {
                     </div>
                   ))}
                 </div>
+                )}
               </div>
-
             </div>
           </div>
         </div>

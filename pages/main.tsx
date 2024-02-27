@@ -10,23 +10,21 @@ import axios from "axios"
 /*추가 중*/
 import React, { useEffect, useState } from 'react';
 
-export default function Main({ userId }: { userId: string }) {
-  /*헤더...*/
-  const [user, setUser] = useState<User | null>(null);
-
+export default function Main() {
   // 세션 데이터 가져오기
+  const [name, setName] = useState<string | null>(null);
+  const [certification, setCertification] = useState<string | null>(null);
   useEffect(() => {
-    if (userId) {
-      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
-        .then(response => {
-          console.log('Session data:', response.data);
-          setUser(response.data.data); // 세션 정보를 상태에 저장
-        })
-        .catch(error => {
-          console.error('Error fetching session:', error);
-        });
+    const storedName  = sessionStorage.getItem('name');
+    const storedCertification = sessionStorage.getItem('certification');
+    if (storedCertification) {
+      setCertification(storedCertification);
     }
-  }, [userId]);
+    if (storedName) {
+      console.log('Name from sessionStorage:', storedName);
+      setName(storedName)
+    }
+  }, []); // 빈 배열을 전달하여 최초 렌더링 시에만 실행되도록 설정
 
   const handleLogout = () => {
     fetch('http://192.168.0.132:9988/api/logout', {
@@ -34,7 +32,11 @@ export default function Main({ userId }: { userId: string }) {
     })
       .then(response => response.json())
       .then(data => {
-        setUser(null); // 로그아웃 시 세션 정보를 초기화
+        // 세션 정보 초기화
+        sessionStorage.removeItem('auth');
+        sessionStorage.removeItem('certification');
+        sessionStorage.removeItem('name');
+        sessionStorage.removeItem('key');
       })
       .catch(error => console.error('Error logging out:', error));
   };
@@ -102,10 +104,10 @@ export default function Main({ userId }: { userId: string }) {
           </Button>
         </div>
         <div className="flex space-x-4">
-          {user ? (
+          {certification ? (
             <>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{user.userName}님</Link>
+                <Link href="/mypage">{name}님</Link>
               </Button>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
@@ -164,14 +166,6 @@ export default function Main({ userId }: { userId: string }) {
       </main>
     </div>
   )
-}
-
-interface User {
-  userId: string;
-  userName: string;
-  email: string;
-  login: boolean;
-  auth: string;
 }
 
 interface Product {
