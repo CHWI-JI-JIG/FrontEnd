@@ -26,13 +26,22 @@ export default function Login() {
         alert("로그인에 성공하였습니다.");
         
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
-
-        const {key, auth, certification} = response.data;
-        sessionStorage.setItem('key', key);
+        const {auth, certification, name, key} = response.data;
         sessionStorage.setItem('auth', auth);
         sessionStorage.setItem('certification', certification);
-        router.push('/main');
+        sessionStorage.setItem('key', key);
+        sessionStorage.setItem('name', name);
 
+        //auth에 따른 페이지 이동
+        if (auth === 'BUYER') {
+          router.push('/main');
+        } else if (auth === 'SELLER') {
+          router.push('/seller');
+        } else if (auth === 'ADMIN') {
+          router.push('/admin');
+        } else {
+          alert("알 수 없는 권한입니다.");
+        }
       } else {
         alert("로그인에 실패하였습니다.");
       }

@@ -11,10 +11,14 @@ export default function payPopup() {
   const handleNumButtonClick = (num: number) => {
     const nextPassword = [...password];
     const firstEmptyIndex = nextPassword.indexOf(null);
+
+    console.log('Num Button Clicked:', num); // 확인을 위한 로그
     
     if (firstEmptyIndex !== -1) {
       nextPassword[firstEmptyIndex] = num;
       setPassword(nextPassword);
+
+      console.log('Password Updated:', nextPassword); // 확인을 위한 로그
     }
   };
 
