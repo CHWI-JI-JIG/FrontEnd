@@ -2,29 +2,11 @@ import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
 import { CardContent, Card } from "@/components/ui/MA_card"
-import { JSX, SVGProps } from "react"
+import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
-
-const getSessionData = () => {
-  // sessionStorage가 있는지 확인
-  if (typeof sessionStorage !== 'undefined') {
-    // 세션 데이터를 어디서든 가져오는 논리를 구현합니다.
-    // 예를 들어 다음과 같이 사용할 수 있습니다.
-    const sessionData = {
-      auth: sessionStorage.getItem('auth'),
-      certification: sessionStorage.getItem('certification'),
-      key: sessionStorage.getItem('key'),
-      name: sessionStorage.getItem('name'),
-    };
-
-    return sessionData;
-  } else {
-    // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
-    return { auth: null, certification: null, key: null, name: null };
-  }
-};
+import { getSessionData } from '@/utils/auth'
 
 export default function Main() {
   // 세션 데이터 가져오기

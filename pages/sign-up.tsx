@@ -21,7 +21,7 @@ export default function SignUp() {
   // 아이디 중복 검사
   const checkId = async () => {
     try {
-      const response = await axios.get(`http://192.168.0.132:9988/api/check-id?id=${id}`);
+      const response = await axios.get(`http://192.168.0.132:5000/api/check-id?id=${id}`);
       if (response.data.duplicated) {
         alert("중복된 아이디입니다.");
       } else {

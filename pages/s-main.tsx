@@ -6,24 +6,26 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import ProductRegistration from './product-registration';
+import { getSessionData } from '@/utils/auth';
 
-export default function Seller_main({ userId }: { userId: string }) {
+export default function Seller_main() {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [showProductModal, setShowProductModal] = useState(false);
+  const { key } = getSessionData();
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/sproduct?userId=${userId}&page=${page}`)
+    fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [page, userId]);
+  }, [key, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {

@@ -7,8 +7,33 @@ import { Button } from "@/components/ui/MA_button";
 import { Input } from "@/components/ui/MA_input";
 import axios from 'axios';
 
+const getSessionData = () => {
+    // sessionStorage가 있는지 확인
+    if (typeof sessionStorage !== 'undefined') {
+      const sessionData = {
+        auth: sessionStorage.getItem('auth'),
+        certification: sessionStorage.getItem('certification'),
+        key: sessionStorage.getItem('key'),
+        name: sessionStorage.getItem('name'),
+      };
+      return sessionData;
+    } else {
+      // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
+      return { auth: null, certification: null, key: null, name: null };
+    }
+};
 
-export default function Seller({ userId }: { userId: string }) {
+export default function Seller() {
+    // 세션 데이터 가져오기
+    const { auth, certification, name, key } = getSessionData();
+    
+    const handleLogout = () => {
+        // sessionStorage 초기화
+        if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+        }
+    };
+
     const [selectedSection, setSelectedSection] = useState<string>('s-main');
     const router = useRouter();
 
@@ -30,51 +55,23 @@ export default function Seller({ userId }: { userId: string }) {
     const renderSection = () => {
         switch (selectedSection) {
             case 's-main':
-                return <Smain userId={userId} />;
+                return <Smain />;
             case 's-order':
-                return <Sorder userId={userId} />;
+                return <Sorder />;
             default:
                 return null;
         }
     };
 
-    /*헤더...*/
-    const [user, setUser] = useState<User | null>(null);
-
-    // 세션 데이터 가져오기
-    useEffect(() => {
-        if (userId) {
-        axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
-            .then(response => {
-            setUser(response.data.data); // 세션 정보를 상태에 저장
-            })
-            .catch(error => console.error('Error fetching session:', error));
-        }
-    }, [userId]);
-
-    const handleLogout = () => {
-        fetch('http://192.168.0.132:9988/api/logout', {
-        method: 'POST',
-        })
-        .then(response => response.json())
-        .then(data => {
-            setUser(null); // 로그아웃 시 세션 정보를 초기화
-        })
-        .catch(error => console.error('Error logging out:', error));
-    };
-
     return (
         <>
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <Link href="/">
-                <a className="text-3xl font-bold">취지직</a>
-                </Link>
-                
+                <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
                 <div className="flex space-x-4">
-                {user ? (
+                {certification ? (
                     <>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        <Link href="/mypage">{user.userName}님</Link>
+                        <Link href="/mypage">{name}님</Link>
                     </Button>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                         로그아웃
@@ -92,6 +89,7 @@ export default function Seller({ userId }: { userId: string }) {
                 )}
                 </div>
             </header>
+
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">
                 <ul className="flex space-x-4">
                     <li>
@@ -116,12 +114,4 @@ export default function Seller({ userId }: { userId: string }) {
             </div>
         </>
     );
-
-    interface User {
-        userId: string;
-        userName: string;
-        email: string;
-        login: boolean;
-        auth: string;
-    }
 }
