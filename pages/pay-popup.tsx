@@ -2,6 +2,7 @@ import "@/app/globals.css"
 import React, {useState} from "react"
 import axios from "axios"
 import { SVGProps } from "react"
+import { Key } from "lucide-react";
 
 export default function payPopup() {
 
@@ -34,9 +35,25 @@ export default function payPopup() {
     }
   };
 
-  const handleFingerprintButtonClick = () => {
+
     // 지문 인증 버튼을 누르면 수행하는 로직을 여기에 작성하세요.
+  const handleFingerprintButtonClick = async () => {
+      // 비밀번호를 문자열로 변환합니다.
+    const passwordString = password.join('');
+
+    const data = {
+        password: passwordString,
+        // 필요한 다른 데이터를 여기에 추가하세요.
+    };
+
+    try {
+        const response = await axios.post('http://192.168.0.132/pg/api/fin', data);
+        console.log(response.data);
+    } catch (error) {
+        console.error(`Error: ${error}`);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center">

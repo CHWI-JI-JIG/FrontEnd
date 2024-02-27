@@ -65,12 +65,12 @@ export default function SignUp() {
     // 회원가입 요청
     try {
       const response = await axios.post("http://172.30.1.32:9988/api/signup", {
-        id,
-        password,
-        name,
-        phone,
-        email,
-        address,
+        "buyerId" : id,
+        "buyerPassword" : password,
+        "buyerName" : name,
+        "buyerPhone" : phone,
+        "buyerEmail" : email,
+        "buyerAddress" : address,
       });
 
       if (response.data.success) {

@@ -26,14 +26,7 @@ export default function Main({ userId }: { userId: string }) {
   }, [userId]);
 
   const handleLogout = () => {
-    fetch('http://192.168.0.132:9988/api/logout', {
-      method: 'POST',
-    })
-      .then(response => response.json())
-      .then(data => {
-        setUser(null); // 로그아웃 시 세션 정보를 초기화
-      })
-      .catch(error => console.error('Error logging out:', error));
+      sessionStorage.clear()
   };
 
   /*상품정보 받는 중*/
