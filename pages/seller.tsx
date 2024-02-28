@@ -66,14 +66,12 @@ export default function Seller() {
     return (
         <>
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <Link href="/">
-                    <a className="text-3xl font-bold">취지직</a>
-                </Link>
+                <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
                 <div className="flex space-x-4">
                 {certification ? (
                     <>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        <Link href="/mypage">{name}님</Link>
+                        {name}님
                     </Button>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                         로그아웃

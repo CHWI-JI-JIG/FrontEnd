@@ -7,8 +7,11 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth'
+import { useRouter } from 'next/router';
 
 export default function Main() {
+  const router = useRouter();
+
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
   
@@ -43,16 +46,23 @@ export default function Main() {
     const handleSearch = async () => {
       try {
         console.log('Keyword:', keyword);
-        const response = await fetch(`http://192.168.0.132:5000/api/search?page=${page}&keyword=${keyword}`);
+        const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
         const data = await response.json();
         setSearchResults(data.data);
         setTotalPages(data.totalPage);
         console.log('Search Results:', data.data);
+  
+        // 검색된 결과 페이지 이동
+        router.push({
+          pathname: '/search',
+          query: { page: 1, keyword },
+        });
+
       } catch (error) {
         console.error('Error searching:', error);
       }
-    };
-
+    };   
+    
   const handleNextPage = () => {
     if (page < totalPages) {
       setPage(page + 1);
@@ -109,9 +119,9 @@ export default function Main() {
       
       <main className="py-6 px-6">
         <section className="mb-6">
-          {searchResults.length > 0 || products.length > 0 ? (
+          {products.length > 0 ? (
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
-            {(searchResults.length > 0 ? searchResults : products).map((product) => (
+            {(products).map((product) => (
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
                   <CardContent>

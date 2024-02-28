@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
 import axios from "axios";
 import { getSessionData } from '@/utils/auth';
+import { useRouter } from 'next/router';
 
 export default function Mypage() {
+  const router = useRouter();
   // 세션 데이터 가져오기
   const { auth, certification, name, key } = getSessionData();
   
@@ -16,6 +18,31 @@ export default function Mypage() {
       sessionStorage.clear();
     }
   };
+
+  //검색창
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const handleSearch = async () => {
+    try {
+      console.log('Keyword:', keyword);
+      const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
+      const data = await response.json();
+      setSearchResults(data.data);
+      setTotalPages(data.totalPage);
+      console.log('Search Results:', data.data);
+
+      // 검색된 결과 페이지 이동
+      router.push({
+        pathname: '/search',
+        query: { page: 1, keyword },
+      });
+
+    } catch (error) {
+      console.error('Error searching:', error);
+    }
+  };  
 
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
 
@@ -53,6 +80,13 @@ export default function Mypage() {
         <Link href="/">
           <a className="text-3xl font-bold">취지직</a>
         </Link>
+        <div className="flex items-center space-x-2">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+          value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={handleSearch}>
+            <SearchIcon className="text-gray-700" />
+          </Button>
+        </div>
         <div className="flex space-x-4">
           {certification ? (
             <>
@@ -164,6 +198,13 @@ interface Order {
   orderDate: Date;
 }
 
+interface Product {
+  productId: string;
+  productName: string;
+  productImageUrl: string;
+  productPrice: number;
+}
+
 function UserIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -222,4 +263,24 @@ function MessageCircleIcon(props:SVGProps<SVGSVGElement>) {
       <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
     </svg>
   )
+}
+
+function SearchIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
 }
