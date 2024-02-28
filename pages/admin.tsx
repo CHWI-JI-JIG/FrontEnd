@@ -9,12 +9,12 @@ import "@/app/globals.css";
 import { getSessionData } from '@/utils/auth'
 import { useEffect, useState } from 'react';
 
-export default function Admin() {
+export default function admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
   const [userData, setUserData] = useState<User | null>(null);
-  const [selectedRoleTop, setSelectedRoleTop] = useState('seller');
-  const [selectedRoleIn, setSelectedRoleIn] = useState('seller');
+  const [selectedRoleTop, setSelectedRoleTop] = useState('BUYER');
+  const [selectedRoleIn, setSelectedRoleIn] = useState('');
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
@@ -36,8 +36,19 @@ export default function Admin() {
     // 세션 데이터의 key를 서버로 보내어 사용자 데이터를 가져오는 예시
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`/api/getUserData?key=${key}`);
+        const response = await fetch('/api/getUserData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ key: key }),
+        });
         const data = await response.json();
+        if (data && data.length > 0) {
+          const firstUserAuth = data[0].userAuth;
+          setSelectedRoleTop(firstUserAuth);
+          setSelectedRoleIn(firstUserAuth);
+        }
         setUserData(data); // 가져온 사용자 데이터를 상태에 저장
       } catch (error) {
         console.error('Error fetching user data', error);
@@ -68,11 +79,12 @@ export default function Admin() {
           <div className="relative w-1/5">
             <Select value={selectedRoleTop} onValueChange={(role) => handleRoleChangeTop(role)}>
               <SelectTrigger>
-                <SelectValue>{selectedRoleTop === 'seller' ? 'SELLER' : 'BUYER'}</SelectValue>
+                {selectedRoleTop === 'SELLER' ? 'SELLER' : selectedRoleTop === 'BUYER' ? 'BUYER' : 'ADMIN'}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="seller">SELLER</SelectItem>
-                <SelectItem value="buyer">BUYER</SelectItem>
+                <SelectItem value="SELLER">SELLER</SelectItem>
+                <SelectItem value="BUYER">BUYER</SelectItem>
+                <SelectItem value="ADMIN">ADMIN</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -82,9 +94,7 @@ export default function Admin() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">이름</TableHead>
                   <TableHead className="hidden md:table-cell">아이디</TableHead>
-                  <TableHead className="min-w-[100px]">전화번호</TableHead>
                   <TableHead className="hidden md:table-cell">Role</TableHead>
                   <TableHead className="hidden md:table-cell">상태</TableHead>
                 </TableRow>
@@ -93,18 +103,17 @@ export default function Admin() {
                 {userData && userData.length > 0 ? (
                   userData.map((user) => (
                     <TableRow key={user.userId}>
-                      <TableCell className="flex items-center">{user.userName}</TableCell>
                       <TableCell className="font-medium">{user.userId}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.userPhone}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         <div className='w-full'>
                           <Select value={selectedRoleIn} onValueChange={(role) => handleRoleChangeIn(role)}>
                             <SelectTrigger>
-                              <SelectValue>{selectedRoleIn === 'seller' ? 'SELLER' : 'BUYER'}</SelectValue>
+                              {selectedRoleIn === 'SELLER' ? 'SELLER' : selectedRoleIn === 'BUYER' ? 'BUYER' : 'ADMIN'}
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="seller">SELLER</SelectItem>
-                              <SelectItem value="buyer">BUYER</SelectItem>
+                              <SelectItem value="SELLER">SELLER</SelectItem>
+                              <SelectItem value="BUYER">BUYER</SelectItem>
+                              <SelectItem value="ADMIN">ADMIN</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -132,8 +141,6 @@ interface User {
   map(arg0: (user: any) => import("react").JSX.Element): import("react").ReactNode;
   length: number;
   userUUID: string;
-  userName: string;
   userId: string;
-  userPhone: string;
   userAuth: string;
 }
