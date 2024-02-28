@@ -50,7 +50,9 @@ export default function Mypage() {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+        <Link href="/">
+          <a className="text-3xl font-bold">취지직</a>
+        </Link>
         <div className="flex space-x-4">
           {certification ? (
             <>
