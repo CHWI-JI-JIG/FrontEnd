@@ -27,7 +27,7 @@ export default function Main() {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/products?page=1`)
+    fetch(`http://192.168.0.132:5000/api/products?page=1`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
@@ -60,7 +60,7 @@ export default function Main() {
   const handleSearch = async () => {
     try {
       console.log('Keyword:', keyword);
-      const response = await fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}`);
+      const response = await fetch(`http://192.168.0.132:5000/api/search?keyword=${keyword}`);
       const data = await response.json();
       setSearchResults(data.data);
       
