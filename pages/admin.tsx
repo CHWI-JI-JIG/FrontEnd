@@ -1,104 +1,352 @@
-import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/AD_select"
-import { Button } from "@/components/ui/AD_button"
-import Link from "next/link"
-import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/AD_dropdown-menu"
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/AD_table"
-import { Switch } from "@/components/ui/AD_switch"
-import { useEffect, useState } from 'react';
+import { useState, useEffect, createContext, useContext, SVGProps } from 'react';
+import { useRouter } from 'next/router';
+import { Input } from "@/components/ui/MA_input"
+import { Label } from "@/components/ui/DE_label";
+import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/DE_select";
 import axios from 'axios';
+import { Button } from "@/components/ui/DE_button";
 import "@/app/globals.css";
+import QaModal from './qa-modal'; // qa-modal 컴포넌트를 불러옵니다.
+import Link from "next/link"
 
-interface User {
-  userName: string;
-  userId: string;
-  userPhone: string;
-  userAuth: 'seller' | 'buyer'; // userAuth는 seller, buyer 중 하나여야 합니다.
+interface Product {
+    productId: string;
+    productName: string;
+    productPrice: number;
+    productImageUrl: string;
+    productDescription: string;
 }
 
-export default function Admin() {
-  const [users, setUsers] = useState<User[]>([]);
+interface PagedProductList {
+    page: number;
+    size: number;
+    totalPage: number;
+    totalCount: number;
+    data: Product[];
+}
 
-  useEffect(() => {
-    // 세션 키가 들어있는 JSON 데이터
-    const sessionData = {
-      "session.key": "세션키값"
+interface QA {
+    qId: string;
+    question: string;
+    answer: string;
+}
+
+// 가격 포맷 함수
+const numberWithCommas = (number: number) => {
+    return number.toLocaleString();
+};
+
+// 세션 데이터 가져오기
+const SessionContext = createContext<string | null>(null);
+
+export default function Detail() {
+    const [product, setProduct] = useState<Product | null>(null);
+    const [qas, setQas] = useState<QA[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [selectedProductCount, setSelectedProductCount] = useState<string>("1");
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // 모달 상태 추가 
+    const [pageStatus, setPageStatus] = useState<string>("buyerPage"); // 페이지 상태 추가
+    const [name, setName] = useState<string>(""); // 이름 상태 추가
+    const [sessionKey, setSessionKey] = useState<string | null>(null); // 세션 상태 추가
+    const router = useRouter();
+    const { productId } = router.query;
+
+    useEffect(() => {
+        // 세션 데이터 가져오기
+        setSessionKey(sessionStorage.getItem('key'));
+    }, []);
+
+    useEffect(() => {
+        // 로그인 확인을 위한 API 호출
+        const checkLogin = async () => {
+            if (sessionKey) {
+                try {
+                    const response = await axios.post(`http://192.168.0.132:9988/api/check-ssession`, { sessionKey });
+                    const { auth, certification, key, name, success } = response.data;
+                    setName(name); // 이름 설정
+                    
+                    if (!certification) {
+                        setPageStatus('nologinPage');
+                    }
+                    if (auth === 'seller') {
+                        setPageStatus('sellerPage');
+                    } else {
+                        setPageStatus('buyerPage');
+                    }
+                } catch (error) {
+                    console.error('세션 가져오는 중 오류 발생:', error);
+                }
+            }
+        };
+    
+        // 상품 정보 로드
+        const fetchProductData = async () => {
+            if (!productId) {
+                console.log("잘못된 접근...");
+                return;
+            }
+            setLoading(true);
+            try {
+                const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
+                const productData = await productResponse.json();
+                const product = productData;
+                if (product) {
+                    setProduct(product);
+                } else {
+                    return <div>로딩 중...</div>;
+                }
+            } catch (error) {
+                console.error('데이터 가져오는 중 오류 발생:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        // 상품 아이디와 로그인 사용자 ID 확인
+        const checkProductOwnership = async () => {
+            if (!productId) {
+                console.log("잘못된 접근...");
+                return;
+            }
+            
+            if (sessionKey !== null) {
+              try {
+                  const response = await axios.post('/api/owner-check', {
+                      productId: productId,
+                      session: { key: sessionKey }
+                  });
+                  const { owner } = response.data;
+                  
+                  // owner 값에 따라 로직을 처리합니다.
+                  if (owner) {
+                      // 로그인한 사용자가 등록한 상품인 경우
+                      console.log("로그인한 사용자가 등록한 상품입니다.");
+                  } else {
+                      // 로그인한 사용자가 등록한 상품이 아닌 경우
+                      console.log("로그인한 사용자가 등록한 상품이 아닙니다.");
+                  }
+              } catch (error) {
+                  console.error('상품 소유권 확인 중 오류 발생:', error);
+              }
+          }
+          
+        };
+        
+    
+        // Q&A 로드
+        const fetchQAs = async () => {
+            if (!productId) {
+                console.log("잘못된 접근...");
+                return;
+            }
+            try {
+                // 해당 상품에 대한 Q&A를 가져오는 API 호출
+            } catch (error) {
+                console.error('Q&A 가져오는 중 오류 발생:', error);
+            }
+        };
+    
+        checkLogin();
+        fetchProductData();
+        checkProductOwnership();
+        fetchQAs();
+    }, [productId, sessionKey]);
+
+    const handleLogout = () => {
+        fetch('http://192.168.0.132:9988/api/logout', {
+            method: 'POST',
+        })
+            .then(response => response.json())
+            .then(data => {
+                // 로그아웃 시 세션 정보를 초기화
+                setSessionKey(null);
+            })
+            .catch(error => console.error('로그아웃 중 오류 발생:', error));
     };
 
-    // 세션 키를 백엔드로 전송하여 사용자 정보를 받아옵니다.
-    axios.post('/api/admin', sessionData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(response => {
-      // 성공적으로 사용자 정보를 받아왔을 때의 처리
-      console.log(response.data); // 받아온 사용자 정보 출력
-      setUsers(response.data.users); // 받아온 사용자 정보를 상태에 저장
-    })
-    .catch(error => {
-      // 요청이 실패했을 때의 처리
-      console.error('Error fetching user data:', error);
-    });
-  }, []); // 컴포넌트가 처음 렌더링될 때만 실행되도록 빈 배열을 useEffect의 두 번째 인자로 전달
+    useEffect(() => {
+        if (!productId) {
+            console.log("잘못된 접근...");
+            return;
+        }
+        fetchData();
+    }, [productId]);
 
-  return (
-    <div className="flex h-full max-h-screen flex-col gap-2">
-      <div className="flex flex-col">
-      
-      <header className="flex items-center justify-between py-6 px-6 gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-        <a className="text-3xl font-bold mb-4 mt-4">취지직 관리자 페이지</a>
-        <div className="flex space-x-4">
-          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-            관리자님
-          </Button>
-          <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-            <Link href="/privacy-policy">로그아웃</Link>
-          </Button>
-        </div>
-      </header>
-      <main className="flex flex-col gap-2 p-4 md:gap-8 md:p-6">
-        <div className="flex items-center justify-end w-full">
-          <div className="relative w-1/5">
-            <Select defaultValue="seller">
-              <SelectTrigger>
-                <SelectValue>Role</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="seller">Seller</SelectItem>
-                <SelectItem value="buyer">Buyer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
+            const productData = await productResponse.json();
+            const product = productData;
+            if (product) {
+                setProduct(product);
+            } else {
+                return <div>로딩 중...</div>;
+            }
+        } catch (error) {
+            console.error('데이터 가져오는 중 오류 발생:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-          <div className="border shadow-sm rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">이름</TableHead>
-                  <TableHead className="hidden md:table-cell">아이디</TableHead>
-                  <TableHead className="min-w-[150px]">전화번호</TableHead>
-                  <TableHead className="hidden md:table-cell">계정 상태</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="flex items-center">
-                      <span className="ml-2 font-medium">{user.userName}</span>
-                    </TableCell>
-                    <TableCell className="font-medium">{user.userId}</TableCell>
-                    <TableCell className="hidden md:table-cell">{user.userPhone}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Switch className="mx-auto" defaultChecked={user.userAuth === 'seller'} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </main>
-      </div>
-    </div>
-  )
+    const handlePurchase = async () => {
+        try {
+            if (pageStatus === 'nologinPage') {//로그인 페이지로 로드
+                router.push('/login');
+            }
+            if (!product) {
+                return;
+            }
+          
+            const purchaseData = {
+                productId: product.productId,
+                productName: product.productName,
+                productCount: parseInt(selectedProductCount),
+                productPrice: product.productPrice,
+                key: sessionKey
+            };
+            const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
+            console.log("구매 요청:", purchaseResponse.data);
+        } catch (error) {
+            console.error('구매 처리 중 오류 발생:', error);
+        }
+    };
+    
+
+    const handleSelectChange = (selectedValue: string) => {
+        setSelectedProductCount(selectedValue);
+    };
+
+    // 모달 열기 함수
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    // 모달 닫기 함수
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    if (loading) {
+        return <div>로딩 중...</div>;
+    }
+
+    if (!product) {
+        return null;
+    }
+
+    return (
+        <div className="max-w-screen-xl mx-auto">
+            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
+                <Link href="/">
+                    <a className="text-3xl font-bold">취지직</a>
+                </Link>
+                <div className="flex space-x-4">
+                    {pageStatus === 'sellerPage' ? (
+                        <>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href={pageStatus === 'sellerPage' ? "/seller" : "/login"}>{name}님</Link>
+                            </Button>
+
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                                로그아웃
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href="/login">로그인</Link>
+                            </Button>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href="/privacy-policy">회원가입</Link>
+                            </Button>
+                        </>
+                    )}
+                </div>
+            </header>
+
+            <div className="my-6 mx-6">
+                <div className="grid md:grid-cols-2 md:gap-6 items-start">
+                    <div>
+                        <img
+                            alt="Product Image"
+                            className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
+                            height={200}
+                            src={product.productImageUrl}
+                            width={200}
+                        />
+                    </div>
+                    <div className="flex flex-col gap-4 md:gap-8">
+                        <h1 className="font-bold text-2xl sm:text-3xl">{product.productName}</h1>
+                        <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}</div> {/* 가격 포맷 */}
+                        <p>{product.productDescription}</p>
+                        <div className="grid gap-4 md:gap-8">
+                            <form className="grid gap-4 md:gap-8">
+                                <div className="grid gap-2">
+                                    <Label className="text-base" htmlFor="quantity">
+                                        수량
+                                    </Label>
+                                    <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+
+                                {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
+                                {pageStatus !== 'sellerPage' ? (
+                                    <Button size="lg" onClick={handlePurchase}>구매하기</Button>
+                                ) : null}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="font-bold text-4xl mb-2">Q&A</h2>
+                    {pageStatus === 'sellerPage' ? (
+                        <Button onClick={openModal}>Q&A 작성</Button>
+                    ) : null}
+                </div>
+
+                <div>
+                    {qas.map((qa, index) => (
+                        <div key={index} className="text-sm" style={{ margin: '10px 0' }}>
+                            <div className="border-b border-gray-300 pb-4">
+                                <h3 className="font-medium text-lg">Q. {qa.question}</h3>
+                                {qa.answer !== "" && (
+                                    <p className="text-gray-500">A. {qa.answer}</p>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {isModalOpen && <QaModal closeModal={closeModal} productId={productId as string} />}
+            </div>
+        </div>
+    );
+
+    function SearchIcon(props: SVGProps<SVGSVGElement>) {
+        return (
+            <svg
+                {...props}
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+            </svg>
+        );
+    }
 }

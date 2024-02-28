@@ -6,11 +6,11 @@ import "@/app/globals.css";
 
 interface QaModalProps {
   closeModal: () => void; // closeModal 함수 prop으로 전달
-  userId: string; // userId prop 추가
+  //userId: string; // session.key로 변경
   productId: string; // productId prop 추가
 }
 
-const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
+const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
   const [question, setQuestion] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -24,7 +24,7 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
 
       // 서버로 보낼 데이터 구성
       const dataToSend = {
-        userId: userId,
+        //userId: userId,//session.key로 변경
         productId: productId,
         question: question // textarea에 입력된 내용
       };
