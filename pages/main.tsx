@@ -2,38 +2,22 @@ import { Button } from "@/components/ui/MA_button"
 import Link from "next/link"
 import { Input } from "@/components/ui/MA_input"
 import { CardContent, Card } from "@/components/ui/MA_card"
-import { JSX, SVGProps } from "react"
+import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
-import axios from "axios"
-
-/*추가 중*/
 import React, { useEffect, useState } from 'react';
+import { getSessionData } from '@/utils/auth'
 
-export default function Main({ userId }: { userId: string }) {
-  /*헤더...*/
-  const [user, setUser] = useState<User | null>(null);
-
+export default function Main() {
   // 세션 데이터 가져오기
-  useEffect(() => {
-    if (userId) {
-      axios.post(`http://192.168.0.132:9988/api/get-session`, { userId })
-        .then(response => {
-          setUser(response.data.data); // 세션 정보를 상태에 저장
-        })
-        .catch(error => console.error('Error fetching session:', error));
-    }
-  }, [userId]);
-
+  const { auth, certification, key, name } = getSessionData();
+  
   const handleLogout = () => {
-    fetch('http://192.168.0.132:9988/api/logout', {
-      method: 'POST',
-    })
-      .then(response => response.json())
-      .then(data => {
-        setUser(null); // 로그아웃 시 세션 정보를 초기화
-      })
-      .catch(error => console.error('Error logging out:', error));
+    // sessionStorage 초기화
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+      window.location.reload();
+    }
   };
 
   /*상품정보 받는 중*/
@@ -99,10 +83,10 @@ export default function Main({ userId }: { userId: string }) {
           </Button>
         </div>
         <div className="flex space-x-4">
-          {user ? (
+          {certification ? (
             <>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{user.userName}님</Link>
+                <Link href="/mypage">{name}님</Link>
               </Button>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
@@ -161,14 +145,6 @@ export default function Main({ userId }: { userId: string }) {
       </main>
     </div>
   )
-}
-
-interface User {
-  userId: string;
-  userName: string;
-  email: string;
-  login: boolean;
-  auth: string;
 }
 
 interface Product {

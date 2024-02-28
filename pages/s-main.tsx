@@ -6,24 +6,26 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import ProductRegistration from './product-registration';
+import { getSessionData } from '@/utils/auth';
 
-export default function Seller_main({ userId }: { userId: string }) {
+export default function Seller_main() {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [showProductModal, setShowProductModal] = useState(false);
+  const { key } = getSessionData();
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/sproduct?userId=abc&page=${page}`)
+    fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [page]);
+  }, [key, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -57,30 +59,6 @@ export default function Seller_main({ userId }: { userId: string }) {
         return `${year}/${month}/${day} ${hour}:${minute}`;
     }
 
-    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
-    const handleSellComplete = async (productId: string) => {
-        try {
-            // 서버로 상태 변경 요청 보내기
-            const response = await fetch(`http://192.168.0.132:9988/api/change-state`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({userId, productId, selling: false }),
-            });
-    
-            if (response.ok) {
-                // 판매 상태 변경이 성공하면 상품 목록에서 해당 상품 제거
-                setProducts(prevProducts => prevProducts.filter(product => product.productId !== productId));
-            } else {
-                console.error('Failed to change selling status.');
-            }
-        } catch (error) {
-            console.error('Error during sellComplete request:', error);
-        }
-    };
-
     return (
         <div className="max-w-screen-xl mx-auto bg-white">
             <div className="flex justify-between items-center py-4 px-6">
@@ -104,41 +82,45 @@ export default function Seller_main({ userId }: { userId: string }) {
             <main className="py-6 px-6">
                 <section className="mb-6">
                 <div className="grid grid-cols-1 gap-4">
-                    {products.map(product => (
-                    <Card className="w-full" key={product.productId}>
-                        <a href={`/detail?productId=${product.productId}`}>
-                        <CardContent className="grid grid-cols-10 items-center">
-                        <div className="col-span-1 mr-4">
-                            <img
-                            alt={product.productName}
-                            height="150"
-                            src={product.productImageUrl}
-                            style={{
-                                objectFit: "cover",
-                            }}
-                            width="150"
-                            />
-                        </div>
-
-                        <div className="col-span-8">
-                            <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
-                            <div className="flex justify-between items-center">
-                            <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
+                {products.length === 0 ? (
+                    <p className="text-gray-500">등록된 상품이 없습니다</p>
+                    ) : (
+                        products.map(product => (
+                        <Card className="w-full" key={product.productId}>
+                            <a href={`/detail?productId=${product.productId}`}>
+                            <CardContent className="grid grid-cols-10 items-center">
+                            <div className="col-span-1 mr-4">
+                                <img
+                                alt={product.productName}
+                                height="150"
+                                src={product.productImageUrl}
+                                style={{
+                                    objectFit: "cover",
+                                }}
+                                width="150"
+                                />
                             </div>
-                            <div className="text-sm mt-2 text-gray-500">{formatDate(product.regDate)}</div>
-                        </div>
 
-                        <div className="col-span-1">
-                            <div className="flex items-center justify-end">
-                            <Button className="text-white bg-[#212121] h-full mr-2">
-                                판매중
-                            </Button>
+                            <div className="col-span-8">
+                                <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
+                                <div className="flex justify-between items-center">
+                                <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
+                                </div>
+                                <div className="text-sm mt-2 text-gray-500">{formatDate(product.regDate)}</div>
                             </div>
-                        </div>
-                        </CardContent>
-                        </a>
-                    </Card>
-                    ))}
+
+                            <div className="col-span-1">
+                                <div className="flex items-center justify-end">
+                                <Button className="text-white bg-[#212121] h-full mr-2">
+                                    판매중
+                                </Button>
+                                </div>
+                            </div>
+                            </CardContent>
+                            </a>
+                        </Card>
+                        ))
+                    )}
                 </div>
 
                 <div className="flex flex-col items-center mt-4">

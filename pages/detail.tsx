@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/DE_button";
 import "@/app/globals.css";
 import QaModal from './qa-modal'; // qa-modal 컴포넌트를 불러옵니다.
 import Link from "next/link"
+import { getSessionData } from '@/utils/auth'
 
 interface Product {
     productId: string;
@@ -43,28 +44,27 @@ export default function Detail() {
     const [selectedProductCount, setSelectedProductCount] = useState<string>("1");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // 모달 상태 추가 
     const [pageStatus, setPageStatus] = useState<string>("buyerPage"); // 페이지 상태 추가
-    const [name, setName] = useState<string>(""); // 이름 상태 추가
-    const [sessionKey, setSessionKey] = useState<string | null>(null); // 세션 상태 추가
     const [currentPage, setCurrentPage] = useState<number>(1); // 현재 페이지 상태 추가
     const [totalPage, setTotalPage] = useState<number>(1); // 총 페이지 상태 추가
     const router = useRouter();
     const { productId } = router.query;
 
-    useEffect(() => {
-        // 세션 데이터 가져오기
-        const sessionKey = sessionStorage.getItem('key');
-        setSessionKey(sessionKey);
-    }, []);
+    // 세션 데이터 가져오기
+  const { auth, certification, key, name } = getSessionData();
+  
+  const handleLogout = () => {
+    // sessionStorage 초기화
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+      window.location.reload();
+    }
+  };
 
     useEffect(() => {
         // 로그인 확인을 위한 API 호출
         const checkLogin = async () => {
-            if (sessionKey) {
+            if (key) {
                 try {
-                    const response = await axios.post(`http://192.168.0.132:9988/api/check-ssession`, { sessionKey });
-                    const { auth, certification, key, name, success } = response.data;
-                    setName(name); // 이름 설정
-
                     if (!certification) {
                         setPageStatus('nologinPage');
                     }
@@ -109,11 +109,11 @@ export default function Detail() {
                 return;
             }
 
-            if (sessionKey !== null) {
+            if (key !== null) {
                 try {
                     const response = await axios.post('/api/owner-check', {
                         productId: productId,
-                        session: { key: sessionKey }
+                        session: { key: key }
                     });
                     const { owner } = response.data;
                     // owner 값에 따라 로직을 처리합니다.
@@ -141,7 +141,7 @@ export default function Detail() {
                 const response = await axios.post('/api/qa', {
                     productId: productId,
                     page: page, // 페이지 번호 전달
-                    session: { key: sessionKey }
+                    session: { key: key }
                 });
                 const qa: PagedQAList = response.data;
                 setQas(qa.data);
@@ -156,18 +156,7 @@ export default function Detail() {
         fetchProductData();
         checkProductOwnership();
         fetchQAs(currentPage); // 초기 페이지 데이터 가져오기
-    }, [productId, sessionKey, currentPage]);
-
-    const handleLogout = () => {
-        fetch('http://192.168.0.132:9988/api/logout', {
-            method: 'POST',
-        })
-            .then(response => response.json())
-            .then(data => {
-                // 로그아웃 시 세션 정보를 초기화
-            })
-            .catch(error => console.error('Error logging out:', error));
-    };
+    }, [productId, key, currentPage]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page); // 페이지 변경 핸들러
@@ -185,13 +174,12 @@ export default function Detail() {
             if (!product) {
                 return;
             }
-            const sessionKey = sessionStorage.getItem('key');
             const purchaseData = {
                 productId: product.productId,
                 productName: product.productName,
                 productCount: parseInt(selectedProductCount),
                 productPrice: product.productPrice,
-                key: sessionKey
+                key: key
             };
             const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
             console.log("구매 요청:", purchaseResponse.data);
@@ -236,32 +224,29 @@ export default function Detail() {
 
     return (
         <div className="max-w-screen-xl mx-auto">
-            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#212121]">
-                <Link href="/">
-                    <a className="text-3xl font-bold">취지직</a>
-                </Link>
-                <div className="flex space-x-4">
-                    {pageStatus === 'sellerPage' ? (
-                        <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href={pageStatus === 'sellerPage' ? "/seller" : "/login"}>{name}님</Link>
-                            </Button>
-
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                                로그아웃
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/login">로그인</Link>
-                            </Button>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/privacy-policy">회원가입</Link>
-                            </Button>
-                        </>
-                    )}
-                </div>
+            <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
+              <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+              <div className="flex space-x-4">
+                {certification ? (
+                  <>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                      <Link href="/mypage">{name}님</Link>
+                    </Button>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                      로그아웃
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                      <Link href="/login">로그인</Link>
+                    </Button>
+                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                      <Link href="/privacy-policy">회원가입</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
             </header>
 
             <div className="my-6 mx-6">
