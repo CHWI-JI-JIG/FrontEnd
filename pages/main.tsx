@@ -20,21 +20,38 @@ export default function Main() {
     }
   };
 
-  /*상품정보 받는 중*/
+  // 상품정보 받는 중
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/products?page=1`)
+    fetch(`http://192.168.0.132:5000/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
+        console.log('Search Results:', data.data);
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [page]);
+    }, [page]);
+
+    //검색창
+    const [keyword, setKeyword] = useState('');
+    const [searchResults, setSearchResults] = useState<Product[]>([]);
+  
+    const handleSearch = async () => {
+      try {
+        console.log('Keyword:', keyword);
+        const response = await fetch(`http://192.168.0.132:5000/api/search?page=${page}&keyword=${keyword}`);
+        const data = await response.json();
+        setSearchResults(data.data);
+        setTotalPages(data.totalPage);
+        console.log('Search Results:', data.data);
+      } catch (error) {
+        console.error('Error searching:', error);
+      }
+    };
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -49,27 +66,12 @@ export default function Main() {
   };
 
   /*가격 자릿수*/
-  const numberWithCommas = (number: { toLocaleString: () => any }) => {
-    return number.toLocaleString();
-  };
-
-  //검색창
-  const [keyword, setKeyword] = useState('');
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
-
-  const handleSearch = async () => {
-    try {
-      console.log('Keyword:', keyword);
-      const response = await fetch(`http://192.168.0.132:9988/api/search?keyword=${keyword}`);
-      const data = await response.json();
-      setSearchResults(data.data);
-      
-      console.log('Search Results:', data.data);
-    } catch (error) {
-      console.error('Error searching:', error);
+  const numberWithCommas = (number: { toLocaleString?: () => any }) => {
+    if (number && number.toLocaleString) {
+      return number.toLocaleString();
     }
+    return '';
   };
-
 
   return (
     <div className="bg-white">
@@ -107,8 +109,9 @@ export default function Main() {
       
       <main className="py-6 px-6">
         <section className="mb-6">
+          {searchResults.length > 0 || products.length > 0 ? (
           <div className="grid grid-cols-4 grid-rows-5 gap-4">
-            {(searchResults.length > 0 ? searchResults : products).map(product => (
+            {(searchResults.length > 0 ? searchResults : products).map((product) => (
               <Card className="w-full" key={product.productId}>
                 <a href={`/detail?productId=${product.productId}`}>
                   <CardContent>
@@ -132,7 +135,10 @@ export default function Main() {
                 </a>
               </Card>
             ))}
-          </div>
+            </div>
+          ) : (
+            <p className="text-lg font-bold">상품이 없습니다.</p>
+          )}
 
           <div className="flex flex-col items-center mt-4">
             <div className="flex">
