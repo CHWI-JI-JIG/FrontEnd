@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/Lo_button"
 import { useRouter } from "next/router";
 import "@/app/globals.css"
+import { setSessionData } from '@/utils/auth';
 
 export default function Login() {
   const router  = useRouter();
@@ -27,10 +28,7 @@ export default function Login() {
         
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
         const {auth, certification, name, key} = response.data;
-        sessionStorage.setItem('auth', auth);
-        sessionStorage.setItem('certification', certification);
-        sessionStorage.setItem('key', key);
-        sessionStorage.setItem('name', name);
+        setSessionData({ auth, certification, key, name });
 
         //auth에 따른 페이지 이동
         if (auth === 'BUYER') {

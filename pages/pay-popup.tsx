@@ -1,5 +1,5 @@
 import "@/app/globals.css"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import axios from "axios"
 import { SVGProps } from "react"
 import { Key } from "lucide-react";
@@ -7,6 +7,7 @@ import { Key } from "lucide-react";
 export default function payPopup() {
 
   const [password, setPassword] = useState(Array(6).fill(null));
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
   const handleNumButtonClick = (num: number) => {
     const nextPassword = [...password];
@@ -39,44 +40,33 @@ export default function payPopup() {
     }
   };
 
-
-    // 지문 인증 버튼을 누르면 수행하는 로직을 여기에 작성하세요.
-  const handleFingerprintButtonClick = async () => {
-      // 비밀번호를 문자열로 변환합니다.
-    const passwordString = password.join('');
-
-    const data = {
-        password: passwordString,
-        // 필요한 다른 데이터를 여기에 추가하세요.
-    };
-
-    try {
-        const response = await axios.post('http://192.168.0.132/pg/api/fin', data);
-        console.log(response.data);
-    } catch (error) {
-        console.error(`Error: ${error}`);
-    }
+  const handleOKButtonClick = () => {
+    console.log('클릭했쏘요~');
   };
 
+  useEffect(() => {
+    // 비밀번호 6자리가 모두 입력되었는지 확인하여 버튼 활성화 여부 결정
+    setIsButtonEnabled(password.every(digit => digit !== null));
+  }, [password]);
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center">
       <div className="w-full max-w-md p-4 bg-white">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <FlagIcon className="text-[#1ec800] h-6 w-6" />
+            <FlagIcon className="text-[#121513] h-6 w-6" />
             <span className="font-bold">Pay</span>
           </div>
           <PanelTopCloseIcon className="text-gray-400 h-6 w-6" />
         </div>
         <div className="flex flex-col items-center">
-          <div className="mb-2 w-24 h-2 bg-[#1ec800] rounded-full" />
+          <div className="mb-2 w-24 h-2 bg-[#121513] rounded-full" />
           <h2 className="text-lg font-semibold mb-2">비밀번호 입력</h2>
           <div className="flex items-center justify-center mb-4">
             {password.map((digit, index) => (
               <div
                 key={index}
-                className={`w-2.5 h-2.5 rounded-full mx-1 ${digit !== null ? 'bg-[#1ec800]' : 'bg-gray-300'}`}
+                className={`w-2.5 h-2.5 rounded-full mx-1 ${digit !== null ? 'bg-[#121513]' : 'bg-gray-300'}`}
               />
             ))}
           </div>
@@ -109,10 +99,12 @@ export default function payPopup() {
           <button onClick={() => handleNumButtonClick(9)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             9
           </button>
-          <div onClick={handleFingerprintButtonClick} className="flex items-center justify-center">
-           <FingerprintIcon className="text-white h-6 w-6" />
-           <span className="sr-only">Fingerprint authentication</span>
-         </div>
+          <button
+            onClick={handleOKButtonClick}
+            className={`text-white text-xl font-semibold border border-solid border-gray-300 ${isButtonEnabled ? 'bg-black' : 'bg-gray-200'} ${isButtonEnabled ? 'hover:bg-gray-700' : ''}`}
+            disabled={!isButtonEnabled}>
+            확인
+          </button>
           <button onClick={() => handleNumButtonClick(0)} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
             0
           </button>
