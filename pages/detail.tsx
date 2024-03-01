@@ -71,7 +71,6 @@ export default function Detail() {
                 try {
                     if (auth === 'BUYER') {
                         setPageStatus('buyerPage');
-                        console.log(pageStatus);
                     } else {
                         setPageStatus('sellerPage');
                     }
@@ -171,30 +170,36 @@ export default function Detail() {
 
     const handlePurchase = async () => {
         try {
+            console.log("product1", product);
+            if (pageStatus === 'nologinPage') {
+                // 로그인 페이지로 로드
+                router.push('/login');
+            }
+    
             if (!product) {
+                console.log("product2");
                 return;
             }
+    
             const purchaseData = {
                 productId: product.productId,
                 productName: product.productName,
                 productCount: parseInt(selectedProductCount),
                 productPrice: product.productPrice,
             };
+    
             Cookies.set('purchaseData', JSON.stringify(purchaseData));
             console.log('Purchase Data:', purchaseData);
-            // const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
-            // console.log("구매 요청:", purchaseResponse.data);
-            if (pageStatus === 'nologinPage') {//로그인 페이지로 로드
-                router.push('/login');
-            }
-            if(pageStatus === 'buyerPage')
-                router.push('/payment-page');
-            
-            
+    
+            console.log("product3");
+            //const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
+            //console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
+            console.log("product4");
         }
     };
+    
     const handleAnswer = async (qId: string) => {
         // input 창에서 작성된 답변 가져오기
         const answerInput = document.getElementById(`answerInput_${qId}`) as HTMLInputElement;
@@ -233,7 +238,9 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <a className="text-3xl font-bold" onClick={() => { window.location.reload(); }}>취지직</a>
+                <Link href="/">
+                    <a className="text-3xl font-bold">취지직</a>
+                </Link>
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
@@ -274,7 +281,7 @@ export default function Detail() {
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                {pageStatus !== 'sellerPage' && (
+                                {pageStatus === 'buyerPage' && (
                                     <div className="grid gap-2">
                                         <Label className="text-base" htmlFor="quantity">
                                             수량
@@ -291,7 +298,13 @@ export default function Detail() {
 
                                 {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
                                 {pageStatus !== 'sellerPage' && (
-                                    <Button size="lg" onClick={handlePurchase}>구매하기</Button>
+                                    <Link href="/payment-page" as="/payment-page">
+                                    <a>
+                                      <Button size="lg" onClick={handlePurchase} style={{ width: '100%', display: 'block' }}>
+                                        구매하기
+                                      </Button>
+                                    </a>
+                                  </Link>
                                 )}
                             </form>
                         </div>
@@ -330,26 +343,6 @@ export default function Detail() {
             </div>
         </div>
     );
-
-    function SearchIcon(props: SVGProps<SVGSVGElement>) {
-        return (
-            <svg
-                {...props}
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-            </svg>
-        );
-    }
 }
 
 // 페이징 컴포넌트

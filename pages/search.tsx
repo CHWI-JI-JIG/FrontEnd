@@ -113,7 +113,7 @@ export default function Search() {
                         <img
                             alt={result.productName}
                             className="mb-2"
-                            src={result.productImageUrl}
+                            src={`http://192.168.0.132:5000${result.productImageUrl}`}
                             style={{
                             height: "200",
                             width: "200",
@@ -156,24 +156,4 @@ interface Product {
   productName: string;
   productImageUrl: string;
   productPrice: number;
-}
-
-function SearchIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
 }
