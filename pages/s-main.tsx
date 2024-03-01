@@ -16,17 +16,6 @@ export default function Seller_main() {
   const [showProductModal, setShowProductModal] = useState(false);
   const { key } = getSessionData();
 
-//   //상품 데이터 가져오기 
-//   useEffect(() => {
-//     fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
-//       .then(response => response.json())
-//       .then((data: PagedProductList) => {
-//         setProducts(data.data);
-//         setTotalPages(data.totalPage);
-//       })
-//       .catch(error => console.error('Error fetching data:', error));
-//   }, [key, page]);
-
     useEffect(() => {
         // POST 요청 body에 담을 데이터
         const requestData = {
@@ -50,9 +39,6 @@ export default function Seller_main() {
             console.log('data', data);
             setProducts(data.data);
             setTotalPages(data.totalPage);
-            if (data.data.length > 0) {
-                console.log('First product image URL:', data.data[0].productImageUrl);
-            }
         })
         .catch(error => console.error('Error fetching data:', error));
     }, [key, page]);

@@ -8,20 +8,24 @@ import { Switch } from "@/components/ui/AD_switch"
 import "@/app/globals.css";
 import { getSessionData } from '@/utils/auth'
 import { useEffect, useState } from 'react';
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 export default function Admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
-  const [userData, setUserData] = useState<User[] | null>(null);
+  const [userData, setUsers] = useState<User[]>([]);
   const [selectedRoleTop, setSelectedRoleTop] = useState('BUYER');
   const [selectedRoleIn, setSelectedRoleIn] = useState('');
+
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
 
     // 선택된 역할에 따라 userData를 필터링
     const filteredUserData = (userData || []).filter(user => user?.userAuth === role) || [];
-    setUserData(filteredUserData);
+    setUsers(filteredUserData);
   };
 
   const handleRoleChangeIn = (role: string) => {
@@ -36,31 +40,70 @@ export default function Admin() {
     }
   };
 
-  useEffect(() => {
-    // 세션 데이터의 key를 서버로 보내어 사용자 데이터를 가져오는 예시
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('/api/getUserData', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ key: key }),
-        });
-        const data: User[] = await response.json();
-        if (data && data.length > 0) {
-          const firstUserAuth = data[0].userAuth;
-          setSelectedRoleTop(firstUserAuth);
-          setSelectedRoleIn(firstUserAuth);
-        }
-        setUserData(data); // 가져온 사용자 데이터를 상태에 저장
-      } catch (error) {
-        console.error('Error fetching user data', error);
-      }
-    };
+  // useEffect(() => {
+  //   // 세션 데이터의 key를 서버로 보내어 사용자 데이터를 가져오는 예시
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await fetch('/api/admin', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({ key: key }),
+  //       });
+  //       const data: User[] = await response.json();
+  //       if (data && data.length > 0) {
+  //         const firstUserAuth = data[0].userAuth;
+  //         setSelectedRoleTop(firstUserAuth);
+  //         setSelectedRoleIn(firstUserAuth);
+  //       }
+  //       setUserData(data); // 가져온 사용자 데이터를 상태에 저장
+  //     } catch (error) {
+  //       console.error('Error fetching user data', error);
+  //     }
+  //   };
 
-    fetchUserData(); // 페이지가 로드될 때 사용자 데이터를 가져오도록 호출
-  }, [key]); // key가 변경될 때마다 호출
+  //   fetchUserData(); // 페이지가 로드될 때 사용자 데이터를 가져오도록 호출
+  // }, [key]); // key가 변경될 때마다 호출
+
+  useEffect(() => {
+      // POST 요청 body에 담을 데이터
+      const requestData = {
+      key: key,
+      page: page,  // page를 body에 포함
+      };
+
+      // POST 요청 설정
+      const requestOptions = {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+      };
+
+      // 서버에 POST 요청 보내기
+      fetch('http://192.168.0.132:5000/api/admin', requestOptions)
+      .then(response => response.json())
+      .then((data: PagedUserList) => {
+          console.log('data', data);
+          setUsers(data.data);
+          setTotalPages(data.totalPage);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, [key, page]);
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
 
   return (
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -130,6 +173,14 @@ export default function Admin() {
               </TableBody>
             </Table>
           </div>
+
+          <div className="flex flex-col items-center mt-4">
+            <div className="flex">
+              <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
+                <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+              <Button onClick={handleNextPage}><FaAngleRight /></Button>
+            </div>
+          </div>
         </main>
       </div>
     </div>
@@ -140,4 +191,12 @@ interface User {
   userUUID: string;
   userId: string;
   userAuth: string;
+}
+
+interface PagedUserList {
+  page: number;
+  size: number;
+  totalPage: number;
+  totalCount: number;
+  data: User[];
 }
