@@ -72,7 +72,7 @@ export default function Detail() {
                 try {
                     if (auth === 'seller') {
                         setPageStatus('sellerPage');
-                    } else if(auth === 'buyer'){
+                    } else {
                         setPageStatus('buyerPage');
                     }
                 } catch (error) {
