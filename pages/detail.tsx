@@ -71,6 +71,7 @@ export default function Detail() {
                 try {
                     if (auth === 'BUYER') {
                         setPageStatus('buyerPage');
+                        console.log(pageStatus);
                     } else {
                         setPageStatus('sellerPage');
                     }
@@ -170,9 +171,6 @@ export default function Detail() {
 
     const handlePurchase = async () => {
         try {
-            if (pageStatus === 'nologinPage') {//로그인 페이지로 로드
-                router.push('/login');
-            }
             if (!product) {
                 return;
             }
@@ -184,8 +182,15 @@ export default function Detail() {
             };
             Cookies.set('purchaseData', JSON.stringify(purchaseData));
             console.log('Purchase Data:', purchaseData);
-            const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
-            console.log("구매 요청:", purchaseResponse.data);
+            // const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
+            // console.log("구매 요청:", purchaseResponse.data);
+            if (pageStatus === 'nologinPage') {//로그인 페이지로 로드
+                router.push('/login');
+            }
+            if(pageStatus === 'buyerPage')
+                router.push('/payment-page');
+            
+            
         } catch (error) {
             console.error('Error handling purchase:', error);
         }
@@ -269,7 +274,7 @@ export default function Detail() {
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                {pageStatus === 'buyerPage' && (
+                                {pageStatus !== 'sellerPage' && (
                                     <div className="grid gap-2">
                                         <Label className="text-base" htmlFor="quantity">
                                             수량
