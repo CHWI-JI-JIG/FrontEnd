@@ -79,12 +79,11 @@ export default function admin() {
           <div className="relative w-1/5">
             <Select value={selectedRoleTop} onValueChange={(role) => handleRoleChangeTop(role)}>
               <SelectTrigger>
-                {selectedRoleTop === 'SELLER' ? 'SELLER' : selectedRoleTop === 'BUYER' ? 'BUYER' : 'ADMIN'}
+                {selectedRoleTop === 'SELLER' ? 'SELLER' : 'BUYER'}
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="SELLER">SELLER</SelectItem>
                 <SelectItem value="BUYER">BUYER</SelectItem>
-                <SelectItem value="ADMIN">ADMIN</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -108,12 +107,11 @@ export default function admin() {
                         <div className='w-full'>
                           <Select value={selectedRoleIn} onValueChange={(role) => handleRoleChangeIn(role)}>
                             <SelectTrigger>
-                              {selectedRoleIn === 'SELLER' ? 'SELLER' : selectedRoleIn === 'BUYER' ? 'BUYER' : 'ADMIN'}
+                              {selectedRoleIn === 'SELLER' ? 'SELLER' : 'BUYER' }
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="SELLER">SELLER</SelectItem>
                               <SelectItem value="BUYER">BUYER</SelectItem>
-                              <SelectItem value="ADMIN">ADMIN</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

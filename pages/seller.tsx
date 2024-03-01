@@ -27,6 +27,17 @@ export default function Seller() {
         setSelectedSection(section);
     };
     
+    useEffect(() => {
+        if (!certification || auth !== 'SELLER') {
+            // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+            alert('판매자 로그인이 필요합니다.');
+            router.push('/').then(() => {
+                // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+                window.location.href = '/';
+            });
+        }
+    }, []);
+
     // 선택한 섹션에 따라 해시를 변경
     useEffect(() => {
         window.location.hash = selectedSection;
