@@ -65,25 +65,25 @@ export default function Seller() {
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
                 <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
                 <div className="flex space-x-4">
-                {certification ? (
-                    <>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        <Link href="/mypage">{name}님</Link>
-                    </Button>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                        로그아웃
-                    </Button>
-                    </>
-                ) : (
-                    <>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        <Link href="/login">로그인</Link>
-                    </Button>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        <Link href="/privacy-policy">회원가입</Link>
-                    </Button>
-                    </>
-                )}
+                    {certification ? (
+                        <>
+                        <Link href="/mypage">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+                        </Link>
+                        <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                            로그아웃
+                        </Button>
+                        </>
+                    ) : (
+                        <>
+                        <Link href="/login">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+                        </Link>
+                        <Link href="/privacy-policy">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+                        </Link>
+                        </>
+                    )}
                 </div>
             </header>
 

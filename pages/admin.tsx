@@ -13,23 +13,31 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 export default function Admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
+
   const [userData, setUsers] = useState<User[]>([]);
-  const [selectedRoleTop, setSelectedRoleTop] = useState('BUYER');
+  const [allUserData, setAllUsers] = useState<User[]>([]);
+  const [selectedRoleTop, setSelectedRoleTop] = useState('all');
   const [selectedRoleIn, setSelectedRoleIn] = useState('');
+
+  const [selectedUserKey, setSelectedUserKey] = useState<string | null>(null);
 
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
-
-    // 선택된 역할에 따라 userData를 필터링
-    const filteredUserData = (userData || []).filter(user => user?.userAuth === role) || [];
+  
+    // 선택된 역할에 따라 allUserData를 필터링
+    let filteredUserData: User[] = [];
+    if (role === 'all') {
+      // All을 선택한 경우 모든 데이터를 보여줍니다.
+      filteredUserData = allUserData;
+    } else {
+      // 선택된 역할에 맞게 데이터를 필터링합니다.
+      filteredUserData = allUserData.filter((user: User) => user?.userAuth === role) || [];
+    }
+  
     setUsers(filteredUserData);
-  };
-
-  const handleRoleChangeIn = (role: string) => {
-    setSelectedRoleIn(role);
   };
 
   const handleLogout = () => {
@@ -40,58 +48,117 @@ export default function Admin() {
     }
   };
 
-  // useEffect(() => {
-  //   // 세션 데이터의 key를 서버로 보내어 사용자 데이터를 가져오는 예시
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const response = await fetch('/api/admin', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({ key: key }),
-  //       });
-  //       const data: User[] = await response.json();
-  //       if (data && data.length > 0) {
-  //         const firstUserAuth = data[0].userAuth;
-  //         setSelectedRoleTop(firstUserAuth);
-  //         setSelectedRoleIn(firstUserAuth);
-  //       }
-  //       setUserData(data); // 가져온 사용자 데이터를 상태에 저장
-  //     } catch (error) {
-  //       console.error('Error fetching user data', error);
-  //     }
-  //   };
-
-  //   fetchUserData(); // 페이지가 로드될 때 사용자 데이터를 가져오도록 호출
-  // }, [key]); // key가 변경될 때마다 호출
-
   useEffect(() => {
-      // POST 요청 body에 담을 데이터
-      const requestData = {
+    // POST 요청 body에 담을 데이터
+    const requestData = {
       key: key,
       page: page,  // page를 body에 포함
-      };
+    };
+    console.log('데이터 조회 시 Request key : ', key)
 
-      // POST 요청 설정
-      const requestOptions = {
+    // POST 요청 설정
+    const requestOptions = {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestData),
-      };
+    };
 
-      // 서버에 POST 요청 보내기
-      fetch('http://192.168.0.132:5000/api/admin', requestOptions)
+    // 서버에 POST 요청 보내기
+    fetch('http://192.168.0.112:5000/api/admin', requestOptions)
       .then(response => response.json())
       .then((data: PagedUserList) => {
-          console.log('data', data);
-          setUsers(data.data);
-          setTotalPages(data.totalPage);
+        console.log("admin:",data.data)
+        setAllUsers(data.data); // 전체 데이터 업데이트
+        setUsers(data.data);    // 현재 필터링된 데이터 업데이트
+        setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
   }, [key, page]);
+
+  //
+
+  useEffect(() => {
+    // selectedRoleIn 또는 selectedUserKey 값이 변경될 때마다 호출
+    if (selectedRoleIn && selectedUserKey) {
+      handleRoleSubmit(selectedRoleIn, selectedUserKey);
+    }
+  }, [selectedRoleIn, selectedUserKey]);
+
+  const handleRoleChangeIn = (role: string, userKey: string) => {
+    console.log('handleRoleChangeIn - role:', role, 'userKey:', userKey);
+    setSelectedRoleIn(role);
+    setSelectedUserKey(userKey);
+  };
+  
+
+  const handleRoleSubmit = (role: string, userKey: string) => {
+    console.log('handleRoleSubmit - selectedRoleIn:', selectedRoleIn, 'userKey:', userKey);
+    // 선택된 값이 없다면 아무 동작도 하지 않음
+    if (!selectedRoleIn || !userKey) return;
+  
+    // POST 요청 body에 담을 데이터
+    const requestData = {
+      userKey: userKey,
+      userAuth: selectedRoleIn,
+    };
+    console.log('role change 전송 data:', requestData);
+  
+    // POST 요청 설정
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestData),
+    };
+  
+    // 서버에 POST 요청 보내기
+    fetch('http://192.168.0.112:5000/api/user-role', requestOptions)
+      .then(response => response.json())
+      .then((data) => {
+        console.log("user-role:", data.data)
+        if (data.success) {
+          alert('권한 변경 성공');
+  
+          // 전체 데이터 업데이트
+          setAllUsers(prevUsers => {
+            return prevUsers.map(user => {
+              if (user.userKey === userKey) {
+                return {
+                  ...user,
+                  userAuth: role,
+                };
+              }
+              return user;
+            });
+          });
+  
+          // 현재 필터링된 데이터 업데이트
+          setUsers(prevUsers => {
+            // selectedRoleTop이 'all'이면 업데이트된 사용자를 다시 목록에 추가
+            if (selectedRoleTop === 'all') {
+              return prevUsers.map(user => {
+                if (user.userKey === userKey) {
+                  return {
+                    ...user,
+                    userAuth: role,
+                  };
+                }
+                return user;
+              });
+            } else {
+              // selectedRoleTop이 'all'이 아닌 경우 변경된 사용자를 현재 필터링된 목록에서 제외
+              return prevUsers.filter(user => user.userKey !== userKey);
+            }
+          });
+        } else {
+          alert('권한 변경 실패..잠시 후 다시 시도해주세요.')
+        }
+      })
+      .catch(error => console.error('Error updating user role:', error));
+  };
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -119,16 +186,18 @@ export default function Admin() {
             </Button>
           </div>
         </header>
+
         <main className="flex flex-col gap-2 p-4 md:gap-8 md:p-6">
           <div className="flex items-center justify-end w-full">
             <div className="relative w-1/5">
               <Select value={selectedRoleTop} onValueChange={(role) => handleRoleChangeTop(role)}>
                 <SelectTrigger>
-                  {selectedRoleTop === 'SELLER' ? 'SELLER' : 'BUYER'}
+                  {selectedRoleTop === 'all' ? 'all' : selectedRoleTop === 'seller' ? 'seller' : 'buyer'}
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="SELLER">SELLER</SelectItem>
-                  <SelectItem value="BUYER">BUYER</SelectItem>
+                  <SelectItem value="all">all</SelectItem>
+                  <SelectItem value="seller">seller</SelectItem>
+                  <SelectItem value="buyer">buyer</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -145,17 +214,20 @@ export default function Admin() {
               <TableBody>
                 {userData && userData.length > 0 ? (
                   userData.map((user) => (
-                    <TableRow key={user.userId}>
+                    <TableRow key={user.userKey}>
                       <TableCell className="font-medium">{user.userId}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         <div className='w-full'>
-                          <Select value={user.userAuth} onValueChange={(role) => handleRoleChangeIn(role)}>
+                          <Select value={user.userAuth} onValueChange={(role) => {
+                              console.log('Select - onValueChange - role:', role, 'user.key:', user.userKey);
+                              handleRoleChangeIn(role, user.userKey);
+                            }}>
                             <SelectTrigger>
-                              {user.userAuth === 'SELLER' ? 'SELLER' : 'BUYER' }
+                              {user.userAuth === 'seller' ? 'seller' : 'buyer' }
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="SELLER">SELLER</SelectItem>
-                              <SelectItem value="BUYER">BUYER</SelectItem>
+                              <SelectItem value="seller">seller</SelectItem>
+                              <SelectItem value="buyer">buyer</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -188,7 +260,7 @@ export default function Admin() {
 }
 
 interface User {
-  userUUID: string;
+  userKey: string;
   userId: string;
   userAuth: string;
 }

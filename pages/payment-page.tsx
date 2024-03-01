@@ -30,7 +30,7 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://192.168.0.132:5000/api/c-user', {});
+            const result = await axios.post('http://192.168.0.112:5000/api/c-user', {});
             setUserData(result.data);
             console.log(result.data)
         };

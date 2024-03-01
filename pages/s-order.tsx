@@ -16,7 +16,7 @@ export default function Seller_order() {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/seller-order?key=${key}&page=${page}`)
+    fetch(`http://192.168.0.112:9988/api/seller-order?key=${key}&page=${page}`)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
         setOrders(data.data);

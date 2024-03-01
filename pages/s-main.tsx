@@ -33,7 +33,7 @@ export default function Seller_main() {
         };
     
         // 서버에 POST 요청 보내기
-        fetch('http://192.168.0.132:5000/api/sproducts', requestOptions)
+        fetch('http://192.168.0.112:5000/api/sproducts', requestOptions)
         .then(response => response.json())
         .then((data: PagedProductList) => {
             console.log('data', data);
@@ -107,7 +107,7 @@ export default function Seller_main() {
                                 <img
                                 alt={product.productName}
                                 height="150"
-                                src={`http://192.168.0.132:5000${product.productImageUrl}`}
+                                src={`http://192.168.0.112:5000${product.productImageUrl}`}
                                 style={{
                                     objectFit: "cover",
                                 }}

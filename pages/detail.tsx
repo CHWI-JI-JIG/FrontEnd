@@ -88,7 +88,7 @@ export default function Detail() {
             }
             setLoading(true);
             try {
-                const productResponse = await fetch(`http://192.168.0.132:5000/api/detail?productId=${productId}`);
+                const productResponse = await fetch(`http://192.168.0.112:5000/api/detail?productId=${productId}`);
                 const productData = await productResponse.json();
                 const product = productData;
                 if (product) {
@@ -192,7 +192,7 @@ export default function Detail() {
             console.log('Purchase Data:', purchaseData);
     
             console.log("product3");
-            //const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
+            //const purchaseResponse = await axios.post('http://192.168.0.112:5000/api/temppayment', key);
             //console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
@@ -244,21 +244,21 @@ export default function Detail() {
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/mypage">{name}님</Link>
-                            </Button>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                                로그아웃
-                            </Button>
+                        <Link href="/mypage">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+                        </Link>
+                        <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                            로그아웃
+                        </Button>
                         </>
                     ) : (
                         <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/login">로그인</Link>
-                            </Button>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/privacy-policy">회원가입</Link>
-                            </Button>
+                        <Link href="/login">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+                        </Link>
+                        <Link href="/privacy-policy">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+                        </Link>
                         </>
                     )}
                 </div>
@@ -271,7 +271,7 @@ export default function Detail() {
                             alt="Product Image"
                             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
                             height={200}
-                            src={`http://192.168.0.132:5000${product.productImageUrl}`}
+                            src={`http://192.168.0.112:5000${product.productImageUrl}`}
                             width={200}
                         />
                     </div>

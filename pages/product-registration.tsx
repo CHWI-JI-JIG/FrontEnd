@@ -59,7 +59,7 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
     }
   
     try {
-      const response = await fetch('http://192.168.0.132:5000/api/product-registration', {
+      const response = await fetch('http://192.168.0.112:5000/api/product-registration', {
         method: 'POST',
         body: formData,
       });
