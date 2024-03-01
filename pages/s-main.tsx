@@ -16,16 +16,43 @@ export default function Seller_main() {
   const [showProductModal, setShowProductModal] = useState(false);
   const { key } = getSessionData();
 
-  //상품 데이터 가져오기 
-  useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
-      .then(response => response.json())
-      .then((data: PagedProductList) => {
-        setProducts(data.data);
-        setTotalPages(data.totalPage);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, [key, page]);
+//   //상품 데이터 가져오기 
+//   useEffect(() => {
+//     fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
+//       .then(response => response.json())
+//       .then((data: PagedProductList) => {
+//         setProducts(data.data);
+//         setTotalPages(data.totalPage);
+//       })
+//       .catch(error => console.error('Error fetching data:', error));
+//   }, [key, page]);
+
+    useEffect(() => {
+        // POST 요청 body에 담을 데이터
+        const requestData = {
+        key: key,
+        page: page,  // page를 body에 포함
+        };
+    
+        // POST 요청 설정
+        const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+        };
+    
+        // 서버에 POST 요청 보내기
+        fetch('http://192.168.0.132:5000/api/sproducts', requestOptions)
+        .then(response => response.json())
+        .then((data: PagedProductList) => {
+            console.log('data', data);
+            setProducts(data.data);
+            setTotalPages(data.totalPage);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }, [key, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
