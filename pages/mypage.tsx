@@ -6,7 +6,7 @@ import "@/app/globals.css"
 import axios from "axios";
 import { getSessionData } from '@/utils/auth';
 import { useRouter } from 'next/router';
-
+const apiUrl = 'http://192.168.0.132:5000'; 
 export default function Mypage() {
   const router = useRouter();
   // 세션 데이터 가져오기
@@ -27,7 +27,7 @@ export default function Mypage() {
   const handleSearch = async () => {
     try {
       console.log('Keyword:', keyword);
-      const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
+      const response = await fetch(`${apiUrl}/api/search?page=1&keyword=${keyword}`);
       const data = await response.json();
       setSearchResults(data.data);
       setTotalPages(data.totalPage);
@@ -50,7 +50,7 @@ export default function Mypage() {
   useEffect(() => {
     if (key) {
       // 서버 API 호출
-      axios.post(`http://192.168.0.132:9988/api/order-history`, { key })
+      axios.post(`${apiUrl}/api/order-history`, { key })
         .then(response => {
           setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
         })

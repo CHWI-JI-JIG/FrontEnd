@@ -19,7 +19,9 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "downlevelIteration": true, // 이 부분을 추가해주세요
+    "target": "es2015" // 이 부분도 추가 혹은 확인해주세요
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "pages"],
   "exclude": ["node_modules"]

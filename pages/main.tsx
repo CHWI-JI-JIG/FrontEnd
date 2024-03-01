@@ -8,7 +8,7 @@ import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth'
 import { useRouter } from 'next/router';
-
+const apiUrl = 'http://127.0.0.1:5000'; 
 export default function Main() {
   const router = useRouter();
 
@@ -29,7 +29,7 @@ export default function Main() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    fetch(`http://192.168.0.132:5000/api/products?page=${page}`)
+    fetch(`${apiUrl}/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         console.log('Search Results:', data.data);
@@ -49,7 +49,7 @@ export default function Main() {
     const handleSearch = async () => {
       try {
         console.log('Keyword:', keyword);
-        const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
+        const response = await fetch(`${apiUrl}/api/search?page=1&keyword=${keyword}`);
         const data = await response.json();
         setSearchResults(data.data);
         setTotalPages(data.totalPage);
@@ -132,7 +132,7 @@ export default function Main() {
                       <img
                         alt={product.productName}
                         className="mb-2"
-                        src={`http://192.168.0.132:5000${product.productImageUrl}`}
+                        src={`${apiUrl}${product.productImageUrl}`}
                         style={{
                           height: "200",
                           width: "200",

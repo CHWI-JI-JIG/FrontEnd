@@ -8,7 +8,7 @@ import React, { useEffect, useState, ChangeEvent } from "react"
 import axios from "axios"
 import Cookies from 'js-cookie';
 import "@/app/globals.css"
-
+const apiUrl = 'http://127.0.0.1:5000'; 
 export default function PaymentPage() {
 
     const [cardNum, setCardNum] = useState<string>()
@@ -30,13 +30,13 @@ export default function PaymentPage() {
     
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://172.30.1.32:9988/api/c-user', {});
+            const result = await axios.post(`${apiUrl}/api/c-user`, {});
             setUserData(result.data);
             console.log(result.data)
         };
 
         // const fetchProductData = async () => {
-        //     const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
+        //     const response = await axios.post(`${apiUrl}/api/product-trans`);
         //     setProduct(response.data);
         //     setFinalPrice(response.data.productPrice)
         //     console.log(response.data)

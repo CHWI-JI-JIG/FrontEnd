@@ -3,7 +3,6 @@ import React, {useEffect, useState} from "react"
 import axios from "axios"
 import { SVGProps } from "react"
 import { Key } from "lucide-react";
-
 export default function payPopup() {
 
   const [password, setPassword] = useState(Array(6).fill(null));

@@ -65,7 +65,7 @@ export default function Admin() {
   return (
     <div className="flex h-full max-h-screen flex-col gap-2">
       <div className="flex flex-col">
-        <header className="flex items-center justify-between py-6 px-6 gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+        <header className="flex items-center justify-between py-6 px-6 gap-4 border-b bg-gray-zzzz00/40 px-6 dark:bg-gray-800/40">
           <a className="text-3xl font-bold mb-4 mt-4">취지직 관리자 페이지</a>
           <div className="flex space-x-4">
             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">

@@ -6,7 +6,7 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth';
-
+const apiUrl = 'http://192.168.0.132:5000'; 
 export default function Seller_order() {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
@@ -16,7 +16,7 @@ export default function Seller_order() {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/seller-order?key=${key}&page=${page}`)
+    fetch(`${apiUrl}/api/seller-order?key=${key}&page=${page}`)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
         setOrders(data.data);

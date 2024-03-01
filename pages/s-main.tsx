@@ -7,7 +7,7 @@ import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import ProductRegistration from './product-registration';
 import { getSessionData } from '@/utils/auth';
-
+const apiUrl = 'http://127.0.0.1:5000'; 
 export default function Seller_main() {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
@@ -18,7 +18,7 @@ export default function Seller_main() {
 
 //   //상품 데이터 가져오기 
 //   useEffect(() => {
-//     fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
+//     fetch(`${apiUrl}/api/sproduct?key=${key}&page=${page}`)
 //       .then(response => response.json())
 //       .then((data: PagedProductList) => {
 //         setProducts(data.data);
@@ -44,7 +44,7 @@ export default function Seller_main() {
         };
     
         // 서버에 POST 요청 보내기
-        fetch('http://192.168.0.132:5000/api/sproducts', requestOptions)
+        fetch(`${apiUrl}/api/sproducts`, requestOptions)
         .then(response => response.json())
         .then((data: PagedProductList) => {
             console.log('data', data);
@@ -121,7 +121,7 @@ export default function Seller_main() {
                                 <img
                                 alt={product.productName}
                                 height="150"
-                                src={`http://192.168.0.132:5000${product.productImageUrl}`}
+                                src={`${apiUrl}${product.productImageUrl}`}
                                 style={{
                                     objectFit: "cover",
                                 }}

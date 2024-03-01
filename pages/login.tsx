@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Lo_button"
 import { useRouter } from "next/router";
 import "@/app/globals.css"
 import { setSessionData } from '@/utils/auth';
-
+const apiUrl = 'http://127.0.0.1:5000'; 
 export default function Login() {
   const router  = useRouter();
   // 입력값 상태 관리
@@ -18,7 +18,7 @@ export default function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // 로그인 요청
     try {
-      const response = await axios.post("http://192.168.0.132:5000/api/login", {
+      const response = await axios.post(`${apiUrl}/api/login`, {
         "userId":id,
         "userPassword":password,
       });
