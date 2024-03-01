@@ -6,31 +6,17 @@ import Link from "next/link"
 import { Button } from "@/components/ui/MA_button";
 import { Input } from "@/components/ui/MA_input";
 import axios from 'axios';
-
-const getSessionData = () => {
-    // sessionStorage가 있는지 확인
-    if (typeof sessionStorage !== 'undefined') {
-      const sessionData = {
-        auth: sessionStorage.getItem('auth'),
-        certification: sessionStorage.getItem('certification'),
-        key: sessionStorage.getItem('key'),
-        name: sessionStorage.getItem('name'),
-      };
-      return sessionData;
-    } else {
-      // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
-      return { auth: null, certification: null, key: null, name: null };
-    }
-};
+import { getSessionData } from '@/utils/auth';
 
 export default function Seller() {
     // 세션 데이터 가져오기
-    const { auth, certification, name, key } = getSessionData();
+    const { auth, certification, key, name } = getSessionData();
     
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
         sessionStorage.clear();
+        window.location.reload();
         }
     };
 
@@ -66,9 +52,7 @@ export default function Seller() {
     return (
         <>
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <Link href="/">
-                    <a className="text-3xl font-bold">취지직</a>
-                </Link>
+                <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
                 <div className="flex space-x-4">
                 {certification ? (
                     <>
