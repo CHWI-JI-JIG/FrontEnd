@@ -4,18 +4,19 @@ import Link from "next/link"
 import { Label } from "@/components/ui/PayP_label"
 import { Input } from "@/components/ui/PayP_input"
 import { SVGProps } from "react"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, ChangeEvent } from "react"
 import axios from "axios"
+import Cookies from 'js-cookie';
 import "@/app/globals.css"
 
 export default function PaymentPage() {
 
+    const [cardNum, setCardNum] = useState<string>()
     const [userData, setUserData] = useState({
         name: '',
         userId: '',
         phone: '',
         address: '',
-        cardNum: [],
         point: 0
     });
 
@@ -24,7 +25,9 @@ export default function PaymentPage() {
         productCount: 0,
         productPrice: 0,
     });
+
     const [finalPrice, setFinalPrice] = useState(0);
+    
     useEffect(() => {
         const fetchUserData = async () => {
             const result = await axios.post('http://172.30.1.32:9988/api/c-user', {});
@@ -32,16 +35,25 @@ export default function PaymentPage() {
             console.log(result.data)
         };
 
+<<<<<<< HEAD
         const fetchProductData = async () => {
             const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
             setProduct(response.data);
             setFinalPrice(response.data.productPrice)
             console.log(response.data)
         };
+=======
+        // const fetchProductData = async () => {
+        //     const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
+        //     setProduct(response.data);
+        //     setFinalPrice(response.data.productPrice)
+        //     console.log(response.data)
+        // };
+>>>>>>> susujin
 
 
         fetchUserData();
-        fetchProductData();
+        //fetchProductData();
     }, []);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,33 +74,37 @@ export default function PaymentPage() {
 
     const handleUsePointsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
-      
+
         if (isNaN(value)) { // 입력이 숫자가 아닐 경우
-          value = 0; // 값을 0으로 설정
+            value = 0; // 값을 0으로 설정
         } else if (value < 0) { // 입력이 0보다 작을 경우
-          value = 0; // 값을 0으로 설정
+            value = 0; // 값을 0으로 설정
         } else if (value > userData.point) { // 입력이 보유 포인트보다 클 경우
-          value = userData.point; // 값을 보유 포인트로 설정
+            value = userData.point; // 값을 보유 포인트로 설정
         }
-      
+
         setUsePoints(value);
+    }
+
+    const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) =>{
+        setCardNum(event.target.value);
     }
 
     const handleUsePointsClick = async () => {
         if (userData.point < usePoints) {
-          alert('보유 포인트보다 많은 포인트를 사용할 수 없습니다.');
-          return;
+            alert('보유 포인트보다 많은 포인트를 사용할 수 없습니다.');
+            return;
         }
-      
+
         // Data type check and conversion
         const price = Number(product.productPrice);
         const points = Number(usePoints);
-      
+
         setFinalPrice(price - points); // Update final price
     }
     const openPopup = () => {
         window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
-      };
+    };
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -163,23 +179,15 @@ export default function PaymentPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="number">카드 번호</Label>
-                                        {userData.cardNum ? (
-                                            <select id="number" onChange={handleInputChange}>
-                                                {userData.cardNum.map((num, index) => (
-                                                    <option key={index} value={num}>
-                                                        {num}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        ) : (
-                                            <select id="number" disabled>
-                                                <option>카드번호</option>
-                                            </select>
-                                        )}
+                                        <select id="number" onChange={handleCardNumChange}>
+                                            <option value="1111-1111-1111-1111">1111-1111-1111-1111</option>
+                                            <option value="2222-2222-2222-2222">2222-2222-2222-2222</option>
+                                        </select>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>보유 포인트</Label>
-                                        <div>{userData.point}</div>
+                                        {/* <div>{userData.point}</div> */}
+                                        <div>{userData.point = 0}</div>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>사용할 포인트</Label>
@@ -195,7 +203,7 @@ export default function PaymentPage() {
                 </CardContent>
                 <CardFooter>
                     <div>{finalPrice}</div>
-                        <Button className="ml-auto" onClick={openPopup}>Pay</Button>
+                    <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>
         </div>

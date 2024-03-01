@@ -6,14 +6,14 @@ import "@/app/globals.css";
 
 interface QaModalProps {
   closeModal: () => void; // closeModal 함수 prop으로 전달
-  userId: string; // userId prop 추가
+  //userId: string; // session.key로 변경
   productId: string; // productId prop 추가
 }
 
-const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
+const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
   const [question, setQuestion] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null;
   const handleSubmit = async () => {
     try {
       // 내용이 입력되었는지 확인
@@ -24,13 +24,13 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, userId, productId }) => {
 
       // 서버로 보낼 데이터 구성
       const dataToSend = {
-        userId: userId,
+        key: sessionKey,
         productId: productId,
         question: question // textarea에 입력된 내용
       };
 
       // 서버에 POST 요청 보내기
-      const qaResponse= await axios.post('http://192.168.0.132:9988/api/qa-question-submit', dataToSend);
+      const qaResponse= await axios.post('http://192.168.0.132:5000/api/qa-question-submit', dataToSend);
       const qaData = qaResponse.data;
       console.log(qaData);
 

@@ -21,7 +21,7 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
 
   const isPriceValid = price !== '' && parseInt(price) <= 50000000;
   const isCompleteEnabled = productName !== '' && file !== null && isPriceValid && description !== '';
-
+  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null;
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files && event.target.files[0];
     if (selectedFile) {
@@ -41,15 +41,42 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
       setPrice('');
     } else {
       setPriceErrorMessage('');
-      setPrice(enteredPrice); // 문자열로 저장
+      setPrice(enteredPrice);
     }
   };
 
-  const handleSubmit = () => {
-    // 완료 버튼 클릭 시 처리 로직 추가
-    // 예: 서버로 데이터 전송 등
-    onClose(); // 모달 닫기
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append('productName', productName);
+    formData.append('productPrice', price);
+    formData.append('productDescription', description);
+    if (sessionKey) {
+      formData.append('key', sessionKey);
+    }
+  
+    if (file) {
+      formData.append('productImagePath', file);
+    }
+  
+    try {
+      const response = await fetch('http://192.168.0.132:5000/api/product-registration', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const responseData = await response.json();
+  
+      if (responseData.success) {
+        console.log('상품 등록 성공');
+        onClose(); // 모달 닫기
+      } else {
+        console.log('상품 등록 실패');
+      }
+    } catch (error) {
+      console.error('상품 등록 중 오류 발생:', error);
+    }
   };
+  
 
   return (
     <div className="bg-gray-800 bg-opacity-50 fixed inset-0 flex items-center justify-center">

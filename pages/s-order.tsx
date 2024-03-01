@@ -5,24 +5,29 @@ import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
+import { getSessionData } from '@/utils/auth';
 
-export default function Seller_order({ userId }: { userId: string }) {
+export default function Seller_order() {
   /*상품정보 받는 중*/
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [sellerId, setSellerId] = useState<string>("");
+  const { key } = getSessionData();
 
   //상품 데이터 가져오기 
   useEffect(() => {
+<<<<<<< HEAD
     fetch(`http://172.30.1.32:9988/api/seller-order?sellerId=abc&page=${page}`)
+=======
+    fetch(`http://192.168.0.132:9988/api/seller-order?key=${key}&page=${page}`)
+>>>>>>> susujin
       .then(response => response.json())
       .then((data: PagedOrderList) => {
         setOrders(data.data);
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-  }, [sellerId,page]);
+  }, [key, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -140,23 +145,4 @@ interface PagedOrderList {
   totalPage: number;
   totalCount: number;
   data: Order[];
-}
-
-function ChevronDownIcon(props:SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  )
 }
