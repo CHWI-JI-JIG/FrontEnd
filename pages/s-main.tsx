@@ -16,18 +16,6 @@ export default function Seller_main() {
   const [showProductModal, setShowProductModal] = useState(false);
   const { key } = getSessionData();
 
-<<<<<<< HEAD
-  //상품 데이터 가져오기 
-  useEffect(() => {
-    fetch(`http://172.30.1.32:9988/api/sproduct?userId=abc&page=${page}`)
-      .then(response => response.json())
-      .then((data: PagedProductList) => {
-        setProducts(data.data);
-        setTotalPages(data.totalPage);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, [page]);
-=======
 //   //상품 데이터 가져오기 
 //   useEffect(() => {
 //     fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
@@ -68,7 +56,6 @@ export default function Seller_main() {
         })
         .catch(error => console.error('Error fetching data:', error));
     }, [key, page]);
->>>>>>> susujin
 
   const handleNextPage = () => {
     if (page < totalPages) {

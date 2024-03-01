@@ -35,21 +35,12 @@ export default function PaymentPage() {
             console.log(result.data)
         };
 
-<<<<<<< HEAD
-        const fetchProductData = async () => {
-            const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
-            setProduct(response.data);
-            setFinalPrice(response.data.productPrice)
-            console.log(response.data)
-        };
-=======
         // const fetchProductData = async () => {
         //     const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
         //     setProduct(response.data);
         //     setFinalPrice(response.data.productPrice)
         //     console.log(response.data)
         // };
->>>>>>> susujin
 
 
         fetchUserData();
