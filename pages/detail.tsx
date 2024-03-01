@@ -6,9 +6,10 @@ import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@
 import axios from 'axios';
 import { Button } from "@/components/ui/DE_button";
 import "@/app/globals.css";
-import QaModal from './qa-modal'; // qa-modal 컴포넌트를 불러옵니다.
+import QaModal from './qa-modal'; // qa-modal 컴포넌트
 import Link from "next/link"
 import { getSessionData } from '@/utils/auth'
+import Cookies from 'js-cookie'
 
 interface Product {
     productId: string;
@@ -66,14 +67,12 @@ export default function Detail() {
             if (sessionStorage.getItem('key') === null) {
                 setPageStatus('nologinPage');
             }
-            const response = await axios.post(`http://192.168.0.132:5000/api/check-ssession`, { key });
-            const auth = response.data;
             if (key) {
                 try {
-                    if (auth === 'seller') {
-                        setPageStatus('sellerPage');
-                    } else {
+                    if (auth === 'BUYER') {
                         setPageStatus('buyerPage');
+                    } else {
+                        setPageStatus('sellerPage');
                     }
                 } catch (error) {
                     console.error('Error fetching session:', error);
@@ -89,11 +88,12 @@ export default function Detail() {
             }
             setLoading(true);
             try {
-                const productResponse = await fetch(`http://192.168.0.132:9988/api/detail?productId=${productId}`);
+                const productResponse = await fetch(`http://192.168.0.132:5000/api/detail?productId=${productId}`);
                 const productData = await productResponse.json();
                 const product = productData;
                 if (product) {
                     setProduct(product);
+                    console.log(product);
                 } else {
                     return <div>로딩 중...</div>;
                 }
@@ -181,9 +181,10 @@ export default function Detail() {
                 productName: product.productName,
                 productCount: parseInt(selectedProductCount),
                 productPrice: product.productPrice,
-                key: key
             };
-            const purchaseResponse = await axios.post('http://192.168.0.132:9988/api/temppayment', purchaseData);
+            Cookies.set('purchaseData', JSON.stringify(purchaseData));
+            console.log('Purchase Data:', purchaseData);
+            const purchaseResponse = await axios.post('http://192.168.0.132:5000/api/temppayment', key);
             console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
@@ -227,7 +228,9 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <a className="text-3xl font-bold" onClick={() => { window.location.reload(); }}>취지직</a>
+                <Link href="/">
+                    <a className="text-3xl font-bold">취지직</a>
+                </Link>
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
@@ -258,28 +261,30 @@ export default function Detail() {
                             alt="Product Image"
                             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
                             height={200}
-                            src={product.productImageUrl}
+                            src={`http://192.168.0.132:5000${product.productImageUrl}`}
                             width={200}
                         />
                     </div>
                     <div className="flex flex-col gap-4 md:gap-8">
                         <h1 className="font-bold text-2xl sm:text-3xl">{product.productName}</h1>
-                        <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}</div> {/* 가격 포맷 */}
+                        <div className="text-4xl font-bold">{numberWithCommas(product.productPrice)}원</div> {/* 가격 포맷 */}
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                <div className="grid gap-2">
-                                    <Label className="text-base" htmlFor="quantity">
-                                        수량
-                                    </Label>
-                                    <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                    </select>
-                                </div>
+                                {pageStatus !== 'sellerPage' && (
+                                    <div className="grid gap-2">
+                                        <Label className="text-base" htmlFor="quantity">
+                                            수량
+                                        </Label>
+                                        <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                )}
 
                                 {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
                                 {pageStatus !== 'sellerPage' && (
@@ -293,7 +298,7 @@ export default function Detail() {
                 <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="font-bold text-4xl mb-2">Q&A</h2>
-                    {pageStatus === 'sellerPage' ? (
+                    {pageStatus === 'buyerPage' ? (
                         <Button onClick={openModal}>Q&A 작성</Button>
                     ) : null}
                 </div>

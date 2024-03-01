@@ -50,6 +50,9 @@ export default function Seller_main() {
             console.log('data', data);
             setProducts(data.data);
             setTotalPages(data.totalPage);
+            if (data.data.length > 0) {
+                console.log('First product image URL:', data.data[0].productImageUrl);
+            }
         })
         .catch(error => console.error('Error fetching data:', error));
     }, [key, page]);
@@ -109,10 +112,8 @@ export default function Seller_main() {
             <main className="py-6 px-6">
                 <section className="mb-6">
                 <div className="grid grid-cols-1 gap-4">
-                {products.length === 0 ? (
-                    <p className="text-gray-500">등록된 상품이 없습니다</p>
-                    ) : (
-                        products.map(product => (
+                {products.length > 0 ? (
+                    products.map(product => (
                         <Card className="w-full" key={product.productId}>
                             <a href={`/detail?productId=${product.productId}`}>
                             <CardContent className="grid grid-cols-10 items-center">
@@ -120,7 +121,7 @@ export default function Seller_main() {
                                 <img
                                 alt={product.productName}
                                 height="150"
-                                src={product.productImageUrl}
+                                src={`http://192.168.0.132:5000${product.productImageUrl}`}
                                 style={{
                                     objectFit: "cover",
                                 }}
@@ -147,6 +148,8 @@ export default function Seller_main() {
                             </a>
                         </Card>
                         ))
+                    ) : (
+                        <p className="text-gray-500">등록된 상품이 없습니다</p>
                     )}
                 </div>
 

@@ -20,17 +20,17 @@ export default function PaymentPage() {
         point: 0
     });
 
-    const [product, setProduct] = useState({
+    const [productData, setProductData] = useState({
         productName: '',
         productCount: 0,
         productPrice: 0,
     });
 
     const [finalPrice, setFinalPrice] = useState(0);
-    
+
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://172.30.1.32:9988/api/c-user', {});
+            const result = await axios.post('http://192.168.0.132:5000/api/c-user', {});
             setUserData(result.data);
             console.log(result.data)
         };
@@ -47,6 +47,18 @@ export default function PaymentPage() {
         //fetchProductData();
     }, []);
 
+    useEffect(() => {
+        const purchaseDataCookie = Cookies.get('purchaseData')
+        
+        if (purchaseDataCookie) {
+            const purchaseData = JSON.parse(purchaseDataCookie);
+            setProductData(purchaseData);
+        } else {
+            console.log('No purchaseData cookie found');
+        }
+
+    }, []);
+    
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { id, value } = event.target;
 
@@ -88,7 +100,7 @@ export default function PaymentPage() {
         }
 
         // Data type check and conversion
-        const price = Number(product.productPrice);
+        const price = Number(productData.productPrice);
         const points = Number(usePoints);
 
         setFinalPrice(price - points); // Update final price
@@ -96,6 +108,25 @@ export default function PaymentPage() {
     const openPopup = () => {
         window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
     };
+
+    useEffect(() => {
+        const handlePopupMessage = (event: MessageEvent) => {
+            if (event.data.success) {
+                //pg사의 post 요청
+                // 팝업에서 success: True를 받았을 때
+                window.location.href = '/mypage';
+            }
+        };
+
+        // 메시지 이벤트 리스너 등록
+        window.addEventListener('message', handlePopupMessage);
+
+        // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+        return () => {
+            window.removeEventListener('message', handlePopupMessage);
+        };
+    }, []);
+
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -143,15 +174,15 @@ export default function PaymentPage() {
                                 <div className="grid grid-cols-3 gap-4 text-sm">
                                     <div className="space-y-1.5">
                                         <Label>상품 이름</Label>
-                                        <div>{product.productName}</div>
+                                        <div>{productData.productName}</div>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>수량</Label>
-                                        <div>{product.productCount}</div>
+                                        <div>{productData.productCount}</div>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>금액</Label>
-                                        <div>{product.productPrice}</div>
+                                        <div>{productData.productPrice}</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -181,11 +212,11 @@ export default function PaymentPage() {
                                         <div>{userData.point = 0}</div>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label>사용할 포인트</Label>
+                                        <Label>사용할 포인트(개발중)</Label>
                                         <Input type="number" min="0" placeholder="사용 포인트" value={usePoints} onChange={handleUsePointsChange} />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Button onClick={handleUsePointsClick}>포인트 사용</Button>
+                                        <Button onClick={handleUsePointsClick}>포인트 사용(개발중)</Button>
                                     </div>
                                 </div>
                             </CardContent>
@@ -193,7 +224,7 @@ export default function PaymentPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <div>{finalPrice}</div>
+                    <div>{productData.productPrice}</div>
                     <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>
