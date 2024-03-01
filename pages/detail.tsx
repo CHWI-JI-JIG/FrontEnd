@@ -50,24 +50,26 @@ export default function Detail() {
     const { productId } = router.query;
 
     // 세션 데이터 가져오기
-  const { auth, certification, key, name } = getSessionData();
-  
-  const handleLogout = () => {
-    // sessionStorage 초기화
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-      window.location.reload();
-    }
-  };
+    const { auth, certification, key, name } = getSessionData();
+
+    const handleLogout = () => {
+        // sessionStorage 초기화
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.clear();
+            window.location.reload();
+        }
+    };
 
     useEffect(() => {
-        // 로그인 확인을 위한 API 호출
+        // 로그인 확인
         const checkLogin = async () => {
+            if (sessionStorage.getItem('key') === null) {
+                setPageStatus('nologinPage');
+            }
+            const response = await axios.post(`http://192.168.0.132:5000/api/check-ssession`, { key });
+            const auth = response.data;
             if (key) {
                 try {
-                    if (!certification) {
-                        setPageStatus('nologinPage');
-                    }
                     if (auth === 'seller') {
                         setPageStatus('sellerPage');
                     } else {
@@ -225,30 +227,28 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-            <Link href="/">
-                <a className="text-3xl font-bold">취지직</a>
-            </Link>
-              <div className="flex space-x-4">
-                {certification ? (
-                  <>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                      <Link href="/mypage">{name}님</Link>
-                    </Button>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                      로그아웃
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                      <Link href="/login">로그인</Link>
-                    </Button>
-                    <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                      <Link href="/privacy-policy">회원가입</Link>
-                    </Button>
-                  </>
-                )}
-              </div>
+                <a className="text-3xl font-bold" onClick={() => { window.location.reload(); }}>취지직</a>
+                <div className="flex space-x-4">
+                    {certification ? (
+                        <>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href="/mypage">{name}님</Link>
+                            </Button>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                                로그아웃
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href="/login">로그인</Link>
+                            </Button>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
+                                <Link href="/privacy-policy">회원가입</Link>
+                            </Button>
+                        </>
+                    )}
+                </div>
             </header>
 
             <div className="my-6 mx-6">

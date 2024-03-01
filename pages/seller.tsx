@@ -6,31 +6,17 @@ import Link from "next/link"
 import { Button } from "@/components/ui/MA_button";
 import { Input } from "@/components/ui/MA_input";
 import axios from 'axios';
-
-const getSessionData = () => {
-    // sessionStorage가 있는지 확인
-    if (typeof sessionStorage !== 'undefined') {
-      const sessionData = {
-        auth: sessionStorage.getItem('auth'),
-        certification: sessionStorage.getItem('certification'),
-        key: sessionStorage.getItem('key'),
-        name: sessionStorage.getItem('name'),
-      };
-      return sessionData;
-    } else {
-      // sessionStorage가 없으면 적절한 대체값을 반환하거나 오류 처리를 수행합니다.
-      return { auth: null, certification: null, key: null, name: null };
-    }
-};
+import { getSessionData } from '@/utils/auth';
 
 export default function Seller() {
     // 세션 데이터 가져오기
-    const { auth, certification, name, key } = getSessionData();
+    const { auth, certification, key, name } = getSessionData();
     
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
         sessionStorage.clear();
+        window.location.reload();
         }
     };
 
@@ -71,7 +57,7 @@ export default function Seller() {
                 {certification ? (
                     <>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                        {name}님
+                        <Link href="/mypage">{name}님</Link>
                     </Button>
                     <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                         로그아웃

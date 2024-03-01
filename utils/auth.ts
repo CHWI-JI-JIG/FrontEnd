@@ -13,7 +13,7 @@ export const setSessionData = (data: { auth: string; certification: string; key:
         auth: sessionStorage.getItem('auth'),
         certification: sessionStorage.getItem('certification'),
         key: sessionStorage.getItem('key'),
-        name: sessionStorage.getItem('name'),
+        name: sessionStorage.getItem('name')
       };
       return sessionData;
     } else {

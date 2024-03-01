@@ -33,6 +33,9 @@ export default function Main() {
       .then(response => response.json())
       .then((data: PagedProductList) => {
         console.log('Search Results:', data.data);
+        if (data.data.length > 0) {
+          console.log('First product image URL:', data.data[0].productImageUrl);
+        }
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
@@ -129,7 +132,7 @@ export default function Main() {
                       <img
                         alt={product.productName}
                         className="mb-2"
-                        src={product.productImageUrl}
+                        src={`http://192.168.0.132:5000${product.productImageUrl}`}
                         style={{
                           height: "200",
                           width: "200",
