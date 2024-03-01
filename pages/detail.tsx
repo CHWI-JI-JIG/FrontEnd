@@ -269,18 +269,20 @@ export default function Detail() {
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                <div className="grid gap-2">
-                                    <Label className="text-base" htmlFor="quantity">
-                                        수량
-                                    </Label>
-                                    <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                    </select>
-                                </div>
+                                {pageStatus === 'buyerPage' && (
+                                    <div className="grid gap-2">
+                                        <Label className="text-base" htmlFor="quantity">
+                                            수량
+                                        </Label>
+                                        <select defaultValue="1" onChange={(e) => handleSelectChange(e.target.value)} className="border border-gray-300 rounded-md px-3 py-2">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                    </div>
+                                )}
 
                                 {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
                                 {pageStatus !== 'sellerPage' && (
@@ -294,7 +296,7 @@ export default function Detail() {
                 <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="font-bold text-4xl mb-2">Q&A</h2>
-                    {pageStatus === 'sellerPage' ? (
+                    {pageStatus === 'buyerPage' ? (
                         <Button onClick={openModal}>Q&A 작성</Button>
                     ) : null}
                 </div>
