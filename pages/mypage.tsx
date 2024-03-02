@@ -53,6 +53,7 @@ export default function Mypage() {
   }
 
   const [orderData, setOrderData] = useState<Order[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
       fetchOrderHistory();
@@ -78,6 +79,7 @@ export default function Mypage() {
 
       if (response.ok) {
           setOrderData(responseData.data);
+          setTotalCount(responseData.totalCount); 
       } else {
           console.error('주문 내역을 불러오는 데 실패했습니다.');
       }
@@ -170,7 +172,7 @@ export default function Mypage() {
                   <div className="bg-white p-4">
                     <BoxIcon className="h-6 w-6 text-gray-500" />
                     <h4 className="mt-2 text-base font-medium text-gray-900">주문</h4>
-                    <p className="mt-1 text-sm text-gray-500">{orderData.length}건</p>
+                    <p className="mt-1 text-sm text-gray-500">{totalCount}건</p>
                   </div>
                   <div className="bg-white p-4">
                     <MessageCircleIcon className="h-6 w-6 text-gray-500" />
