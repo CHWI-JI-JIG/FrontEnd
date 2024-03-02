@@ -69,7 +69,7 @@ export default function Mypage() {
       const response = await fetch('http://192.168.0.132:5000/api/order-history', {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json'
+            'Content-Type': 'application/json'  // 이 줄을 추가해주세요.
           },
           body: JSON.stringify(requestData)
       });
@@ -191,7 +191,7 @@ export default function Mypage() {
                         alt="Product Image"
                         className="rounded-md object-cover"
                         height={64}
-                        src={order.productImageUrl}
+                        src={`http://192.168.0.132:5000${order.productImageUrl}`}
                         style={{
                           aspectRatio: "64/64",
                           objectFit: "cover",

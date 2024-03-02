@@ -119,7 +119,7 @@ export default function PaymentPage() {
                 productPrice : productData.productPrice
             };
 
-            const response = await fetch('/api/upInfo',{
+            const response = await fetch('/api/userproductInfo',{
                 method: 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
