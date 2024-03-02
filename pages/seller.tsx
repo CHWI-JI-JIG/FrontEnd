@@ -15,10 +15,10 @@ export default function Seller() {
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.clear();
-        window.location.reload();
+          sessionStorage.clear();
+          router.push('/');
         }
-    };
+      };
 
     const [selectedSection, setSelectedSection] = useState<string>('s-main');
     const router = useRouter();
@@ -29,6 +29,7 @@ export default function Seller() {
     
     useEffect(() => {
         if (!certification || auth !== 'SELLER') {
+            console.log('useEffect is running!');
             // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
             alert('판매자 로그인이 필요합니다.');
             router.push('/').then(() => {
@@ -36,7 +37,7 @@ export default function Seller() {
                 window.location.href = '/';
             });
         }
-    }, []);
+    }, [certification, auth]);
 
     // 선택한 섹션에 따라 해시를 변경
     useEffect(() => {
@@ -63,11 +64,12 @@ export default function Seller() {
     return (
         <>
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+                <img src="/cjj.png" alt="취지직 로고" 
+                className="w-auto h-12" onClick={() => {window.location.reload();}} />
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
-                        <Link href="/mypage">
+                        <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
                         </Link>
                         <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
@@ -84,7 +86,7 @@ export default function Seller() {
                         </Link>
                         </>
                     )}
-                </div>
+                    </div>
             </header>
 
             <nav className="flex justify-between items-center py-2 px-6 bg-[#f7f7f7]">

@@ -23,7 +23,7 @@ export default function Search() {
     // sessionStorage 초기화
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();
-      window.location.reload();
+      router.push('/');
     }
   };
   
@@ -76,13 +76,12 @@ export default function Search() {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <Link href="/">
-          <a className="text-3xl font-bold">취지직</a>
-        </Link>
+        <img src="/cjj.png" alt="취지직 로고" 
+        className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
         <div className="flex space-x-4">
           {certification ? (
             <>
-              <Link href="/mypage">
+              <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                 <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
               </Link>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
@@ -104,6 +103,7 @@ export default function Search() {
       
     <main className="py-6 px-6">
         <section className="mb-6">
+          <p className="text-lg font-bold">{`"${keyword}"에 대한 검색 결과 입니다.`}</p>
             {searchResults.length > 0 && (
             <div className="grid grid-cols-4 grid-rows-5 gap-4">
                 {(searchResults).map((result) => (
@@ -114,7 +114,7 @@ export default function Search() {
                         <img
                             alt={result.productName}
                             className="mb-2"
-                            src={`http://192.168.0.204:5000${result.productImageUrl}`}
+                            src={`${API_BASE_URL}${result.productImageUrl}`}
                             style={{
                             height: "200",
                             width: "200",

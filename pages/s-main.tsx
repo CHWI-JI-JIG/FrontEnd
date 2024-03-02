@@ -108,7 +108,7 @@ export default function Seller_main() {
                                 <img
                                 alt={product.productName}
                                 height="150"
-                                src={`http://192.168.0.204:5000${product.productImageUrl}`}
+                                src={`${API_BASE_URL}${product.productImageUrl}`}
                                 style={{
                                     objectFit: "cover",
                                 }}

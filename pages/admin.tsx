@@ -57,7 +57,7 @@ export default function Admin() {
     // sessionStorage 초기화
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();
-      window.location.reload();
+      router.push('/');
     }
   };
 
@@ -188,8 +188,11 @@ export default function Admin() {
   return (
     <div className="flex h-full max-h-screen flex-col gap-2">
       <div className="flex flex-col">
-        <header className="flex items-center justify-between py-6 px-6 gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-          <a className="text-3xl font-bold mb-4 mt-4">취지직 관리자 페이지</a>
+        <header className="flex items-center justify-between py-6 px-6 gap-4 border-b text-white bg-[#121513] px-6 dark:bg-gray-800/40">
+          <div className="flex items-center space-x-4">
+            <img src="/cjj.png" alt="취지직 로고" className="w-auto h-12" />
+            <a className="text-3xl font-bold mb-4 mt-4">관리자 페이지</a>
+          </div>
           <div className="flex space-x-4">
             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
               관리자님
@@ -226,30 +229,29 @@ export default function Admin() {
               </TableHeader>
               <TableBody>
                 {userData && userData.length > 0 ? (
-                  userData.map((user) => (
-                    <TableRow key={user.userKey}>
-                      <TableCell className="font-medium">{user.userId}</TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <div className='w-full'>
-                          <Select value={user.userAuth} onValueChange={(role) => {
-                              console.log('Select - onValueChange - role:', role, 'user.key:', user.userKey);
-                              handleRoleChangeIn(role, user.userKey);
-                            }}>
-                            <SelectTrigger>
-                              {user.userAuth === 'seller' ? 'seller' : 'buyer' }
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="seller">seller</SelectItem>
-                              <SelectItem value="buyer">buyer</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <Switch className="mx-auto" defaultChecked />
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  userData
+                    .filter((user) => user.userAuth !== 'admin') // 'admin'인 경우 제외
+                    .map((user) => (
+                      <TableRow key={user.userKey}>
+                        <TableCell className="font-medium">{user.userId}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <div className='w-full'>
+                            <Select value={user.userAuth} onValueChange={(role) => handleRoleChangeIn(role, user.userKey)}>
+                              <SelectTrigger>
+                                {user.userAuth === 'seller' ? 'seller' : 'buyer' }
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="seller">seller</SelectItem>
+                                <SelectItem value="buyer">buyer</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <Switch className="mx-auto" defaultChecked />
+                        </TableCell>
+                      </TableRow>
+                    ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center">사용자가 없습니다.</TableCell>

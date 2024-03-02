@@ -20,7 +20,7 @@ export default function Main() {
     // sessionStorage 초기화
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();
-      window.location.reload();
+      router.push('/');
     }
   };
 
@@ -90,7 +90,8 @@ export default function Main() {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+        <img src="/cjj.png" alt="취지직 로고" 
+        className="w-auto h-12" onClick={() => {window.location.reload();}} />
         <div className="flex items-center space-x-2">
           <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
           value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
@@ -101,7 +102,7 @@ export default function Main() {
         <div className="flex space-x-4">
           {certification ? (
             <>
-              <Link href="/mypage">
+              <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                 <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
               </Link>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
@@ -133,7 +134,7 @@ export default function Main() {
                       <img
                         alt={product.productName}
                         className="mb-2"
-                        src={`http://192.168.0.204:5000${product.productImageUrl}`}
+                        src={`${API_BASE_URL}${product.productImageUrl}`}
                         style={{
                           height: "200",
                           width: "200",
