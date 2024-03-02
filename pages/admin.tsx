@@ -17,24 +17,24 @@ export default function Admin() {
   const { auth, certification, key, name } = getSessionData();
   const router = useRouter();
 
-    //admin 페이지 접근통제(취약점 생성!!!)
-    useEffect(() => {
-      if (auth !== 'ADMIN') {
-        let redirectTo = '/'; 
-        if (auth === 'SELLER') {
-          redirectTo = '/seller';
-        } else if (auth === 'BUYER') {
-          redirectTo = '/main';
-        }
+    // //admin 페이지 접근통제(취약점 생성!!!)
+    // useEffect(() => {
+    //   if (auth !== 'ADMIN') {
+    //     let redirectTo = '/'; 
+    //     if (auth === 'SELLER') {
+    //       redirectTo = '/seller';
+    //     } else if (auth === 'BUYER') {
+    //       redirectTo = '/main';
+    //     }
 
-        alert('접근 권한이 없습니다.');
-        router.push(redirectTo).then(() => {
-          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-          window.location.href = redirectTo;
-        });
-      }
-    }, [auth,router]);
-    //admin 페이지 접근통제
+    //     alert('접근 권한이 없습니다.');
+    //     router.push(redirectTo).then(() => {
+    //       // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+    //       window.location.href = redirectTo;
+    //     });
+    //   }
+    // }, [auth,router]);
+    // //admin 페이지 접근통제
 
   const [userData, setUsers] = useState<User[]>([]);
   const [allUserData, setAllUsers] = useState<User[]>([]);

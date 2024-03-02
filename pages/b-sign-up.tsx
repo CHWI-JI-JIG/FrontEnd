@@ -74,7 +74,7 @@ export default function SignUp() {
         "sellerPassword" : password,
         "sellerName" : name,
         "sellerBRN":brn,
-        "sellerBankA" : bankAccount,
+        "sellerBankAccount" : bankAccount,
         "sellerPhone":phone,
         "sellerEmail":email,
         "sellerAddress":address,
@@ -84,6 +84,7 @@ export default function SignUp() {
         alert("회원가입이 완료되었습니다.");
         router.push('/login');
       } else {
+        console.log(response.data)
         alert("회원가입에 실패하였습니다.");
       }
     } catch (error) {
@@ -124,7 +125,7 @@ export default function SignUp() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="brn">사업자 이름</Label>
+            <Label htmlFor="brn">사업자 등록번호</Label>
             <Input id="brn" required value={brn} onChange={(e) => setBrn(e.target.value)}/>
           </div>
 
