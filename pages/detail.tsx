@@ -57,10 +57,10 @@ export default function Detail() {
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.clear();
-            window.location.reload();
+          sessionStorage.clear();
+          router.push('/');
         }
-    };
+      };
 
     useEffect(() => {
         // 로그인 확인
@@ -239,13 +239,12 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <Link href="/">
-                    <a className="text-3xl font-bold">취지직</a>
-                </Link>
+                <img src="/cjj.png" alt="취지직 로고" 
+                className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
-                        <Link href="/mypage">
+                        <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
                         </Link>
                         <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
@@ -262,7 +261,7 @@ export default function Detail() {
                         </Link>
                         </>
                     )}
-                </div>
+                    </div>
             </header>
 
             <div className="my-6 mx-6">
@@ -272,7 +271,7 @@ export default function Detail() {
                             alt="Product Image"
                             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
                             height={200}
-                            src={`http://192.168.0.204:5000${product.productImageUrl}`}
+                            src={`${API_BASE_URL}${product.productImageUrl}`}
                             width={200}
                         />
                     </div>

@@ -65,7 +65,7 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post("http://192.168.0.204:5000/api/signup", {
+      const response = await axios.post(`${API_BASE_URL}/api/signup`, {
         "buyerId":id,
         "buyerPassword":password,
         "buyerName":name,

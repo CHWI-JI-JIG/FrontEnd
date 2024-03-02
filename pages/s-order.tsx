@@ -15,16 +15,32 @@ export default function Seller_order() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const { key } = getSessionData();
 
-  //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/seller-order?key=${key}&page=${page}`)
-      .then(response => response.json())
-      .then((data: PagedOrderList) => {
+    // POST 요청 body에 담을 데이터
+    const requestData = {
+    key: key,
+    page: page,  // page를 body에 포함
+    };
+
+    // POST 요청 설정
+    const requestOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestData),
+    };
+
+    // 서버에 POST 요청 보내기
+    fetch(`${API_BASE_URL}/api/seller-order`, requestOptions)
+    .then(response => response.json())
+    .then((data: PagedOrderList) => {
+        console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, [key, page]);
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}, [key, page]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -64,15 +80,15 @@ export default function Seller_order() {
         <main className="py-6 px-6">
           <section className="mb-6">
             <div className="grid grid-cols-1 gap-4">
-              {orders.map(order => (
+              {orders.length > 0 ? (
+                orders.map(order => (
                 <Card className="w-full flex" key={order.productId}>
                   <CardContent className="flex-1 flex items-center">
-                    {/* 좌측 그리드 - 이미지와 나머지 내용 */}
                     <div className="flex-shrink-0 mr-4 mt-4">
                       <img
-                        alt="OrderImg"
+                        alt={order.productName}
                         height="150"
-                        src={order.productImageUrl}
+                        src={`${API_BASE_URL}${order.productImageUrl}`}
                         style={{
                           objectFit: "cover",
                         }}
@@ -103,7 +119,10 @@ export default function Seller_order() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                ))
+                ) : (
+                    <p className="text-gray-500">등록된 상품이 없습니다</p>
+                )}
             </div>
 
             <div className="flex flex-col items-center mt-4">
