@@ -5,134 +5,112 @@ import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
 import axios from "axios";
 import { getSessionData } from '@/utils/auth';
+import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 export default function Mypage() {
   const router = useRouter();
   // 세션 데이터 가져오기
   const { auth, certification, name, key } = getSessionData();
+  const [page, setPage] = useState<number>(1);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState(0);
   
   const handleLogout = () => {
     // sessionStorage 초기화
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();
+      router.push('/');
     }
   };
-
-  //검색창
-  const [keyword, setKeyword] = useState('');
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(1);
-
-  const handleSearch = async () => {
-    try {
-      console.log('Keyword:', keyword);
-      const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
-      const data = await response.json();
-      setSearchResults(data.data);
-      setTotalPages(data.totalPage);
-      console.log('Search Results:', data.data);
-
-      // 검색된 결과 페이지 이동
-      router.push({
-        pathname: '/search',
-        query: { page: 1, keyword },
-      });
-
-    } catch (error) {
-      console.error('Error searching:', error);
-    }
-  }; 
-  
-  interface Order {
-    productImageUrl: string;
-    productName: string;
-    orderQuantity: number;
-    orderPrice: number;
-    orderDate: string;
-  }
-
-  const [orderData, setOrderData] = useState<Order[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-      fetchOrderHistory();
-  }, []);
+    // POST 요청 body에 담을 데이터
+    const requestData = {
+    key: key,
+    page: page,  // page를 body에 포함
+    };
 
-  const fetchOrderHistory = async () => {
-      const requestData = {
-        key : getSessionData().key,
-        page: 1
-      };
+    // POST 요청 설정
+    const requestOptions = {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestData),
+    };
 
-      console.log(requestData)
+    // 서버에 POST 요청 보내기
+    fetch(`${API_BASE_URL}/api/order-history`, requestOptions)
+    .then(response => response.json())
+    .then((data: PagedOrderList) => {
+        console.log('data', data);
+        setOrders(data.data);
+        setTotalPages(data.totalPage);
+        setTotalCount(data.totalCount);
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}, [key, page]);
 
-      const response = await fetch('http://192.168.0.132:5000/api/order-history', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'  // 이 줄을 추가해주세요.
-          },
-          body: JSON.stringify(requestData)
-      });
 
-      const responseData = await response.json();
+const handleNextPage = () => {
+  if (page < totalPages) {
+    setPage(page + 1);
+  }
+};
 
-      if (response.ok) {
-          setOrderData(responseData.data);
-          setTotalCount(responseData.totalCount); 
-      } else {
-          console.error('주문 내역을 불러오는 데 실패했습니다.');
-      }
+const handlePrevPage = () => {
+  if (page > 1) {
+    setPage(page - 1);
+  }
+};
+
+  /*가격 자릿수*/
+  const numberWithCommas = (number: { toLocaleString: () => any }) => {
+      return number.toLocaleString();
   };
-
 
   /*날짜 형식*/
   function formatDate(dateString: string | number | Date) {
-    const date = new Date(dateString);
-
-    const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', hour12: false};
-
-    const formatter = new Intl.DateTimeFormat('en-US', options);
-    const [{ value: month },,{ value: day },,{ value: year },,
-        { value: hour },,{ value: minute }
-    ] = formatter.formatToParts(date);
-
-    return `${year}/${month}/${day} ${hour}:${minute}`;
+      const date = new Date(dateString);
+  
+      const options: Intl.DateTimeFormatOptions = {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', hour12: false};
+  
+      const formatter = new Intl.DateTimeFormat('en-US', options);
+      const [{ value: month },,{ value: day },,{ value: year },,
+          { value: hour },,{ value: minute }
+      ] = formatter.formatToParts(date);
+  
+      return `${year}/${month}/${day} ${hour}:${minute}`;
   }
 
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <Link href="/">
-          <a className="text-3xl font-bold">취지직</a>
-        </Link>
-        <div className="flex items-center space-x-2">
-          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
-          value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
-          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={handleSearch}>
-            <SearchIcon className="text-gray-700" />
-          </Button>
-        </div>
+        <img src="/cjj.png" alt="취지직 로고" 
+        className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
         <div className="flex space-x-4">
           {certification ? (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{name}님</Link>
-              </Button>
+              <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+              </Link>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
               </Button>
             </>
           ) : (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/login">로그인</Link>
-              </Button>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/privacy-policy">회원가입</Link>
-              </Button>
+              <Link href="/login">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+              </Link>
+              <Link href="/privacy-policy">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+              </Link>
             </>
           )}
         </div>
@@ -183,17 +161,17 @@ export default function Mypage() {
               </div>
               <div className="bg-gray-200 p-4 mt-4">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">주문내역</h3>
-                {orderData.length === 0 ? (
+                {orders.length === 0 ? (
                   <p>주문 내역이 없습니다</p>
                 ) : (
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {orderData.map((order, index) => (
+                  {orders.map((order, index) => (
                     <div key={index} className="bg-white p-4">
                       <img
                         alt="Product Image"
                         className="rounded-md object-cover"
                         height={64}
-                        src={`http://192.168.0.132:5000${order.productImageUrl}`}
+                        src={`${API_BASE_URL}${order.productImageUrl}`}
                         style={{
                           aspectRatio: "64/64",
                           objectFit: "cover",
@@ -208,7 +186,16 @@ export default function Mypage() {
                   ))}
                 </div>
                 )}
+
+                <div className="flex flex-col items-center mt-4">
+                  <div className="flex">
+                    <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
+                    <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                    <Button onClick={handleNextPage}><FaAngleRight /></Button>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -226,11 +213,12 @@ interface Order {
   orderDate: Date;
 }
 
-interface Product {
-  productId: string;
-  productName: string;
-  productImageUrl: string;
-  productPrice: number;
+interface PagedOrderList {
+  page: number;
+  size: number;
+  totalPage: number;
+  totalCount: number;
+  data: Order[];
 }
 
 function UserIcon(props: SVGProps<SVGSVGElement>) {

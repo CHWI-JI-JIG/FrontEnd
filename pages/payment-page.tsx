@@ -7,6 +7,7 @@ import { SVGProps } from "react"
 import React, { useEffect, useState, ChangeEvent } from "react"
 import axios from "axios"
 import Cookies from 'js-cookie';
+import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css"
 
 export default function PaymentPage() {
@@ -29,6 +30,7 @@ export default function PaymentPage() {
 
     const [finalPrice, setFinalPrice] = useState(0);
 
+
     useEffect(() => {
         const fetchUserData = async () => {
             const result = await axios.post('http://192.168.0.132:5000/api/c-user', {});
@@ -47,6 +49,19 @@ export default function PaymentPage() {
         fetchUserData();
         //fetchProductData();
     }, []);
+
+    useEffect(() => {
+        const purchaseDataCookie = Cookies.get('purchaseData')
+        
+        if (purchaseDataCookie) {
+            const purchaseData = JSON.parse(purchaseDataCookie);
+            setProductData(purchaseData);
+        } else {
+            console.log('No purchaseData cookie found');
+        }
+
+    }, []);
+    
 
     useEffect(() => {
         const purchaseDataCookie = Cookies.get('purchaseData')
