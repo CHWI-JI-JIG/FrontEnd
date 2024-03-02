@@ -125,13 +125,16 @@ export default function Seller_order() {
                 )}
             </div>
 
-            <div className="flex flex-col items-center mt-4">
-              <div className="flex">
-                <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
-                <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-                <Button onClick={handleNextPage}><FaAngleRight /></Button>
-              </div>
-            </div>
+                {totalPages > 0 && (
+                  <div className="flex flex-col items-center mt-4">
+                    <div className="flex">
+                      <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
+                      <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                      <Button onClick={handleNextPage}><FaAngleRight /></Button>
+                    </div>
+                  </div>
+                )}
+                
           </section>
         </main>
       </div>
