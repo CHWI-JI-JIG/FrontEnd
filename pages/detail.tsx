@@ -69,10 +69,10 @@ export default function Detail() {
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
-          sessionStorage.clear();
-          router.push('/');
+            sessionStorage.clear();
+            router.push('/');
         }
-      };
+    };
 
     useEffect(() => {
         // 로그인 확인
@@ -118,32 +118,32 @@ export default function Detail() {
         };
 
         // 상품 아이디와 로그인 사용자 ID 확인
-        const checkProductOwnership = async () => {
-            if (!productId) {
-                console.log("잘못된 접근...");
-                return;
-            }
+        // const checkProductOwnership = async () => {
+        //     if (!productId) {
+        //         console.log("잘못된 접근...");
+        //         return;
+        //     }
 
-            if (key !== null) {
-                try {
-                    const response = await axios.post('/api/owner-check', {
-                        productId: productId,
-                        session: { key: key }
-                    });
-                    const { owner } = response.data;
-                    // owner 값에 따라 로직을 처리합니다.
-                    if (owner) {
-                        // 로그인한 사용자가 등록한 상품인 경우
-                        console.log("로그인한 사용자가 등록한 상품입니다.");
-                    } else {
-                        // 로그인한 사용자가 등록한 상품이 아닌 경우
-                        console.log("로그인한 사용자가 등록한 상품이 아닙니다.");
-                    }
-                } catch (error) {
-                    console.error('Error checking product ownership:', error);
-                }
-            }
-        };
+        //     if (key !== null) {
+        //         try {
+        //             const response = await axios.post(`${API_BASE_URL}/api/owner-check`, {
+        //                 productId: productId,
+        //                 session: { key: key }
+        //             });
+        //             const { owner } = response.data;
+        //             // owner 값에 따라 로직을 처리합니다.
+        //             if (owner) {
+        //                 // 로그인한 사용자가 등록한 상품인 경우
+        //                 console.log("로그인한 사용자가 등록한 상품입니다.");
+        //             } else {
+        //                 // 로그인한 사용자가 등록한 상품이 아닌 경우
+        //                 console.log("로그인한 사용자가 등록한 상품이 아닙니다.");
+        //             }
+        //         } catch (error) {
+        //             console.error('Error checking product ownership:', error);
+        //         }
+        //     }
+        // };
 
 
         // Q&A 로드
@@ -153,10 +153,8 @@ export default function Detail() {
                 return;
             }
             try {
-                const response = await axios.post('/api/qa', {
-                    productId: productId,
-                    page: page, // 페이지 번호 전달
-                    session: { key: key }
+                const response = await axios.post(`${API_BASE_URL}/api/qa`, {
+                    productId: productId
                 });
                 const qa: PagedQAList = response.data;
                 setQas(qa.data);
@@ -169,7 +167,7 @@ export default function Detail() {
 
         checkLogin();
         fetchProductData();
-        checkProductOwnership();
+        //checkProductOwnership();
         fetchQAs(currentPage); // 초기 페이지 데이터 가져오기
     }, [productId, key, currentPage]);
 
@@ -183,27 +181,26 @@ export default function Detail() {
 
     const handlePurchase = async () => {
         try {
-            console.log("product1", product);
             if (pageStatus === 'nologinPage') {
                 // 로그인 페이지로 로드
                 router.push('/login');
             }
-    
+
             if (!product) {
                 console.log("product2");
                 return;
             }
-    
+
             const purchaseData = {
                 productId: product.productId,
                 productName: product.productName,
                 productCount: parseInt(selectedProductCount),
                 productPrice: product.productPrice,
             };
-    
+
             Cookies.set('purchaseData', JSON.stringify(purchaseData));
             console.log('Purchase Data:', purchaseData);
-    
+
             console.log("product3");
             //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
             //console.log("구매 요청:", purchaseResponse.data);
@@ -212,19 +209,31 @@ export default function Detail() {
             console.log("product4");
         }
     };
-    
+
     const handleAnswer = async (qId: string) => {
         // input 창에서 작성된 답변 가져오기
         const answerInput = document.getElementById(`answerInput_${qId}`) as HTMLInputElement;
         const answer = answerInput.value;
-
-        // 답변 작성 API 호출
+    
+        // 답변이 비어 있는지 확인
+        if (answer.trim() === '') {
+            alert('답변을 작성해주세요.');
+            return;
+        }
+    
         try {
-            const response = await axios.post('/api/answer', {
+            // 답변 작성 API 호출
+            const response = await axios.post(`${API_BASE_URL}/api/answer`, {
                 qId: qId,
-                answer: answer
+                answer: answer,
+                key: key
             });
             // 답변 작성이 성공했을 때의 로직 처리
+            console.log('답변 작성 성공:', response.data);
+    
+            // 성공적으로 답변을 작성했으므로, 화면을 다시 로드합니다.
+            window.location.reload(); // 화면 새로고침
+            
         } catch (error) {
             console.error('Error handling answer:', error);
         }
@@ -251,37 +260,37 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <img src="/cjj.png" alt="취지직 로고" 
-                className="w-auto h-12" onClick={() => {
-                    if (auth === 'SELLER') {
-                      router.push('/seller');
-                    } else if (auth === 'BUYER') {
-                      router.push('/main');
-                    } else {
-                      router.push('/');
-                    }
-                  }} />
+                <img src="/cjj.png" alt="취지직 로고"
+                    className="w-auto h-12" onClick={() => {
+                        if (auth === 'SELLER') {
+                            router.push('/seller');
+                        } else if (auth === 'BUYER') {
+                            router.push('/main');
+                        } else {
+                            router.push('/');
+                        }
+                    }} />
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
-                        <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
-                        </Link>
-                        <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                            로그아웃
-                        </Button>
+                            <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
+                                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+                            </Link>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                                로그아웃
+                            </Button>
                         </>
                     ) : (
                         <>
-                        <Link href="/login">
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
-                        </Link>
-                        <Link href="/privacy-policy">
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
-                        </Link>
+                            <Link href="/login">
+                                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+                            </Link>
+                            <Link href="/privacy-policy">
+                                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+                            </Link>
                         </>
                     )}
-                    </div>
+                </div>
             </header>
 
             <div className="my-6 mx-6">
@@ -319,12 +328,12 @@ export default function Detail() {
                                 {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
                                 {pageStatus !== 'sellerPage' && (
                                     <Link href="/payment-page" as="/payment-page">
-                                    <a>
-                                      <Button size="lg" onClick={handlePurchase} style={{ width: '100%', display: 'block' }}>
-                                        구매하기
-                                      </Button>
-                                    </a>
-                                  </Link>
+                                        <a>
+                                            <Button size="lg" onClick={handlePurchase} style={{ width: '100%', display: 'block' }}>
+                                                구매하기
+                                            </Button>
+                                        </a>
+                                    </Link>
                                 )}
                             </form>
                         </div>
@@ -334,28 +343,40 @@ export default function Detail() {
                 <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="font-bold text-4xl mb-2">Q&A</h2>
-                    {pageStatus === 'buyerPage' ? (
-                        <Button onClick={openModal}>Q&A 작성</Button>
-                    ) : null}
+                    {pageStatus === 'buyerPage' && (
+                        <>
+                            <Button onClick={openModal}>Q&A 작성</Button>
+                            {isModalOpen && <QaModal closeModal={closeModal} productId={productId as string} />}
+                        </>
+                    )}
+
+                    {pageStatus === 'nologinPage' && (
+                        <Link href="/login">
+                            <Button>Q&A 작성</Button>
+                        </Link>
+                    )}
                 </div>
 
                 <div>
-                    {qas.map((qa, index) => (
-                        <div key={qa.qId} className="text-sm" style={{ margin: '10px 0' }}>
-                            <div className="border-b border-gray-300 pb-4">
-                                <h3 className="font-medium text-lg">Q. {qa.question}</h3>
-                                {qa.answer !== "" ? (
-                                    <p className="text-gray-500">A. {qa.answer}</p>
-                                ) : (
-                                    <>
-                                        <input type="text" placeholder="답변을 작성해주세요" />
-                                        <button onClick={() => handleAnswer(qa.qId)}>답변</button>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+    {qas.map((qa, index) => (
+        <div key={qa.qId} className="text-sm" style={{ margin: '10px 0' }}>
+            <div className="border-b border-gray-300 pb-4">
+                <h3 className="font-medium text-lg">Q. {qa.question}</h3>
+                {pageStatus === 'sellerPage' && qa.answer === null && (
+                    <>
+                        <input type="text" id={`answerInput_${qa.qId}`} placeholder="답변을 작성해주세요" />
+                        <button onClick={() => handleAnswer(qa.qId)}>답변</button>
+                    </>
+                )}
+                {qa.answer !== null && (
+                    <p className="text-gray-500">A. {qa.answer}</p>
+                )}
+            </div>
+        </div>
+    ))}
+</div>
+
+
 
 
                 <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
