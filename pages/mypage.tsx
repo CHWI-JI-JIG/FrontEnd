@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
 import axios from "axios";
 import { getSessionData } from '@/utils/auth';
+import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
 
 export default function Mypage() {
@@ -27,7 +28,7 @@ export default function Mypage() {
   const handleSearch = async () => {
     try {
       console.log('Keyword:', keyword);
-      const response = await fetch(`http://192.168.0.132:5000/api/search?page=1&keyword=${keyword}`);
+      const response = await fetch(`${API_BASE_URL}/api/search?page=1&keyword=${keyword}`);
       const data = await response.json();
       setSearchResults(data.data);
       setTotalPages(data.totalPage);
@@ -50,7 +51,7 @@ export default function Mypage() {
   useEffect(() => {
     if (key) {
       // 서버 API 호출
-      axios.post(`http://192.168.0.132:9988/api/order-history`, { key })
+      axios.post(`http://192.168.0.204:9988/api/order-history`, { key })
         .then(response => {
           setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
         })
@@ -90,21 +91,21 @@ export default function Mypage() {
         <div className="flex space-x-4">
           {certification ? (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{name}님</Link>
-              </Button>
+              <Link href="/mypage">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+              </Link>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
               </Button>
             </>
           ) : (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/login">로그인</Link>
-              </Button>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/privacy-policy">회원가입</Link>
-              </Button>
+              <Link href="/login">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+              </Link>
+              <Link href="/privacy-policy">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+              </Link>
             </>
           )}
         </div>

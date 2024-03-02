@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/PR_input"
 import { Textarea } from "@/components/ui/PR_textarea"
 import { Button } from "@/components/ui/PR_button"
 import { SVGProps } from "react"
+import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css";
 
 interface ProductRegistrationProps {
@@ -14,26 +15,33 @@ interface ProductRegistrationProps {
 export default function ProductRegistration({ onClose }: ProductRegistrationProps) {
   const [productName, setProductName] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
-  const [selectedFileName, setSelectedFileName] = useState<string>('이미지 선택'); // 초기값 설정
+  const [selectedFileName, setSelectedFileName] = useState<string>('이미지 선택');
   const [price, setPrice] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [priceErrorMessage, setPriceErrorMessage] = useState<string>('');
 
   const isPriceValid = price !== '' && parseInt(price) <= 50000000;
   const isCompleteEnabled = productName !== '' && file !== null && isPriceValid && description !== '';
-  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null;
+  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null; 
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    // 파일 선택 이벤트가 발생했을 때 호출되었는지 확인
     const selectedFile = event.target.files && event.target.files[0];
     if (selectedFile) {
+      // 선택된 파일이 존재할 경우 파일 상태 업데이트
       setFile(selectedFile);
-      setSelectedFileName(selectedFile.name); // 파일이 선택되면 파일명을 출력
+      // 선택된 파일명을 출력하여 확인
+      setSelectedFileName(selectedFile.name);
     }
+    // 콘솔을 통해 선택된 파일 확인
+    console.log("selectedFile:", selectedFile);
   };
 
+
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const enteredPrice = event.target.value; // 입력된 값을 문자열로 변환
+    const enteredPrice = event.target.value;
     const parsedPrice = parseInt(enteredPrice);
-    if (isNaN(parsedPrice)) { // 숫자가 아닌 경우
+    if (isNaN(parsedPrice)) {
       setPriceErrorMessage('숫자만 입력 가능합니다.');
       setPrice('');
     } else if (parsedPrice > 50000000) {
@@ -45,38 +53,48 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
     }
   };
 
+  // 프론트엔드 코드 수정
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('productName', productName);
-    formData.append('productPrice', price);
-    formData.append('productDescription', description);
-    if (sessionKey) {
-      formData.append('key', sessionKey);
-    }
-  
+    // 선택된 파일이 있는지 확인
     if (file) {
-      formData.append('productImagePath', file);
-    }
-  
-    try {
-      const response = await fetch('http://192.168.0.132:5000/api/product-registration', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      const responseData = await response.json();
-  
-      if (responseData.success) {
-        console.log('상품 등록 성공');
-        onClose(); // 모달 닫기
-      } else {
-        console.log('상품 등록 실패');
+      // 선택된 파일이 있는 경우에만 FormData 생성
+      const formData = new FormData();
+
+      formData.append('productName', productName);
+      formData.append('productPrice', price);
+      formData.append('productDescription', description);
+      formData.append('file', file); // 파일을 FormData에 추가
+
+      if (sessionKey) {
+        formData.append('key', sessionKey);
       }
-    } catch (error) {
-      console.error('상품 등록 중 오류 발생:', error);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/product-registration`, {
+          method: 'POST',
+          body: formData,
+        });
+        console.log('Response:', response);
+        if (response.ok) {
+          console.log('상품 등록 성공');
+          onClose();
+          window.location.reload();
+        } else {
+          console.error('상품 등록 실패');
+          alert('상품 등록에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('상품 등록 중 오류 발생:', error);
+        alert('상품 등록 중 오류가 발생했습니다.');
+      }
+    } else {
+      // 파일이 선택되지 않은 경우에 대한 처리
+      console.error('파일이 선택되지 않았습니다.');
     }
   };
-  
+
+
+
 
   return (
     <div className="bg-gray-800 bg-opacity-50 fixed inset-0 flex items-center justify-center">
@@ -102,9 +120,10 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
               onChange={handleFileChange}
             />
             <label
-              className="border-dashed border-2 rounded-lg cursor-pointer p-4 flex items-center gap-2 [&:has(:focus)]:outline-none [&:has(:focus)]:ring"
+              className="border-dashed border-2 rounded-lg cursor-pointer p-4 flex items-center gap-2 focus:outline-none focus:ring"
               htmlFor="file"
             >
+
               <ImageIcon className="w-6 h-6" />
               <span className="text-sm font-medium">{selectedFileName}</span> {/* 파일명 출력 */}
             </label>

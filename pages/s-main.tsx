@@ -6,6 +6,7 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import ProductRegistration from './product-registration';
+import { API_BASE_URL } from '@/config/apiConfig';
 import { getSessionData } from '@/utils/auth';
 
 export default function Seller_main() {
@@ -15,17 +16,6 @@ export default function Seller_main() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [showProductModal, setShowProductModal] = useState(false);
   const { key } = getSessionData();
-
-//   //상품 데이터 가져오기 
-//   useEffect(() => {
-//     fetch(`http://192.168.0.132:9988/api/sproduct?key=${key}&page=${page}`)
-//       .then(response => response.json())
-//       .then((data: PagedProductList) => {
-//         setProducts(data.data);
-//         setTotalPages(data.totalPage);
-//       })
-//       .catch(error => console.error('Error fetching data:', error));
-//   }, [key, page]);
 
     useEffect(() => {
         // POST 요청 body에 담을 데이터
@@ -44,15 +34,12 @@ export default function Seller_main() {
         };
     
         // 서버에 POST 요청 보내기
-        fetch('http://192.168.0.132:5000/api/sproducts', requestOptions)
+        fetch(`${API_BASE_URL}/api/sproducts`, requestOptions)
         .then(response => response.json())
         .then((data: PagedProductList) => {
             console.log('data', data);
             setProducts(data.data);
             setTotalPages(data.totalPage);
-            if (data.data.length > 0) {
-                console.log('First product image URL:', data.data[0].productImageUrl);
-            }
         })
         .catch(error => console.error('Error fetching data:', error));
     }, [key, page]);
@@ -121,7 +108,7 @@ export default function Seller_main() {
                                 <img
                                 alt={product.productName}
                                 height="150"
-                                src={`http://192.168.0.132:5000${product.productImageUrl}`}
+                                src={`http://192.168.0.204:5000${product.productImageUrl}`}
                                 style={{
                                     objectFit: "cover",
                                 }}

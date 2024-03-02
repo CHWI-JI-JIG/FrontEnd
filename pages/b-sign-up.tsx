@@ -6,6 +6,7 @@ import { useState } from 'react';
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { API_BASE_URL } from '@/config/apiConfig';
 
 import "@/app/globals.css"
 
@@ -25,7 +26,7 @@ export default function SignUp() {
   // 아이디 중복 검사
   const checkId = async () => {
     try {
-      const response = await axios.get(`http://192.168.0.132:9988/api/check-id?id=${id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/check-id?id=${id}`);
       if (response.data.duplicated) {
         alert("중복된 아이디입니다.");
       } else {
@@ -68,7 +69,7 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post("http://192.168.0.132:9988/api/b-signup", {
+      const response = await axios.post(`${API_BASE_URL}/api/b-signup`, {
         id,
         password,
         name,

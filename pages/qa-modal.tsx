@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/QA_button";
 import { Textarea } from "@/components/ui/QA_textarea";
+import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css";
 
 interface QaModalProps {
@@ -30,7 +31,7 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
       };
 
       // 서버에 POST 요청 보내기
-      const qaResponse= await axios.post('http://192.168.0.132:5000/api/qa-question-submit', dataToSend);
+      const qaResponse= await axios.post(`${API_BASE_URL}/api/qa-question-submit`, dataToSend);
       const qaData = qaResponse.data;
       console.log(qaData);
 

@@ -5,6 +5,7 @@ import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/config/apiConfig';
 import { getSessionData } from '@/utils/auth';
 
 export default function Seller_order() {
@@ -16,7 +17,7 @@ export default function Seller_order() {
 
   //상품 데이터 가져오기 
   useEffect(() => {
-    fetch(`http://192.168.0.132:9988/api/seller-order?key=${key}&page=${page}`)
+    fetch(`${API_BASE_URL}/api/seller-order?key=${key}&page=${page}`)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
         setOrders(data.data);
