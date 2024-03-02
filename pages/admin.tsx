@@ -10,11 +10,31 @@ import { getSessionData } from '@/utils/auth'
 import { useEffect, useState } from 'react';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { API_BASE_URL } from '@/config/apiConfig';
-import router from "next/router";
+import { useRouter } from 'next/router';
 
 export default function Admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
+  const router = useRouter();
+
+    //admin 페이지 접근통제(취약점 생성!!!)
+    useEffect(() => {
+      if (auth !== 'ADMIN') {
+        let redirectTo = '/'; 
+        if (auth === 'SELLER') {
+          redirectTo = '/seller';
+        } else if (auth === 'BUYER') {
+          redirectTo = '/main';
+        }
+
+        alert('접근 권한이 없습니다.');
+        router.push(redirectTo).then(() => {
+          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+          window.location.href = redirectTo;
+        });
+      }
+    }, [auth,router]);
+    //admin 페이지 접근통제
 
   const [userData, setUsers] = useState<User[]>([]);
   const [allUserData, setAllUsers] = useState<User[]>([]);
@@ -25,17 +45,6 @@ export default function Admin() {
 
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-
-  useEffect(() => {
-    if (!certification || auth !== 'ADMIN') {
-        // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
-        alert('관리자 로그인이 필요합니다.');
-        router.push('/').then(() => {
-            // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-            window.location.href = '/';
-        });
-    }
-  }, []);
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
@@ -100,14 +109,12 @@ export default function Admin() {
   }, [selectedRoleIn, selectedUserKey]);
 
   const handleRoleChangeIn = (role: string, userKey: string) => {
-    console.log('handleRoleChangeIn - role:', role, 'userKey:', userKey);
     setSelectedRoleIn(role);
     setSelectedUserKey(userKey);
   };
   
 
   const handleRoleSubmit = (role: string, userKey: string) => {
-    console.log('handleRoleSubmit - selectedRoleIn:', selectedRoleIn, 'userKey:', userKey);
     // 선택된 값이 없다면 아무 동작도 하지 않음
     if (!selectedRoleIn || !userKey) return;
   

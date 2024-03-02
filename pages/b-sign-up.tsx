@@ -54,7 +54,7 @@ export default function SignUp() {
     }
 
     // 전화번호 검증 로직
-    const phoneValidation = /^\d{10,11}$/;
+    const phoneValidation = /^01(0|1|[6-9])[0-9]{3,4}[0-9]{4}$/;;
     if (!phoneValidation.test(phone)) {
       alert("전화번호는 10자리 또는 11자리의 숫자여야 합니다.");
       return;
@@ -70,14 +70,14 @@ export default function SignUp() {
     // 회원가입 요청
     try {
       const response = await axios.post(`${API_BASE_URL}/api/b-signup`, {
-        id,
-        password,
-        name,
-        brn,
-        bankAccount,
-        phone,
-        email,
-        address,
+        "sellerId" :id,
+        "sellerPassword" : password,
+        "sellerName" : name,
+        "sellerBRN":brn,
+        "sellerBankA" : bankAccount,
+        "sellerPhone":phone,
+        "sellerEmail":email,
+        "sellerAddress":address,
       });
 
       if (response.data.success) {

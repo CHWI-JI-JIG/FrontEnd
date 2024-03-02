@@ -10,9 +10,29 @@ import { useRouter } from 'next/router';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 export default function Mypage() {
-  const router = useRouter();
   // 세션 데이터 가져오기
   const { auth, certification, name, key } = getSessionData();
+  const router = useRouter();
+
+  //mypage 접근통제(취약점 생성!!!)
+    useEffect(() => {
+      if (auth !== 'BUYER') {
+        let redirectTo = '/'; 
+        if (auth === 'SELLER') {
+          redirectTo = '/seller';
+        } else if (auth === 'ADMIN') {
+          redirectTo = '/admin';
+        }
+
+        alert('접근 권한이 없습니다.');
+        router.push(redirectTo).then(() => {
+          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+          window.location.href = redirectTo;
+        });
+      }
+    }, [auth,router]);
+  //mypage 접근통제
+
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -89,7 +109,7 @@ const handlePrevPage = () => {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <img src="/cjj.png" alt="취지직 로고" 
+        <img src="/cjj.png" alt="취지직 로고"
         className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
         <div className="flex space-x-4">
           {certification ? (

@@ -40,6 +40,18 @@ const numberWithCommas = (number: number) => {
 };
 
 export default function Detail() {
+    //detail 페이지 접근통제(취약점 생성!!!)
+    useEffect(() => {
+        if (auth === 'ADMIN') {
+            // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+            alert('접근 권한이 없습니다.');
+            router.push('/admin').then(() => {
+                // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+                window.location.href = '/admin';
+            });
+        }
+    }, []);
+
     const [product, setProduct] = useState<Product | null>(null);
     const [qas, setQas] = useState<QA[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -240,7 +252,15 @@ export default function Detail() {
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
                 <img src="/cjj.png" alt="취지직 로고" 
-                className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
+                className="w-auto h-12" onClick={() => {
+                    if (auth === 'SELLER') {
+                      router.push('/seller');
+                    } else if (auth === 'BUYER') {
+                      router.push('/main');
+                    } else {
+                      router.push('/');
+                    }
+                  }} />
                 <div className="flex space-x-4">
                     {certification ? (
                         <>

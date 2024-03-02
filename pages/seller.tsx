@@ -11,6 +11,26 @@ import { getSessionData } from '@/utils/auth';
 export default function Seller() {
     // 세션 데이터 가져오기
     const { auth, certification, key, name } = getSessionData();
+    const router = useRouter();
+
+    //seller 페이지 접근통제(취약점 생성!!!)
+    useEffect(() => {
+        if (auth !== 'SELLER') {
+          let redirectTo = '/'; 
+          if (auth === 'ADMIN') {
+            redirectTo = '/admin';
+          } else if (auth === 'BUYER') {
+            redirectTo = '/main';
+          }
+  
+          alert('접근 권한이 없습니다.');
+          router.push(redirectTo).then(() => {
+            // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+            window.location.href = redirectTo;
+          });
+        }
+      }, [auth,router]);
+      //seller 페이지 접근통제
     
     const handleLogout = () => {
         // sessionStorage 초기화
@@ -21,23 +41,10 @@ export default function Seller() {
       };
 
     const [selectedSection, setSelectedSection] = useState<string>('s-main');
-    const router = useRouter();
 
     const handleSectionChange = (section: string) => {
         setSelectedSection(section);
     };
-    
-    useEffect(() => {
-        if (!certification || auth !== 'SELLER') {
-            console.log('useEffect is running!');
-            // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
-            alert('판매자 로그인이 필요합니다.');
-            router.push('/').then(() => {
-                // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-                window.location.href = '/';
-            });
-        }
-    }, [certification, auth]);
 
     // 선택한 섹션에 따라 해시를 변경
     useEffect(() => {
