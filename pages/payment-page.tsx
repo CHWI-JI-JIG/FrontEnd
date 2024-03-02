@@ -21,6 +21,7 @@ export default function PaymentPage() {
     });
 
     const [productData, setProductData] = useState({
+        productId:'',
         productName: '',
         productCount: 0,
         productPrice: 0,
@@ -105,8 +106,40 @@ export default function PaymentPage() {
 
         setFinalPrice(price - points); // Update final price
     }
-    const openPopup = () => {
-        window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
+    const openPopup = async() => {
+        try {
+            const UserAndProductInfo = {
+                userId : userData.userId,
+                userName : userData.name,
+                userPhone : userData.phone,
+                userAddress : userData.address,
+                productId : productData.productId,
+                productName : productData.productName,
+                productCount : productData.productCount,
+                productPrice : productData.productPrice
+            };
+
+            const response = await fetch('/api/upInfo',{
+                method: 'POST',
+                headers : {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify(UserAndProductInfo)
+            });
+
+            const responseData = await response.json();
+
+            console.log(responseData.transId, responseData.succcess);
+
+            Cookies.set('paymentInfo', JSON.stringify({
+                cardNum : cardNum,
+                price : productData.productPrice,
+                transId : responseData.transId
+            }));
+            window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
+        }catch{
+            console.log('API call error');
+        }
     };
 
     useEffect(() => {

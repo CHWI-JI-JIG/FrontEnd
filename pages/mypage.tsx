@@ -42,21 +42,47 @@ export default function Mypage() {
     } catch (error) {
       console.error('Error searching:', error);
     }
-  };  
+  }; 
+  
+  interface Order {
+    productImageUrl: string;
+    productName: string;
+    orderQuantity: number;
+    orderPrice: number;
+    orderDate: string;
+  }
 
-  const [orderHistory, setOrderHistory] = useState<Order[]>([]);
+  const [orderData, setOrderData] = useState<Order[]>([]);
 
-  //주문내역 
   useEffect(() => {
-    if (key) {
-      // 서버 API 호출
-      axios.post(`http://192.168.0.132:9988/api/order-history`, { key })
-        .then(response => {
-          setOrderHistory(response.data.data?.orderHistory || []); // 주문 내역 저장
-        })
-        .catch(error => console.error('주문 내역 가져오기 오류:', error));
-    }
-  }, [key]);
+      fetchOrderHistory();
+  }, []);
+
+  const fetchOrderHistory = async () => {
+      const requestData = {
+        key : getSessionData().key,
+        page: 1
+      };
+
+      console.log(requestData)
+
+      const response = await fetch('http://192.168.0.132:5000/api/order-history', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestData)
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+          setOrderData(responseData.data);
+      } else {
+          console.error('주문 내역을 불러오는 데 실패했습니다.');
+      }
+  };
+
 
   /*날짜 형식*/
   function formatDate(dateString: string | number | Date) {
@@ -144,7 +170,7 @@ export default function Mypage() {
                   <div className="bg-white p-4">
                     <BoxIcon className="h-6 w-6 text-gray-500" />
                     <h4 className="mt-2 text-base font-medium text-gray-900">주문</h4>
-                    <p className="mt-1 text-sm text-gray-500">{orderHistory.length}건</p>
+                    <p className="mt-1 text-sm text-gray-500">{orderData.length}건</p>
                   </div>
                   <div className="bg-white p-4">
                     <MessageCircleIcon className="h-6 w-6 text-gray-500" />
@@ -155,11 +181,11 @@ export default function Mypage() {
               </div>
               <div className="bg-gray-200 p-4 mt-4">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">주문내역</h3>
-                {orderHistory.length === 0 ? (
+                {orderData.length === 0 ? (
                   <p>주문 내역이 없습니다</p>
                 ) : (
                 <div className="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {orderHistory.map((order, index) => (
+                  {orderData.map((order, index) => (
                     <div key={index} className="bg-white p-4">
                       <img
                         alt="Product Image"
