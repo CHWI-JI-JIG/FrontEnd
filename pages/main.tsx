@@ -24,6 +24,18 @@ export default function Main() {
     }
   };
 
+  // //main 페이지 접근통제(취약점 생성!!!)
+  // useEffect(() => {
+  //   if (auth === 'ADMIN') {
+  //       // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+  //       alert('접근 권한이 없습니다.');
+  //       router.push('/admin').then(() => {
+  //           // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+  //           window.location.href = '/admin';
+  //       });
+  //   }
+  // }, []);
+
   // 상품정보 받는 중
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<Product[]>([]);
@@ -155,13 +167,15 @@ export default function Main() {
             <p className="text-lg font-bold">상품이 없습니다.</p>
           )}
 
-          <div className="flex flex-col items-center mt-4">
-            <div className="flex">
-              <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
-              <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-              <Button onClick={handleNextPage}><FaAngleRight /></Button>
-            </div>
-          </div>
+                {totalPages > 0 && (
+                  <div className="flex flex-col items-center mt-4">
+                    <div className="flex">
+                      <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
+                      <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                      <Button onClick={handleNextPage}><FaAngleRight /></Button>
+                    </div>
+                  </div>
+                )}
         </section>
       </main>
     </div>

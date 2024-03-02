@@ -73,6 +73,13 @@ export default function Login() {
           <Button className="w-full" variant="outline">
             Google로 로그인하기(개발중)
           </Button>
+          <div className="flex justify-center">
+            <Link href="/sign-up">
+              <a className="text-center text-sm text-gray-500 dark:text-gray-400 underline">
+                회원가입
+              </a>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

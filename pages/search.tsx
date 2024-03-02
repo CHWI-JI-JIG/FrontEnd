@@ -11,6 +11,18 @@ import { useRouter } from 'next/router';
 import { API_BASE_URL } from '@/config/apiConfig';
 
 export default function Search() {
+  // //search 페이지 접근통제(취약점 생성!!!)
+  // useEffect(() => {
+  //   if (auth === 'ADMIN') {
+  //       // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+  //       alert('접근 권한이 없습니다.');
+  //       router.push('/admin').then(() => {
+  //           // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+  //           window.location.href = '/admin';
+  //       });
+  //   }
+  // }, []);
+
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
   const router = useRouter();
@@ -45,6 +57,7 @@ export default function Search() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchSearchResults();
+      console.log(data.data);
       setSearchResults(data.data);
       setTotalPages(data.totalPage);
     };
@@ -76,7 +89,7 @@ export default function Search() {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <img src="/cjj.png" alt="취지직 로고" 
+        <img src="/cjj.png" alt="취지직 로고"
         className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
         <div className="flex space-x-4">
           {certification ? (
@@ -103,7 +116,11 @@ export default function Search() {
       
     <main className="py-6 px-6">
         <section className="mb-6">
-          <p className="text-lg font-bold">{`"${keyword}"에 대한 검색 결과 입니다.`}</p>
+          {searchResults.length > 0 ? (
+            <p className="text-lg font-bold">{`"${keyword}"에 대한 검색 결과 입니다.`}</p>
+          ) : (
+            <p className="text-lg font-bold">"{keyword}"에 대한 상품이 없습니다.</p>
+          )}
             {searchResults.length > 0 && (
             <div className="grid grid-cols-4 grid-rows-5 gap-4">
                 {(searchResults).map((result) => (
@@ -141,10 +158,6 @@ export default function Search() {
                 <Button onClick={handleNextPage}><FaAngleRight /></Button>
                 </div>
             </div>
-            )}
-
-            {searchResults.length === 0 && (
-            <p className="text-lg font-bold">"{keyword}"에 대한 상품이 없습니다.</p>
             )}
         </section>
     </main>
