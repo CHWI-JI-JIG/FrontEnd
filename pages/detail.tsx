@@ -310,7 +310,7 @@ export default function Detail() {
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                {pageStatus === 'buyerPage' && (
+                                {pageStatus !== 'sellerPage' && (
                                     <div className="grid gap-2">
                                         <Label className="text-base" htmlFor="quantity">
                                             수량
