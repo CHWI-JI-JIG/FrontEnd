@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/PR_input"
 import { Textarea } from "@/components/ui/PR_textarea"
 import { Button } from "@/components/ui/PR_button"
 import { SVGProps } from "react"
+import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css";
-const apiUrl = 'http://127.0.0.1:5000'; 
 
 interface ProductRegistrationProps {
   onClose: () => void;
@@ -70,7 +70,7 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
       }
 
       try {
-        const response = await fetch(`${apiUrl}/api/product-registration`, {
+        const response = await fetch(`${API_BASE_URL}/api/product-registration`, {
           method: 'POST',
           body: formData,
         });

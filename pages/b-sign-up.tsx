@@ -6,6 +6,7 @@ import { useState } from 'react';
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { API_BASE_URL } from '@/config/apiConfig';
 
 import "@/app/globals.css"
 
@@ -21,11 +22,11 @@ export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const apiUrl = 'http://192.168.0.132:5000'; 
+
   // 아이디 중복 검사
   const checkId = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/check-id?id=${id}`);
+      const response = await axios.get(`${API_BASE_URL}/api/check-id?id=${id}`);
       if (response.data.duplicated) {
         alert("중복된 아이디입니다.");
       } else {
@@ -53,7 +54,7 @@ export default function SignUp() {
     }
 
     // 전화번호 검증 로직
-    const phoneValidation = /^\d{10,11}$/;
+    const phoneValidation = /^01(0|1|[6-9])[0-9]{3,4}[0-9]{4}$/;;
     if (!phoneValidation.test(phone)) {
       alert("전화번호는 10자리 또는 11자리의 숫자여야 합니다.");
       return;
@@ -68,21 +69,22 @@ export default function SignUp() {
 
     // 회원가입 요청
     try {
-      const response = await axios.post(`${apiUrl}/api/b-signup`, {
-        id,
-        password,
-        name,
-        brn,
-        bankAccount,
-        phone,
-        email,
-        address,
+      const response = await axios.post(`${API_BASE_URL}/api/b-signup`, {
+        "sellerId" :id,
+        "sellerPassword" : password,
+        "sellerName" : name,
+        "sellerBRN":brn,
+        "sellerBankAccount" : bankAccount,
+        "sellerPhone":phone,
+        "sellerEmail":email,
+        "sellerAddress":address,
       });
 
       if (response.data.success) {
         alert("회원가입이 완료되었습니다.");
         router.push('/login');
       } else {
+        console.log(response.data)
         alert("회원가입에 실패하였습니다.");
       }
     } catch (error) {
@@ -123,7 +125,7 @@ export default function SignUp() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="brn">사업자 이름</Label>
+            <Label htmlFor="brn">사업자 등록번호</Label>
             <Input id="brn" required value={brn} onChange={(e) => setBrn(e.target.value)}/>
           </div>
 

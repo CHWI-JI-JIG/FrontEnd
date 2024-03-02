@@ -7,8 +7,9 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth'
+import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
-const apiUrl = 'http://127.0.0.1:5000'; 
+
 export default function Main() {
   const router = useRouter();
 
@@ -19,9 +20,21 @@ export default function Main() {
     // sessionStorage 초기화
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();
-      window.location.reload();
+      router.push('/');
     }
   };
+
+  // //main 페이지 접근통제(취약점 생성!!!)
+  // useEffect(() => {
+  //   if (auth === 'ADMIN') {
+  //       // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+  //       alert('접근 권한이 없습니다.');
+  //       router.push('/admin').then(() => {
+  //           // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+  //           window.location.href = '/admin';
+  //       });
+  //   }
+  // }, []);
 
   // 상품정보 받는 중
   const [page, setPage] = useState<number>(1);
@@ -29,7 +42,7 @@ export default function Main() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    fetch(`${apiUrl}/api/products?page=${page}`)
+    fetch(`${API_BASE_URL}/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         console.log('Search Results:', data.data);
@@ -49,7 +62,7 @@ export default function Main() {
     const handleSearch = async () => {
       try {
         console.log('Keyword:', keyword);
-        const response = await fetch(`${apiUrl}/api/search?page=1&keyword=${keyword}`);
+        const response = await fetch(`${API_BASE_URL}/api/search?page=1&keyword=${keyword}`);
         const data = await response.json();
         setSearchResults(data.data);
         setTotalPages(data.totalPage);
@@ -89,7 +102,8 @@ export default function Main() {
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <a className="text-3xl font-bold" onClick={() => {window.location.reload();}}>취지직</a>
+        <img src="/cjj.png" alt="취지직 로고" 
+        className="w-auto h-12" onClick={() => {window.location.reload();}} />
         <div className="flex items-center space-x-2">
           <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
           value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
@@ -100,21 +114,21 @@ export default function Main() {
         <div className="flex space-x-4">
           {certification ? (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/mypage">{name}님</Link>
-              </Button>
+              <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+              </Link>
               <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
                 로그아웃
               </Button>
             </>
           ) : (
             <>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/login">로그인</Link>
-              </Button>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                <Link href="/privacy-policy">회원가입</Link>
-              </Button>
+              <Link href="/login">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+              </Link>
+              <Link href="/privacy-policy">
+                <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+              </Link>
             </>
           )}
         </div>
@@ -132,7 +146,7 @@ export default function Main() {
                       <img
                         alt={product.productName}
                         className="mb-2"
-                        src={`${apiUrl}${product.productImageUrl}`}
+                        src={`${API_BASE_URL}${product.productImageUrl}`}
                         style={{
                           height: "200",
                           width: "200",

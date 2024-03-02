@@ -38,9 +38,23 @@ export default function payPopup() {
       setPassword(nextPassword);
     }
   };
-
+  const initPass  = '123456'
   const handleOKButtonClick = () => {
     console.log('클릭했쏘요~',password);
+    const enterPass = password.join('');
+    const Pass = enterPass===initPass
+
+    if(Pass){
+      // 백엔드에 요청을 보내고 그 결과를 받는 코드가 필요합니다.
+      // 백엔드에서 success: True를 받으면
+      console.log("True");
+      window.opener.postMessage({ success: true }, '*');
+    } else {
+      console.log("False");
+      window.opener.postMessage({ success: false }, '*');
+    }
+
+    window.close();
   };
 
   useEffect(() => {

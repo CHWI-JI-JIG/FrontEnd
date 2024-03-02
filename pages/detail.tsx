@@ -9,8 +9,8 @@ import "@/app/globals.css";
 import QaModal from './qa-modal'; // qa-modal 컴포넌트
 import Link from "next/link"
 import { getSessionData } from '@/utils/auth'
+import { API_BASE_URL } from '@/config/apiConfig';
 import Cookies from 'js-cookie'
-const apiUrl = 'http://127.0.0.1:5000'; 
 
 interface Product {
     productId: string;
@@ -40,6 +40,18 @@ const numberWithCommas = (number: number) => {
 };
 
 export default function Detail() {
+    // //detail 페이지 접근통제(취약점 생성!!!)
+    // useEffect(() => {
+    //     if (auth === 'ADMIN') {
+    //         // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+    //         alert('접근 권한이 없습니다.');
+    //         router.push('/admin').then(() => {
+    //             // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+    //             window.location.href = '/admin';
+    //         });
+    //     }
+    // }, []);
+
     const [product, setProduct] = useState<Product | null>(null);
     const [qas, setQas] = useState<QA[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -57,10 +69,10 @@ export default function Detail() {
     const handleLogout = () => {
         // sessionStorage 초기화
         if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.clear();
-            window.location.reload();
+          sessionStorage.clear();
+          router.push('/');
         }
-    };
+      };
 
     useEffect(() => {
         // 로그인 확인
@@ -89,7 +101,7 @@ export default function Detail() {
             }
             setLoading(true);
             try {
-                const productResponse = await fetch(`${apiUrl}/api/detail?productId=${productId}`);
+                const productResponse = await fetch(`${API_BASE_URL}/api/detail?productId=${productId}`);
                 const productData = await productResponse.json();
                 const product = productData;
                 if (product) {
@@ -193,7 +205,7 @@ export default function Detail() {
             console.log('Purchase Data:', purchaseData);
     
             console.log("product3");
-            //const purchaseResponse = await axios.post(`${apiUrl}/api/temppayment`, key);
+            //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
             //console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
@@ -239,30 +251,37 @@ export default function Detail() {
     return (
         <div className="max-w-screen-xl mx-auto">
             <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-                <Link href="/">
-                    <a className="text-3xl font-bold">취지직</a>
-                </Link>
+                <img src="/cjj.png" alt="취지직 로고" 
+                className="w-auto h-12" onClick={() => {
+                    if (auth === 'SELLER') {
+                      router.push('/seller');
+                    } else if (auth === 'BUYER') {
+                      router.push('/main');
+                    } else {
+                      router.push('/');
+                    }
+                  }} />
                 <div className="flex space-x-4">
                     {certification ? (
                         <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/mypage">{name}님</Link>
-                            </Button>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
-                                로그아웃
-                            </Button>
+                        <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
+                        </Link>
+                        <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+                            로그아웃
+                        </Button>
                         </>
                     ) : (
                         <>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/login">로그인</Link>
-                            </Button>
-                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
-                                <Link href="/privacy-policy">회원가입</Link>
-                            </Button>
+                        <Link href="/login">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">로그인</Button>
+                        </Link>
+                        <Link href="/privacy-policy">
+                            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">회원가입</Button>
+                        </Link>
                         </>
                     )}
-                </div>
+                    </div>
             </header>
 
             <div className="my-6 mx-6">
@@ -272,7 +291,7 @@ export default function Detail() {
                             alt="Product Image"
                             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
                             height={200}
-                            src={`${apiUrl}${product.productImageUrl}`}
+                            src={`${API_BASE_URL}${product.productImageUrl}`}
                             width={200}
                         />
                     </div>

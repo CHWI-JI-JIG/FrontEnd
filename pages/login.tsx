@@ -6,8 +6,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/Lo_button"
 import { useRouter } from "next/router";
 import "@/app/globals.css"
+import { API_BASE_URL } from '@/config/apiConfig';
 import { setSessionData } from '@/utils/auth';
-const apiUrl = 'http://127.0.0.1:5000'; 
+
 export default function Login() {
   const router  = useRouter();
   // 입력값 상태 관리
@@ -18,7 +19,7 @@ export default function Login() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // 로그인 요청
     try {
-      const response = await axios.post(`${apiUrl}/api/login`, {
+      const response = await axios.post(`${API_BASE_URL}/api/login`, {
         "userId":id,
         "userPassword":password,
       });
@@ -72,6 +73,13 @@ export default function Login() {
           <Button className="w-full" variant="outline">
             Google로 로그인하기(개발중)
           </Button>
+          <div className="flex justify-center">
+            <Link href="/sign-up">
+              <a className="text-center text-sm text-gray-500 dark:text-gray-400 underline">
+                회원가입
+              </a>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
