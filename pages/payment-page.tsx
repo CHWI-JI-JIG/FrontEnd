@@ -9,15 +9,16 @@ import axios from "axios"
 import Cookies from 'js-cookie';
 import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css"
+import { getSessionData } from "@/utils/auth"
 
 export default function PaymentPage() {
 
-    const [cardNum, setCardNum] = useState<string>()
+    const [cardNum, setCardNum] = useState<string>('1111-1111-1111-1111')
     const [userData, setUserData] = useState({
-        name: '',
+        userName: '',
         userId: '',
-        phone: '',
-        address: '',
+        userPhone: '',
+        userAddr: '',
         point: 0
     });
 
@@ -30,21 +31,13 @@ export default function PaymentPage() {
 
     const [finalPrice, setFinalPrice] = useState(0);
 
-
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://192.168.0.132:5000/api/c-user', {});
+            const sessionKey = getSessionData().key;
+            const result = await axios.post('http://192.168.0.61:5000/api/c-user', {key : sessionKey});
             setUserData(result.data);
             console.log(result.data)
         };
-
-        // const fetchProductData = async () => {
-        //     const response = await axios.post('http://172.30.1.32:9988/api/product-trans');
-        //     setProduct(response.data);
-        //     setFinalPrice(response.data.productPrice)
-        //     console.log(response.data)
-        // };
-
 
         fetchUserData();
         //fetchProductData();
@@ -80,7 +73,7 @@ export default function PaymentPage() {
 
         // 전화번호 필드에 대해서만 정규식을 적용합니다.
         if (id === 'phone') {
-            const regex = /^[0-9\b -]{0,13}$/; // 전화번호 형식 정규식
+            const regex = /^01(0|1|[6-9])[0-9]{3,4}[0-9]{4}$/; // 전화번호 형식 정규식
 
             // 입력이 정규식에 맞지 않으면 업데이트하지 않습니다.
             if (!regex.test(value)) return;
@@ -106,7 +99,9 @@ export default function PaymentPage() {
     }
 
     const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) =>{
+        console.log("Selected card number:", event.target.value); 
         setCardNum(event.target.value);
+        console.log("Current cardNum state:", cardNum); 
     }
 
     const handleUsePointsClick = async () => {
@@ -124,23 +119,25 @@ export default function PaymentPage() {
     const openPopup = async() => {
         try {
             const UserAndProductInfo = {
-                userId : userData.userId,
-                userName : userData.name,
-                userPhone : userData.phone,
-                userAddress : userData.address,
+                key : getSessionData().key,//id // uuid
+                userName : userData.userName,
+                userPhone : userData.userPhone,
+                userAddr : userData.userAddr,
                 productId : productData.productId,
                 productName : productData.productName,
                 productCount : productData.productCount,
                 productPrice : productData.productPrice
             };
 
-            const response = await fetch('/api/userproductInfo',{
+            const response = await fetch('http://192.168.0.61:5000/api/userproductinfo',{
                 method: 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
                 },
                 body: JSON.stringify(UserAndProductInfo)
             });
+
+            console.log("response = " + JSON.stringify(response))
 
             const responseData = await response.json();
 
@@ -151,6 +148,7 @@ export default function PaymentPage() {
                 price : productData.productPrice,
                 transId : responseData.transId
             }));
+            
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
             console.log('API call error');
@@ -163,6 +161,8 @@ export default function PaymentPage() {
                 //pg사의 post 요청
                 // 팝업에서 success: True를 받았을 때
                 window.location.href = '/mypage';
+            }else{
+                console.log("결제 실패. 메인으로 이동합니다.");
             }
         };
 
@@ -193,7 +193,7 @@ export default function PaymentPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="name">수취인</Label>
-                                        <Input id="name" placeholder="이름" value={userData.name} onChange={handleInputChange} />
+                                        <Input id="name" placeholder="이름" value={userData.userName} onChange={handleInputChange} />
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor="userId">구매자 아이디</Label>
@@ -201,11 +201,11 @@ export default function PaymentPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor="phone">전화번호</Label>
-                                        <Input id="phone" placeholder="휴대폰 번호" value={userData.phone} onChange={handleInputChange} />
+                                        <Input id="phone" placeholder="휴대폰 번호" value={userData.userPhone} onChange={handleInputChange} />
                                     </div>
                                     <div className="col-span-2 space-y-1.5">
                                         <Label htmlFor="address">주소</Label>
-                                        <Input className="min-h-[100px]" id="address" placeholder="주소" value={userData.address} onChange={handleInputChange} />
+                                        <Input className="min-h-[100px]" id="address" placeholder="주소" value={userData.userAddr} onChange={handleInputChange} />
                                     </div>
                                 </div>
                             </CardContent>
@@ -249,7 +249,7 @@ export default function PaymentPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="number">카드 번호</Label>
-                                        <select id="number" onChange={handleCardNumChange}>
+                                        <select id="number" value = {cardNum} onChange={handleCardNumChange}>
                                             <option value="1111-1111-1111-1111">1111-1111-1111-1111</option>
                                             <option value="2222-2222-2222-2222">2222-2222-2222-2222</option>
                                         </select>
