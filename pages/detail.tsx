@@ -9,6 +9,7 @@ import "@/app/globals.css";
 import QaModal from './qa-modal'; // qa-modal 컴포넌트
 import Link from "next/link"
 import { getSessionData } from '@/utils/auth'
+import { API_BASE_URL } from '@/config/apiConfig';
 import Cookies from 'js-cookie'
 
 interface Product {
@@ -88,7 +89,7 @@ export default function Detail() {
             }
             setLoading(true);
             try {
-                const productResponse = await fetch(`http://192.168.0.112:5000/api/detail?productId=${productId}`);
+                const productResponse = await fetch(`${API_BASE_URL}/api/detail?productId=${productId}`);
                 const productData = await productResponse.json();
                 const product = productData;
                 if (product) {
@@ -192,7 +193,7 @@ export default function Detail() {
             console.log('Purchase Data:', purchaseData);
     
             console.log("product3");
-            //const purchaseResponse = await axios.post('http://192.168.0.112:5000/api/temppayment', key);
+            //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
             //console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
@@ -271,7 +272,7 @@ export default function Detail() {
                             alt="Product Image"
                             className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
                             height={200}
-                            src={`http://192.168.0.112:5000${product.productImageUrl}`}
+                            src={`http://192.168.0.204:5000${product.productImageUrl}`}
                             width={200}
                         />
                     </div>

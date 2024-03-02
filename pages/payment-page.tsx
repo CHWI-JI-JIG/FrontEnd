@@ -7,6 +7,7 @@ import { SVGProps } from "react"
 import React, { useEffect, useState, ChangeEvent } from "react"
 import axios from "axios"
 import Cookies from 'js-cookie';
+import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css"
 
 export default function PaymentPage() {
@@ -30,7 +31,7 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const result = await axios.post('http://192.168.0.112:5000/api/c-user', {});
+            const result = await axios.post(`${API_BASE_URL}/c-user`, {});
             setUserData(result.data);
             console.log(result.data)
         };

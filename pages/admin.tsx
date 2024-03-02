@@ -9,6 +9,8 @@ import "@/app/globals.css";
 import { getSessionData } from '@/utils/auth'
 import { useEffect, useState } from 'react';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { API_BASE_URL } from '@/config/apiConfig';
+import router from "next/router";
 
 export default function Admin() {
   // 세션 데이터 가져오기
@@ -23,6 +25,17 @@ export default function Admin() {
 
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+
+  useEffect(() => {
+    if (!certification || auth !== 'ADMIN') {
+        // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+        alert('관리자 로그인이 필요합니다.');
+        router.push('/').then(() => {
+            // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+            window.location.href = '/';
+        });
+    }
+  }, []);
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
@@ -66,7 +79,7 @@ export default function Admin() {
     };
 
     // 서버에 POST 요청 보내기
-    fetch('http://192.168.0.112:5000/api/admin', requestOptions)
+    fetch(`${API_BASE_URL}/api/admin`, requestOptions)
       .then(response => response.json())
       .then((data: PagedUserList) => {
         console.log("admin:",data.data)
@@ -115,7 +128,7 @@ export default function Admin() {
     };
   
     // 서버에 POST 요청 보내기
-    fetch('http://192.168.0.112:5000/api/user-role', requestOptions)
+    fetch(`${API_BASE_URL}/api/user-role`, requestOptions)
       .then(response => response.json())
       .then((data) => {
         console.log("user-role:", data.data)

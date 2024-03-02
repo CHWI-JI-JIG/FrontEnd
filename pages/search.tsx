@@ -8,6 +8,7 @@ import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth'
 import { useRouter } from 'next/router';
+import { API_BASE_URL } from '@/config/apiConfig';
 
 export default function Search() {
   // 세션 데이터 가져오기
@@ -28,7 +29,7 @@ export default function Search() {
   
   const fetchSearchResults = async () => {
     try {
-      const response = await fetch(`http://192.168.0.112:5000/api/search?page=${page}&keyword=${keyword}`);
+      const response = await fetch(`${API_BASE_URL}/api/search?page=${page}&keyword=${keyword}`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -113,7 +114,7 @@ export default function Search() {
                         <img
                             alt={result.productName}
                             className="mb-2"
-                            src={`http://192.168.0.112:5000${result.productImageUrl}`}
+                            src={`http://192.168.0.204:5000${result.productImageUrl}`}
                             style={{
                             height: "200",
                             width: "200",

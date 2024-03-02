@@ -7,6 +7,7 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { getSessionData } from '@/utils/auth'
+import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
 
 export default function Main() {
@@ -29,7 +30,7 @@ export default function Main() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    fetch(`http://192.168.0.112:5000/api/products?page=${page}`)
+    fetch(`${API_BASE_URL}/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
         console.log('Search Results:', data.data);
@@ -49,7 +50,7 @@ export default function Main() {
     const handleSearch = async () => {
       try {
         console.log('Keyword:', keyword);
-        const response = await fetch(`http://192.168.0.112:5000/api/search?page=1&keyword=${keyword}`);
+        const response = await fetch(`${API_BASE_URL}/api/search?page=1&keyword=${keyword}`);
         const data = await response.json();
         setSearchResults(data.data);
         setTotalPages(data.totalPage);
@@ -132,7 +133,7 @@ export default function Main() {
                       <img
                         alt={product.productName}
                         className="mb-2"
-                        src={`http://192.168.0.112:5000${product.productImageUrl}`}
+                        src={`http://192.168.0.204:5000${product.productImageUrl}`}
                         style={{
                           height: "200",
                           width: "200",
