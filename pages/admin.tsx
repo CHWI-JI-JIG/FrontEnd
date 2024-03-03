@@ -6,35 +6,36 @@ import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, Dropdown
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/AD_table"
 import { Switch } from "@/components/ui/AD_switch"
 import "@/app/globals.css";
-import { getSessionData } from '@/utils/auth'
+import { getSessionData, handleLogout } from '@/utils/auth'
 import { useEffect, useState } from 'react';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
+import { handleNextPage, handlePrevPage } from '@/utils/commonUtils';
 
 export default function Admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
   const router = useRouter();
 
-    // //admin 페이지 접근통제(취약점 생성!!!)
-    // useEffect(() => {
-    //   if (auth !== 'ADMIN') {
-    //     let redirectTo = '/'; 
-    //     if (auth === 'SELLER') {
-    //       redirectTo = '/seller';
-    //     } else if (auth === 'BUYER') {
-    //       redirectTo = '/main';
-    //     }
+  // //admin 페이지 접근통제(취약점 생성!!!)
+  // useEffect(() => {
+  //   if (auth !== 'ADMIN') {
+  //     let redirectTo = '/'; 
+  //     if (auth === 'SELLER') {
+  //       redirectTo = '/seller';
+  //     } else if (auth === 'BUYER') {
+  //       redirectTo = '/main';
+  //     }
 
-    //     alert('접근 권한이 없습니다.');
-    //     router.push(redirectTo).then(() => {
-    //       // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-    //       window.location.href = redirectTo;
-    //     });
-    //   }
-    // }, [auth,router]);
-    // //admin 페이지 접근통제
+  //     alert('접근 권한이 없습니다.');
+  //     router.push(redirectTo).then(() => {
+  //       // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+  //       window.location.href = redirectTo;
+  //     });
+  //   }
+  // }, [auth,router]);
+  // //admin 페이지 접근통제
 
   const [userData, setUsers] = useState<User[]>([]);
   const [allUserData, setAllUsers] = useState<User[]>([]);
@@ -48,7 +49,7 @@ export default function Admin() {
 
   const handleRoleChangeTop = (role: string) => {
     setSelectedRoleTop(role);
-  
+
     // 선택된 역할에 따라 allUserData를 필터링
     let filteredUserData: User[] = [];
     if (role === 'all') {
@@ -58,16 +59,12 @@ export default function Admin() {
       // 선택된 역할에 맞게 데이터를 필터링합니다.
       filteredUserData = allUserData.filter((user: User) => user?.userAuth === role) || [];
     }
-  
+
     setUsers(filteredUserData);
   };
 
-  const handleLogout = () => {
-    // sessionStorage 초기화
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-      router.push('/');
-    }
+  const handleLogoutClick = () => {
+    handleLogout(router);
   };
 
   useEffect(() => {
@@ -91,15 +88,13 @@ export default function Admin() {
     fetch(`${API_BASE_URL}/api/admin`, requestOptions)
       .then(response => response.json())
       .then((data: PagedUserList) => {
-        console.log("admin:",data.data)
+        console.log("admin:", data.data)
         setAllUsers(data.data); // 전체 데이터 업데이트
         setUsers(data.data);    // 현재 필터링된 데이터 업데이트
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
   }, [key, page]);
-
-  //
 
   useEffect(() => {
     // selectedRoleIn 또는 selectedUserKey 값이 변경될 때마다 호출
@@ -112,19 +107,19 @@ export default function Admin() {
     setSelectedRoleIn(role);
     setSelectedUserKey(userKey);
   };
-  
+
 
   const handleRoleSubmit = (role: string, userKey: string) => {
     // 선택된 값이 없다면 아무 동작도 하지 않음
     if (!selectedRoleIn || !userKey) return;
-  
+
     // POST 요청 body에 담을 데이터
     const requestData = {
       userKey: userKey,
       userAuth: selectedRoleIn,
     };
     console.log('role change 전송 data:', requestData);
-  
+
     // POST 요청 설정
     const requestOptions = {
       method: 'POST',
@@ -133,7 +128,7 @@ export default function Admin() {
       },
       body: JSON.stringify(requestData),
     };
-  
+
     // 서버에 POST 요청 보내기
     fetch(`${API_BASE_URL}/api/user-role`, requestOptions)
       .then(response => response.json())
@@ -141,7 +136,7 @@ export default function Admin() {
         console.log("user-role:", data.data)
         if (data.success) {
           alert('권한 변경 성공');
-  
+
           // 전체 데이터 업데이트
           setAllUsers(prevUsers => {
             return prevUsers.map(user => {
@@ -154,7 +149,7 @@ export default function Admin() {
               return user;
             });
           });
-  
+
           // 현재 필터링된 데이터 업데이트
           setUsers(prevUsers => {
             // selectedRoleTop이 'all'이면 업데이트된 사용자를 다시 목록에 추가
@@ -180,17 +175,8 @@ export default function Admin() {
       .catch(error => console.error('Error updating user role:', error));
   };
 
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
+  const handleNext = () => handleNextPage(page, totalPages, setPage);
+  const handlePrev = () => handlePrevPage(page, setPage);
 
   return (
     <div className="flex h-full max-h-screen flex-col gap-2">
@@ -204,7 +190,7 @@ export default function Admin() {
             <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">
               관리자님
             </Button>
-            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+            <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogoutClick}>
               <Link href="/login">로그아웃</Link>
             </Button>
           </div>
@@ -245,7 +231,7 @@ export default function Admin() {
                           <div className='w-full'>
                             <Select value={user.userAuth} onValueChange={(role) => handleRoleChangeIn(role, user.userKey)}>
                               <SelectTrigger>
-                                {user.userAuth === 'seller' ? 'seller' : 'buyer' }
+                                {user.userAuth === 'seller' ? 'seller' : 'buyer'}
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="seller">seller</SelectItem>
@@ -268,15 +254,15 @@ export default function Admin() {
             </Table>
           </div>
 
-                {totalPages > 0 && (
-                  <div className="flex flex-col items-center mt-4">
-                    <div className="flex">
-                      <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
-                      <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-                      <Button onClick={handleNextPage}><FaAngleRight /></Button>
-                    </div>
-                  </div>
-                )}
+          {totalPages > 0 && (
+            <div className="flex flex-col items-center mt-4">
+              <div className="flex">
+                <Button onClick={handlePrev}><FaAngleLeft /></Button>
+                <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                <Button onClick={handleNext}><FaAngleRight /></Button>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
