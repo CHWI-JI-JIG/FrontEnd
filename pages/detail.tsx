@@ -354,7 +354,7 @@ export default function Detail() {
                   ) : (
                     <Link href="/login">
                         <Button size="lg" style={{ width: '100%', display: 'block' }}>
-                          로그인 후 구매
+                          구매하기
                         </Button>
                     </Link>
                   )
