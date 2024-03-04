@@ -34,7 +34,7 @@ export default function PaymentPage() {
     useEffect(() => {
         const fetchUserData = async () => {
             const sessionKey = getSessionData().key;
-            const result = await axios.post('http://192.168.0.61:5000/api/c-user', {key : sessionKey});
+            const result = await axios.post('http://192.168.0.133:5000/api/c-user', {key : sessionKey});
             setUserData(result.data);
             console.log(result.data)
         };
@@ -129,7 +129,7 @@ export default function PaymentPage() {
                 productPrice : productData.productPrice
             };
 
-            const response = await fetch('http://192.168.0.61:5000/api/userproductinfo',{
+            const response = await fetch('http://192.168.0.133:5000/api/userproductinfo',{
                 method: 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
@@ -160,7 +160,11 @@ export default function PaymentPage() {
             if (event.data.success) {
                 //pg사의 post 요청
                 // 팝업에서 success: True를 받았을 때
-                window.location.href = '/mypage';
+                alert("결제가 완료되었습니다.")
+                // 5초 후에 페이지 이동
+                setTimeout(() => {
+                    window.location.href = '/mypage';
+                }, 3000);
             }else{
                 console.log("결제 실패. 메인으로 이동합니다.");
             }

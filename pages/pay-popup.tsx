@@ -48,7 +48,7 @@ export default function payPopup() {
 
     const sendPaymentInfo = async (transId: string, price:number, cardNum:string) => {
       try {
-        const response = await fetch('http://192.168.0.61:5000/api/PG/sendpayinfo', {
+        const response = await fetch('http://192.168.0.133:5000/api/PG/sendpayinfo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export default function payPopup() {
       window.opener.postMessage({ success: false }, '*');
     }
 
-    window.close();
+    //window.close();
   };
 
   useEffect(() => {
