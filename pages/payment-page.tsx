@@ -158,23 +158,23 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const handlePopupMessage = (event: MessageEvent) => {
-            if (event.data.success) {
-                //pg사의 post 요청
-                // 팝업에서 success: True를 받았을 때
+            if (event.data.success === true) {
+                // 팝업에서 success: true를 받았을 때
                 alert("결제가 완료되었습니다.")
-                // 5초 후에 페이지 이동
                 setTimeout(() => {
                     window.location.href = '/mypage';
                 }, 3000);
-            }else{
+            } else if (event.data.success === false) {
+                alert("결제가 실패 했습니다.")
+                setTimeout(() => {
+                    window.location.href = '/main';
+                }, 3000);
                 console.log("결제 실패. 메인으로 이동합니다.");
             }
         };
-
-        // 메시지 이벤트 리스너 등록
+    
         window.addEventListener('message', handlePopupMessage);
-
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+    
         return () => {
             window.removeEventListener('message', handlePopupMessage);
         };

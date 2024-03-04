@@ -44,6 +44,7 @@ export default function Mypage() {
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(1);
 
   const handleLogoutClick = () => {
     handleLogout(router);
