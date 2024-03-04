@@ -149,7 +149,7 @@ export default function PaymentPage() {
                 transId : responseData.transId
             }));
             
-            window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
+            window.open('/pay-popup', '_blank', 'toolbar=no, width=500, height=500');
         }catch{
             console.log('API call error');
         }

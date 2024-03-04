@@ -98,7 +98,7 @@ export default function payPopup() {
       window.opener.postMessage({ success: false }, '*');
     }
 
-    //window.close();
+    window.close();
   };
 
   useEffect(() => {
