@@ -1,9 +1,10 @@
 import "@/app/globals.css"
-import React, { useEffect, useState } from "react"
+import React, {useEffect, useState} from "react"
 import axios from "axios"
 import { SVGProps } from "react"
 import { Key } from "lucide-react";
 import Cookies from 'js-cookie';
+import { API_BASE_URL } from '@/config/apiConfig';
 
 export default function payPopup() {
 
@@ -15,7 +16,7 @@ export default function payPopup() {
     const firstEmptyIndex = nextPassword.indexOf(null);
 
     console.log('Num Button Clicked:', num); // 확인을 위한 로그
-
+    
     if (firstEmptyIndex !== -1) {
       nextPassword[firstEmptyIndex] = num;
       setPassword(nextPassword);
@@ -27,42 +28,42 @@ export default function payPopup() {
   const handleDeleteButtonClick = () => {
     const nextPassword = [...password];
     let lastNotEmptyIndex = -1;
-
+  
     for (let i = nextPassword.length - 1; i >= 0; i--) {
       if (nextPassword[i] !== null) {
         lastNotEmptyIndex = i;
         break;
       }
     }
-
+  
     if (lastNotEmptyIndex !== -1) {
       nextPassword[lastNotEmptyIndex] = null;
       setPassword(nextPassword);
     }
   };
-  const initPass = '123456'
+  const initPass  = '123456'
   const handleOKButtonClick = () => {
-    console.log('클릭했쏘요~', password);
+    console.log('클릭했쏘요~',password);
     const enterPass = password.join('');
-    const Pass = enterPass === initPass
+    const Pass = enterPass===initPass
 
-    const sendPaymentInfo = async (transId: string, price: number, cardNum: string) => {
+    const sendPaymentInfo = async (transId: string, price:number, cardNum:string) => {
       try {
-        const response = await fetch('http://192.168.0.61:5000/api/PG/sendpayinfo', {
+        const response = await fetch(`${API_BASE_URL}/api/PG/sendpayinfo`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            "key": transId,
+            "key" : transId,
             "cardNum": cardNum,
-            "productPrice": price
+            "productPrice":price 
           }),
         });
-
+    
         if (response.ok) {
           const responseData = await response.json();
-
+    
           if (responseData.success) {
             console.log('Payment info sent successfully');
           } else {
@@ -78,16 +79,16 @@ export default function payPopup() {
 
     const paymentInfo = Cookies.get('paymentInfo');
 
-    if (Pass) {
+    if(Pass){
 
-      if (paymentInfo) {
+      if(paymentInfo){
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
         sendPaymentInfo(transId, price, cardNum)
 
-      } else {
+      }else{
         console.log('undefind cookie');
       }
-
+        
 
       // 백엔드에 요청을 보내고 그 결과를 받는 코드가 필요합니다.
       // 백엔드에서 success: True를 받으면
@@ -135,8 +136,9 @@ export default function payPopup() {
             <button
               key={num}
               onClick={() => handleNumButtonClick(num)}
-              className={`text-white text-2xl font-semibold border border-solid border-gray-300 ${isButtonEnabled ? 'hover:bg-gray-700' : ''
-                }`}>
+              className={`text-white text-2xl font-semibold border border-solid border-gray-300 ${
+                isButtonEnabled ? 'hover:bg-gray-700' : ''
+              }`}>
               {num}
             </button>
           ))}
@@ -150,8 +152,8 @@ export default function payPopup() {
             0
           </button>
           <button onClick={handleDeleteButtonClick} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-            <DeleteIcon className="h-6 w-6" />
-          </button>
+              <DeleteIcon className="h-6 w-6" />
+         </button>
         </div>
 
       </div>
@@ -181,7 +183,7 @@ function FlagIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 
-function PanelTopCloseIcon(props: SVGProps<SVGSVGElement>) {
+function PanelTopCloseIcon(props:SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -202,7 +204,7 @@ function PanelTopCloseIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
-function DeleteIcon(props: SVGProps<SVGSVGElement>) {
+function DeleteIcon(props:SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
