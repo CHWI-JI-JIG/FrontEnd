@@ -6,22 +6,20 @@ import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
-import { getSessionData } from '@/utils/auth'
+import { getSessionData, handleLogout } from '@/utils/auth'
 import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
+import { handleNextPage, handlePrevPage, numberWithCommas } from '@/utils/commonUtils';
+import { handleSearch, searchProduct } from '@/utils/search';
 
 export default function Main() {
   const router = useRouter();
 
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
-  
-  const handleLogout = () => {
-    // sessionStorage 초기화
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-      router.push('/');
-    }
+
+  const handleLogoutClick = () => {
+    handleLogout(router);
   };
 
   // //main 페이지 접근통제(취약점 생성!!!)
@@ -53,61 +51,27 @@ export default function Main() {
         setTotalPages(data.totalPage);
       })
       .catch(error => console.error('Error fetching data:', error));
-    }, [page]);
+  }, [page]);
 
-    //검색창
-    const [keyword, setKeyword] = useState('');
-    const [searchResults, setSearchResults] = useState<Product[]>([]);
-  
-    const handleSearch = async () => {
-      try {
-        console.log('Keyword:', keyword);
-        const response = await fetch(`${API_BASE_URL}/api/search?page=1&keyword=${keyword}`);
-        const data = await response.json();
-        setSearchResults(data.data);
-        setTotalPages(data.totalPage);
-        console.log('Search Results:', data.data);
-  
-        // 검색된 결과 페이지 이동
-        router.push({
-          pathname: '/search',
-          query: { page: 1, keyword },
-        });
-
-      } catch (error) {
-        console.error('Error searching:', error);
-      }
-    };   
-    
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
-    }
+  //검색창
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<searchProduct[]>([]);
+  const onSearch = async () => {
+    await handleSearch(keyword, setKeyword, setSearchResults, router);
   };
 
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
-  /*가격 자릿수*/
-  const numberWithCommas = (number: { toLocaleString?: () => any }) => {
-    if (number && number.toLocaleString) {
-      return number.toLocaleString();
-    }
-    return '';
-  };
+  const handleNext = () => handleNextPage(page, totalPages, setPage);
+  const handlePrev = () => handlePrevPage(page, setPage);
 
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <img src="/cjj.png" alt="취지직 로고" 
-        className="w-auto h-12" onClick={() => {window.location.reload();}} />
+        <img src="/cjj.png" alt="취지직 로고"
+          className="w-auto h-12" onClick={() => { window.location.reload(); }} />
         <div className="flex items-center space-x-2">
           <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
-          value={keyword} onChange={(e) => setKeyword(e.target.value)}/>
-          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={handleSearch}>
+            value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
             <SearchIcon className="text-gray-700" />
           </Button>
         </div>
@@ -117,7 +81,7 @@ export default function Main() {
               <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                 <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
               </Link>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogoutClick}>
                 로그아웃
               </Button>
             </>
@@ -133,49 +97,55 @@ export default function Main() {
           )}
         </div>
       </header>
-      
+
       <main className="py-6 px-6">
         <section className="mb-6">
           {products.length > 0 ? (
-          <div className="grid grid-cols-4 grid-rows-5 gap-4">
-            {(products).map((product) => (
-              <Card className="w-full" key={product.productId}>
-                <a href={`/detail?productId=${product.productId}`}>
-                  <CardContent>
-                    <div className="flex items-center justify-center">
-                      <img
-                        alt={product.productName}
-                        className="mb-2"
-                        src={`${API_BASE_URL}${product.productImageUrl}`}
-                        style={{
-                          height: "200",
-                          width: "200",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-1">{product.productName}</h3>
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
-                    </div>
-                  </CardContent>
-                </a>
-              </Card>
-            ))}
+            <div className="grid grid-cols-4 grid-rows-5 gap-4">
+              {(products).map((product) => (
+                <Card className="w-full" key={product.productId}>
+                  <a href={`/detail?productId=${product.productId}`}>
+                    <CardContent>
+                      <div className="flex items-center justify-center">
+                        <img
+                          alt={product.productName}
+                          className="mb-2"
+                          src={`${API_BASE_URL}${product.productImageUrl}`}
+                          style={{
+                            height: "200",
+                            width: "200",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                      <h3 className="text-lg font-semibold mb-1 overflow-hidden" style={{
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2
+                      }}>
+                        {product.productName}
+                      </h3>
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold">{numberWithCommas(product.productPrice)}원</span>
+                      </div>
+                    </CardContent>
+                  </a>
+                </Card>
+              ))}
             </div>
           ) : (
             <p className="text-lg font-bold">상품이 없습니다.</p>
           )}
 
-                {totalPages > 0 && (
-                  <div className="flex flex-col items-center mt-4">
-                    <div className="flex">
-                      <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
-                      <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-                      <Button onClick={handleNextPage}><FaAngleRight /></Button>
-                    </div>
-                  </div>
-                )}
+          {totalPages > 0 && (
+            <div className="flex flex-col items-center mt-4">
+              <div className="flex">
+                <Button onClick={handlePrev}><FaAngleLeft /></Button>
+                <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                <Button onClick={handleNext}><FaAngleRight /></Button>
+              </div>
+            </div>
+          )}
         </section>
       </main>
     </div>

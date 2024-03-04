@@ -22,7 +22,7 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
 
   const isPriceValid = price !== '' && parseInt(price) <= 50000000;
   const isCompleteEnabled = productName !== '' && file !== null && isPriceValid && description !== '';
-  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null; 
+  const sessionKey = typeof window !== 'undefined' ? sessionStorage.getItem('key') : null;
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     // 파일 선택 이벤트가 발생했을 때 호출되었는지 확인

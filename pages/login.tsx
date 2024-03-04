@@ -10,7 +10,7 @@ import { API_BASE_URL } from '@/config/apiConfig';
 import { setSessionData } from '@/utils/auth';
 
 export default function Login() {
-  const router  = useRouter();
+  const router = useRouter();
   // 입력값 상태 관리
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -20,15 +20,15 @@ export default function Login() {
     event.preventDefault(); // 로그인 요청
     try {
       const response = await axios.post(`${API_BASE_URL}/api/login`, {
-        "userId":id,
-        "userPassword":password,
+        "userId": id,
+        "userPassword": password,
       });
 
       if (response.data.success) {
         alert("로그인에 성공하였습니다.");
-        
+
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
-        const {auth, certification, name, key} = response.data;
+        const { auth, certification, name, key } = response.data;
         setSessionData({ auth, certification, key, name });
 
         //auth에 따른 페이지 이동
@@ -68,7 +68,7 @@ export default function Login() {
             <Input id="password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <Button className="w-full" type="submit" onClick={handleSubmit}>
-           로그인
+            로그인
           </Button>
           <Button className="w-full" variant="outline">
             Google로 로그인하기(개발중)
