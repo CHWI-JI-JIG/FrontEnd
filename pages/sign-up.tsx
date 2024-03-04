@@ -66,12 +66,12 @@ export default function SignUp() {
     // 회원가입 요청
     try {
       const response = await axios.post(`${API_BASE_URL}/api/signup`, {
-        "buyerId":id,
-        "buyerPassword":password,
-        "buyerName":name,
-        "buyerPhone":phone,
-        "buyerEmail":email,
-        "buyerAddress":address,
+        "buyerId": id,
+        "buyerPassword": password,
+        "buyerName": name,
+        "buyerPhone": phone,
+        "buyerEmail": email,
+        "buyerAddress": address,
       });
 
       if (response.data.success) {
@@ -94,42 +94,42 @@ export default function SignUp() {
       </div>
       <div>
         <div className="space-y-4">
-          
-            <div className="space-y-2">
-              <Label htmlFor="id">아이디</Label>
-              <div className="flex items-center">
-                <Input id="id" required className="w-64" value={id} onChange={(e) => setId(e.target.value)} />
-                <button className="ml-2 bg-gray-500 text-white py-2 px-6 rounded" onClick={checkId}>검증</button>
-              </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="id">아이디</Label>
+            <div className="flex items-center">
+              <Input id="id" required className="w-64" value={id} onChange={(e) => setId(e.target.value)} />
+              <button className="ml-2 bg-gray-500 text-white py-2 px-6 rounded" onClick={checkId}>검증</button>
             </div>
-          
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="password">비밀번호</Label>
-            <Input id="password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            <Input id="password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="passwordConfirm">비밀번호 확인</Label>
-            <Input id="passwordConfirm" required type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)}/>
+            <Input id="passwordConfirm" required type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="name">이름</Label>
-            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)}/>
+            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">전화번호</Label>
-            <Input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)}/>
+            <Input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">이메일</Label>
-            <Input id="email" placeholder="m@example.com" required type="email"value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" placeholder="m@example.com" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="address">주소</Label>
-            <Input id="address" required value={address} onChange={(e) => setAddress(e.target.value)}/>
+            <Input id="address" required value={address} onChange={(e) => setAddress(e.target.value)} />
           </div>
 
           <Button className="w-full" type="submit" onClick={handleSubmit}>

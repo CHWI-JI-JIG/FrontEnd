@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
     }
   }
 
-  const isNextButtonDisabled = !(terms && privacy  && fourteen);
+  const isNextButtonDisabled = !(terms && privacy && fourteen);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 py-8">
@@ -292,7 +292,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div className="flex items-start space-x-4">
-          <input type="checkbox" id="privacy" checked={privacy} onChange={handleAgreement(setPrivacy)} />
+            <input type="checkbox" id="privacy" checked={privacy} onChange={handleAgreement(setPrivacy)} />
             <div>
               <label className="text-sm font-medium leading-none" htmlFor="privacy">
                 [필수] 개인정보 수집 및 이용 동의

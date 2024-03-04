@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, SVGProps } from 'react';
 import { useRouter } from 'next/router';
+import { Input } from "@/components/ui/MA_input"
+import { Label } from "@/components/ui/DE_label";
+import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/DE_select";
 import axios from 'axios';
 import { Button } from "@/components/ui/DE_button";
-import { Label } from "@/components/ui/DE_label";
+import "@/app/globals.css";
 import QaModal from './qa-modal'; // qa-modal 컴포넌트
 import Link from "next/link"
 import { getSessionData } from '@/utils/auth'
@@ -48,17 +51,17 @@ export default function Detail() {
     //         });
     //     }
     // }, []);
+
     const [product, setProduct] = useState<Product | null>(null);
     const [qas, setQas] = useState<QA[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedProductCount, setSelectedProductCount] = useState<string>("1");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // 모달 상태 추가 
-    const [pageStatus, setPageStatus] = useState<string>("nologin"); // 페이지 상태 추가
+    const [pageStatus, setPageStatus] = useState<string>("buyerPage"); // 페이지 상태 추가
     const [currentPage, setCurrentPage] = useState<number>(1); // 현재 페이지 상태 추가
     const [totalPage, setTotalPage] = useState<number>(1); // 총 페이지 상태 추가
     const router = useRouter();
     const { productId } = router.query;
-
 
     // 세션 데이터 가져오기
     const { auth, certification, key, name } = getSessionData();
@@ -151,38 +154,26 @@ export default function Detail() {
             }
             try {
                 const response = await axios.post(`${API_BASE_URL}/api/qa`, {
-                    productId: productId,
-                    page: page // 페이지 번호 추가
+                    productId: productId
                 });
                 const qa: PagedQAList = response.data;
                 setQas(qa.data);
-                setCurrentPage(page); // 현재 페이지 업데이트
                 setTotalPage(qa.totalPage); // 총 페이지 설정
             } catch (error) {
                 console.error('Error fetching Q&A:', error);
             }
         };
 
+
         checkLogin();
         fetchProductData();
+        //checkProductOwnership();
         fetchQAs(currentPage); // 초기 페이지 데이터 가져오기
     }, [productId, key, currentPage]);
 
-    const handlePageChange = async (page: number) => {
-        try {
-            const response = await axios.post(`${API_BASE_URL}/api/qa`, {
-                productId: productId,
-                page: page // 페이지 번호 추가
-            });
-            const qa: PagedQAList = response.data;
-            setQas(qa.data);
-            setTotalPage(qa.totalPage); // 총 페이지 설정
-            setCurrentPage(page); // 현재 페이지 설정
-        } catch (error) {
-            console.error('Error fetching Q&A:', error);
-        }
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page); // 페이지 변경 핸들러
     };
-    
 
     const handleSelectChange = (selectedValue: string) => {
         setSelectedProductCount(selectedValue);
@@ -196,6 +187,7 @@ export default function Detail() {
             }
 
             if (!product) {
+                console.log("product2");
                 return;
             }
 
@@ -209,26 +201,26 @@ export default function Detail() {
             Cookies.set('purchaseData', JSON.stringify(purchaseData));
             console.log('Purchase Data:', purchaseData);
 
+            console.log("product3");
             //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
             //console.log("구매 요청:", purchaseResponse.data);
         } catch (error) {
             console.error('Error handling purchase:', error);
+            console.log("product4");
         }
     };
-    
-    
 
     const handleAnswer = async (qId: string) => {
         // input 창에서 작성된 답변 가져오기
         const answerInput = document.getElementById(`answerInput_${qId}`) as HTMLInputElement;
         const answer = answerInput.value;
-
+    
         // 답변이 비어 있는지 확인
         if (answer.trim() === '') {
             alert('답변을 작성해주세요.');
             return;
         }
-
+    
         try {
             // 답변 작성 API 호출
             const response = await axios.post(`${API_BASE_URL}/api/answer`, {
@@ -238,10 +230,10 @@ export default function Detail() {
             });
             // 답변 작성이 성공했을 때의 로직 처리
             console.log('답변 작성 성공:', response.data);
-
+    
             // 성공적으로 답변을 작성했으므로, 화면을 다시 로드합니다.
             window.location.reload(); // 화면 새로고침
-
+            
         } catch (error) {
             console.error('Error handling answer:', error);
         }
@@ -318,7 +310,7 @@ export default function Detail() {
                         <p>{product.productDescription}</p>
                         <div className="grid gap-4 md:gap-8">
                             <form className="grid gap-4 md:gap-8">
-                                {pageStatus !== 'sellerPage' && (
+                                {pageStatus === 'buyerPage' && (
                                     <div className="grid gap-2">
                                         <Label className="text-base" htmlFor="quantity">
                                             수량
@@ -342,18 +334,17 @@ export default function Detail() {
                                             </Button>
                                         </a>
                                     </Link>
-                                    // <Button size="lg" onClick={handlePurchase} style={{ width: '100%', display: 'block' }}>
-                                    //     구매하기
-                                    // </Button>
                                 )}
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <hr className="my-6 border-gray-300 dark:border-gray-600" /> {/* 구분선 */}
+                <hr className="my-6 border-gray-300 dark:border-gray-600" />
+
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="font-bold text-4xl mb-2">Q&A</h2>
+
                     {pageStatus === 'buyerPage' && (
                         <>
                             <Button onClick={openModal}>Q&A 작성</Button>
@@ -370,22 +361,37 @@ export default function Detail() {
 
                 <div>
                     {qas.map((qa, index) => (
-                        <div key={qa.qId} className="text-sm" style={{ margin: '10px 0' }}>
+                        <div key={qa.qId} className="text-sm mb-4">
                             <div className="border-b border-gray-300 pb-4">
-                                <h3 className="font-medium text-lg">Q. {qa.question}</h3>
+                                <h3 className="font-medium text-lg mb-2">Q. {qa.question}</h3>
+
                                 {pageStatus === 'sellerPage' && qa.answer === null && (
-                                    <>
-                                        <input type="text" id={`answerInput_${qa.qId}`} placeholder="답변을 작성해주세요" />
-                                        <button onClick={() => handleAnswer(qa.qId)}>답변</button>
-                                    </>
+                                    <div className="flex space-x-4 items-center">
+                                        <input
+                                            type="text"
+                                            id={`answerInput_${qa.qId}`}
+                                            placeholder="답변을 작성해주세요"
+                                            className="border p-2 rounded w-full"
+                                        />
+                                        <button
+                                            onClick={() => handleAnswer(qa.qId)}
+                                            className="text-white bg-[#121513] py-2 px-4 rounded"
+                                            style={{ whiteSpace: 'nowrap' }}
+                                        >
+                                            답변
+                                        </button>
+                                    </div>
                                 )}
                                 {qa.answer !== null && (
-                                    <p className="text-gray-500">A. {qa.answer}</p>
+                                    <p className="font-medium text-lg text-gray-500 mt-2">A. {qa.answer}</p>
                                 )}
                             </div>
                         </div>
                     ))}
                 </div>
+
+
+
 
                 <Pagination currentPage={currentPage} totalPage={totalPage} onPageChange={handlePageChange} />
                 {isModalOpen && <QaModal closeModal={closeModal} productId={productId as string} />}
