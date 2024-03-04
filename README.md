@@ -9,8 +9,11 @@ cd frontend
 ```
 
 # How to Run
+install node.js : https://nodejs.org/en
+
 ## How to Test
 ```
+npm install
 npx next build
 npx next start
 ```

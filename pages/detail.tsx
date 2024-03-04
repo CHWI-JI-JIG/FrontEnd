@@ -344,15 +344,20 @@ export default function Detail() {
                   </div>
                 )}
 
-                {/* 버튼을 사용자 권한에 따라 조건부 렌더링 */}
                 {pageStatus !== 'sellerPage' && (
-                  <Link href="/payment-page" as="/payment-page">
-                    <a>
+                  sessionStorage.getItem('key') ? (
+                    <Link href="/payment-page">
                       <Button size="lg" onClick={handlePurchase} style={{ width: '100%', display: 'block' }}>
                         구매하기
                       </Button>
-                    </a>
-                  </Link>
+                    </Link>
+                  ) : (
+                    <Link href="/login">
+                        <Button size="lg" style={{ width: '100%', display: 'block' }}>
+                          구매하기
+                        </Button>
+                    </Link>
+                  )
                 )}
               </form>
             </div>
