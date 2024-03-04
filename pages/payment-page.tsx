@@ -30,6 +30,7 @@ export default function PaymentPage() {
     });
 
     const [finalPrice, setFinalPrice] = useState(0);
+    const totalPrcie = productData.productCount * productData.productPrice
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -234,7 +235,7 @@ export default function PaymentPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>금액</Label>
-                                        <div>{productData.productPrice}</div>
+                                        <div>{totalPrcie}</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -276,7 +277,7 @@ export default function PaymentPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <div>{productData.productPrice}</div>
+                    <div>{totalPrcie}</div>
                     <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>
