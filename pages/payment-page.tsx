@@ -34,7 +34,7 @@ export default function PaymentPage() {
     useEffect(() => {
         const fetchUserData = async () => {
             const sessionKey = getSessionData().key;
-            const result = await axios.post('http://192.168.0.133:5000/api/c-user', {key : sessionKey});
+            const result = await axios.post(`${API_BASE_URL}/api/c-user`, {key : sessionKey});
             setUserData(result.data);
             console.log(result.data)
         };
@@ -129,7 +129,7 @@ export default function PaymentPage() {
                 productPrice : productData.productPrice
             };
 
-            const response = await fetch('http://192.168.0.133:5000/api/userproductinfo',{
+            const response = await fetch(`${API_BASE_URL}/api/userproductinfo`,{
                 method: 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
@@ -149,7 +149,7 @@ export default function PaymentPage() {
                 transId : responseData.transId
             }));
             
-            window.open('/pay-popup', '_blank', 'toolbar=no, width=500, height=500');
+            window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
             console.log('API call error');
         }

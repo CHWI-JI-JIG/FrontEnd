@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/OR_button"
 import { CardContent, Card } from "@/components/ui/OR_card"
-
 import { SVGProps } from "react"
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import "@/app/globals.css"
 import React, { useEffect, useState } from 'react';
 import { API_BASE_URL } from '@/config/apiConfig';
 import { getSessionData } from '@/utils/auth';
+import { handleNextPage, handlePrevPage, numberWithCommas, formatDate } from '@/utils/commonUtils';
 
 export default function Seller_order() {
   /*상품정보 받는 중*/
@@ -18,70 +18,40 @@ export default function Seller_order() {
   useEffect(() => {
     // POST 요청 body에 담을 데이터
     const requestData = {
-    key: key,
-    page: page,  // page를 body에 포함
+      key: key,
+      page: page,  // page를 body에 포함
     };
 
     // POST 요청 설정
     const requestOptions = {
-    method: 'POST',
-    headers: {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestData),
+      },
+      body: JSON.stringify(requestData),
     };
 
     // 서버에 POST 요청 보내기
     fetch(`${API_BASE_URL}/api/seller-order`, requestOptions)
-    .then(response => response.json())
-    .then((data: PagedOrderList) => {
+      .then(response => response.json())
+      .then((data: PagedOrderList) => {
         console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
-    })
-    .catch(error => console.error('Error fetching data:', error));
-}, [key, page]);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, [key, page]);
 
-  const handleNextPage = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
-    }
-  };
+  const handleNext = () => handleNextPage(page, totalPages, setPage);
+  const handlePrev = () => handlePrevPage(page, setPage);
 
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
-    /*가격 자릿수*/
-    const numberWithCommas = (number: { toLocaleString: () => any }) => {
-        return number.toLocaleString();
-    };
-
-    /*날짜 형식*/
-    function formatDate(dateString: string | number | Date) {
-        const date = new Date(dateString);
-    
-        const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric', month: '2-digit', day: '2-digit',
-            hour: '2-digit', minute: '2-digit', hour12: false};
-    
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const [{ value: month },,{ value: day },,{ value: year },,
-            { value: hour },,{ value: minute }
-        ] = formatter.formatToParts(date);
-    
-        return `${year}/${month}/${day} ${hour}:${minute}`;
-    }
-
-    return (
-      <div className="max-w-screen-xl mx-auto bg-white">
-        <main className="py-6 px-6">
-          <section className="mb-6">
-            <div className="grid grid-cols-1 gap-4">
-              {orders.length > 0 ? (
-                orders.map(order => (
+  return (
+    <div className="max-w-screen-xl mx-auto bg-white">
+      <main className="py-6 px-6">
+        <section className="mb-6">
+          <div className="grid grid-cols-1 gap-4">
+            {orders.length > 0 ? (
+              orders.map(order => (
                 <Card className="w-full flex" key={order.productId}>
                   <CardContent className="flex-1 flex items-center">
                     <div className="flex-shrink-0 mr-4 mt-4">
@@ -119,23 +89,26 @@ export default function Seller_order() {
                     </div>
                   </CardContent>
                 </Card>
-                ))
-                ) : (
-                    <p className="text-gray-500">등록된 상품이 없습니다</p>
-                )}
-            </div>
+              ))
+            ) : (
+              <p className="text-gray-500">등록된 상품이 없습니다</p>
+            )}
+          </div>
 
+          {totalPages > 0 && (
             <div className="flex flex-col items-center mt-4">
               <div className="flex">
-                <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
+                <Button onClick={handlePrev}><FaAngleLeft /></Button>
                 <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-                <Button onClick={handleNextPage}><FaAngleRight /></Button>
+                <Button onClick={handleNext}><FaAngleRight /></Button>
               </div>
             </div>
-          </section>
-        </main>
-      </div>
-    )
+          )}
+
+        </section>
+      </main>
+    </div>
+  )
 }
 
 
@@ -146,13 +119,13 @@ interface Order {
   buyerAddr: string;
 
   productId: string;
-  productName:string;
-  productImageUrl:string;
+  productName: string;
+  productImageUrl: string;
 
   sellerId: string;
-  orderQuantity:Number;
-  orderPrice:Number;
-  orderDate:Date;
+  orderQuantity: Number;
+  orderPrice: Number;
+  orderDate: Date;
 }
 
 interface PagedOrderList {

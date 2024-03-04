@@ -4,102 +4,103 @@ import { SVGProps, useEffect, useState } from "react"
 import { Button } from "@/components/ui/MA_button";
 import "@/app/globals.css"
 import axios from "axios";
-import { getSessionData } from '@/utils/auth';
+import { getSessionData, handleLogout } from '@/utils/auth';
 import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-
+import { handleNextPage, handlePrevPage, numberWithCommas, formatDate } from '@/utils/commonUtils';
+import { handleSearch, searchProduct } from '@/utils/search';
 export default function Mypage() {
-  const router = useRouter();
   // 세션 데이터 가져오기
   const { auth, certification, name, key } = getSessionData();
+  const router = useRouter();
+
+  //검색창 테스트
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState<searchProduct[]>([]);
+  const onSearch = async () => {
+    await handleSearch(keyword, setKeyword, setSearchResults, router);
+  };
+
+  // //mypage 접근통제(취약점 생성!!!)
+  //   useEffect(() => {
+  //     if (auth !== 'BUYER') {
+  //       let redirectTo = '/'; 
+  //       if (auth === 'SELLER') {
+  //         redirectTo = '/seller';
+  //       } else if (auth === 'ADMIN') {
+  //         redirectTo = '/admin';
+  //       }
+
+  //       alert('접근 권한이 없습니다.');
+  //       router.push(redirectTo).then(() => {
+  //         // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+  //         window.location.href = redirectTo;
+  //       });
+  //     }
+  //   }, [auth,router]);
+  // //mypage 접근통제
+
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [totalCount, setTotalCount] = useState(0);
-  
-  const handleLogout = () => {
-    // sessionStorage 초기화
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-      router.push('/');
-    }
+
+  const handleLogoutClick = () => {
+    handleLogout(router);
   };
 
   useEffect(() => {
     // POST 요청 body에 담을 데이터
     const requestData = {
-    key: key,
-    page: page,  // page를 body에 포함
+      key: key,
+      page: page,  // page를 body에 포함
     };
 
     // POST 요청 설정
     const requestOptions = {
-    method: 'POST',
-    headers: {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestData),
+      },
+      body: JSON.stringify(requestData),
     };
 
     // 서버에 POST 요청 보내기
     fetch(`${API_BASE_URL}/api/order-history`, requestOptions)
-    .then(response => response.json())
-    .then((data: PagedOrderList) => {
+      .then(response => response.json())
+      .then((data: PagedOrderList) => {
         console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
-        setTotalCount(data.totalCount);
-    })
-    .catch(error => console.error('Error fetching data:', error));
-}, [key, page]);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, [key, page]);
 
-
-const handleNextPage = () => {
-  if (page < totalPages) {
-    setPage(page + 1);
-  }
-};
-
-const handlePrevPage = () => {
-  if (page > 1) {
-    setPage(page - 1);
-  }
-};
-
-  /*가격 자릿수*/
-  const numberWithCommas = (number: { toLocaleString: () => any }) => {
-      return number.toLocaleString();
-  };
-
-  /*날짜 형식*/
-  function formatDate(dateString: string | number | Date) {
-      const date = new Date(dateString);
-  
-      const options: Intl.DateTimeFormatOptions = {
-          year: 'numeric', month: '2-digit', day: '2-digit',
-          hour: '2-digit', minute: '2-digit', hour12: false};
-  
-      const formatter = new Intl.DateTimeFormat('en-US', options);
-      const [{ value: month },,{ value: day },,{ value: year },,
-          { value: hour },,{ value: minute }
-      ] = formatter.formatToParts(date);
-  
-      return `${year}/${month}/${day} ${hour}:${minute}`;
-  }
+  const handleNext = () => handleNextPage(page, totalPages, setPage);
+  const handlePrev = () => handlePrevPage(page, setPage);
 
   return (
     <div className="bg-white">
       <header className="flex items-center justify-between py-8 px-6 text-white bg-[#121513]">
-        <img src="/cjj.png" alt="취지직 로고" 
-        className="w-auto h-12" onClick={() => {window.location.href = '/';}} />
+        <img src="/cjj.png" alt="취지직 로고"
+          className="w-auto h-12" onClick={() => { window.location.href = '/'; }} />
+
+        {/* 검색창 테스트 */}
+        <div className="flex items-center space-x-2">
+            <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+              value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+            <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
+              <SearchIcon className="text-gray-700" />
+            </Button>
+        </div>
+
         <div className="flex space-x-4">
           {certification ? (
             <>
               <Link href={auth === 'BUYER' ? '/mypage' : auth === 'SELLER' ? '/seller' : '/admin'}>
                 <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost">{name}님</Button>
               </Link>
-              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogout}>
+              <Button className="text-black bg-[#F1F5F9] hover:bg-[#D1D5D9]" variant="ghost" onClick={handleLogoutClick}>
                 로그아웃
               </Button>
             </>
@@ -164,36 +165,45 @@ const handlePrevPage = () => {
                 {orders.length === 0 ? (
                   <p>주문 내역이 없습니다</p>
                 ) : (
-                <div className="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {orders.map((order, index) => (
-                    <div key={index} className="bg-white p-4">
-                      <img
-                        alt="Product Image"
-                        className="rounded-md object-cover"
-                        height={64}
-                        src={`${API_BASE_URL}${order.productImageUrl}`}
-                        style={{
-                          aspectRatio: "64/64",
-                          objectFit: "cover",
-                        }}
-                        width={64}
-                      />
-                      <h4 className="mt-2 text-base font-medium text-gray-900">{order.productName}</h4>
-                      <p className="mt-1 text-sm text-gray-500">구매수량: {order.orderQuantity}</p>
-                      <p className="mt-1 text-sm text-gray-500">구매총가격: {order.orderPrice}</p>
-                      <p className="mt-1 text-sm text-gray-500">구매날짜: {formatDate(order.orderDate)}</p>
-                    </div>
-                  ))}
-                </div>
+                  <div className="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {orders.map((order, index) => (
+                      <div key={index} className="bg-white p-4">
+                        <img
+                          alt="Product Image"
+                          className="rounded-md object-cover"
+                          height={64}
+                          src={`${API_BASE_URL}${order.productImageUrl}`}
+                          style={{
+                            aspectRatio: "64/64",
+                            objectFit: "cover",
+                          }}
+                          width={64}
+                        />
+
+                        <h4 className="mt-2 text-base font-medium text-gray-900 overflow-hidden" style={{
+                          display: '-webkit-box',
+                          WebkitBoxOrient: 'vertical',
+                          WebkitLineClamp: 2,
+                        }}>
+                          {order.productName}
+                        </h4>
+                        <p className="mt-1 text-sm text-gray-500">구매수량: {order.orderQuantity}</p>
+                        <p className="mt-1 text-sm text-gray-500">구매총가격: {numberWithCommas(order.orderPrice)}원</p>
+                        <p className="mt-1 text-sm text-gray-500">구매날짜: {formatDate(order.orderDate)}</p>
+                      </div>
+                    ))}
+                  </div>
                 )}
 
-                <div className="flex flex-col items-center mt-4">
-                  <div className="flex">
-                    <Button onClick={handlePrevPage}><FaAngleLeft /></Button>
-                    <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
-                    <Button onClick={handleNextPage}><FaAngleRight /></Button>
+                {totalPages > 0 && (
+                  <div className="flex flex-col items-center mt-4">
+                    <div className="flex">
+                      <Button onClick={handlePrev}><FaAngleLeft /></Button>
+                      <span className="mx-4">{`페이지 ${page} / ${totalPages}`}</span>
+                      <Button onClick={handleNext}><FaAngleRight /></Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
             </div>
@@ -241,7 +251,7 @@ function UserIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
-function BoxIcon(props:SVGProps<SVGSVGElement>) {
+function BoxIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -262,7 +272,7 @@ function BoxIcon(props:SVGProps<SVGSVGElement>) {
   )
 }
 
-function MessageCircleIcon(props:SVGProps<SVGSVGElement>) {
+function MessageCircleIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
