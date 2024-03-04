@@ -35,7 +35,6 @@ export default function Seller_order() {
     fetch(`${API_BASE_URL}/api/seller-order`, requestOptions)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
-        console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
       })

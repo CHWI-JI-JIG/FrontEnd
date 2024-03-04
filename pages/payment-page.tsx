@@ -38,7 +38,6 @@ export default function PaymentPage() {
             const sessionKey = getSessionData().key;
             const result = await axios.post(`${API_BASE_URL}/api/c-user`, {key : sessionKey});
             setUserData(result.data);
-            console.log(result.data)
         };
 
         fetchUserData();
@@ -52,7 +51,6 @@ export default function PaymentPage() {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
         } else {
-            console.log('No purchaseData cookie found');
         }
 
     }, []);
@@ -65,7 +63,6 @@ export default function PaymentPage() {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
         } else {
-            console.log('No purchaseData cookie found');
         }
 
     }, []);
@@ -137,8 +134,6 @@ export default function PaymentPage() {
                 body: JSON.stringify(UserAndProductInfo)
             });
 
-            console.log("response = " + JSON.stringify(response))
-
             const responseData = await response.json();
 
 
@@ -150,7 +145,6 @@ export default function PaymentPage() {
             
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
-            console.log('API call error');
         }
     };
 

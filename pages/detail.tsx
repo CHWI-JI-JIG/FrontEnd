@@ -89,7 +89,6 @@ export default function Detail() {
             setPageStatus('sellerPage');
           }
         } catch (error) {
-          console.error('Error fetching session:', error);
         }
       }
     };
@@ -97,7 +96,6 @@ export default function Detail() {
     // 상품 정보 로드
     const fetchProductData = async () => {
       if (!productId) {
-        console.log("잘못된 접근...");
         return;
       }
       setLoading(true);
@@ -107,12 +105,10 @@ export default function Detail() {
         const product = productData;
         if (product) {
           setProduct(product);
-          console.log(product);
         } else {
           return <div>로딩 중...</div>;
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
@@ -150,7 +146,6 @@ export default function Detail() {
     // Q&A 로드
     const fetchQAs = async (page: number) => {
       if (!productId) {
-        console.log("잘못된 접근...");
         return;
       }
       try {
@@ -163,7 +158,6 @@ export default function Detail() {
         setCurrentPage(page);
         setTotalPage(qa.totalPage); // 총 페이지 설정
       } catch (error) {
-        console.error('Error fetching Q&A:', error);
       }
     };
 
@@ -183,7 +177,6 @@ export default function Detail() {
       setTotalPage(qa.totalPage); // 총 페이지 설정
       setCurrentPage(page); // 현재 페이지 설정
     } catch (error) {
-      console.error('Error fetching Q&A:', error);
     }
   };
 
@@ -210,12 +203,10 @@ export default function Detail() {
       };
 
       Cookies.set('purchaseData', JSON.stringify(purchaseData));
-      console.log('Purchase Data:', purchaseData);
 
       //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
       //console.log("구매 요청:", purchaseResponse.data);
     } catch (error) {
-      console.error('Error handling purchase:', error);
     }
   };
 
@@ -238,13 +229,11 @@ export default function Detail() {
         key: key
       });
       // 답변 작성이 성공했을 때의 로직 처리
-      console.log('답변 작성 성공:', response.data);
 
       // 성공적으로 답변을 작성했으므로, 화면을 다시 로드합니다.
       window.location.reload(); // 화면 새로고침
 
     } catch (error) {
-      console.error('Error handling answer:', error);
     }
   };
 

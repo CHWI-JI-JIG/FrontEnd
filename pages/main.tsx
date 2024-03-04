@@ -43,10 +43,7 @@ export default function Main() {
     fetch(`${API_BASE_URL}/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        console.log('Search Results:', data.data);
-        if (data.data.length > 0) {
-          console.log('First product image URL:', data.data[0].productImageUrl);
-        }
+
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })

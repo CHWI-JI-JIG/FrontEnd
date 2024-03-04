@@ -15,13 +15,10 @@ export default function payPopup() {
     const nextPassword = [...password];
     const firstEmptyIndex = nextPassword.indexOf(null);
 
-    console.log('Num Button Clicked:', num); // 확인을 위한 로그
-    
     if (firstEmptyIndex !== -1) {
       nextPassword[firstEmptyIndex] = num;
       setPassword(nextPassword);
 
-      console.log('Password Updated:', nextPassword); // 확인을 위한 로그
     }
   };
 
@@ -43,7 +40,6 @@ export default function payPopup() {
   };
   const initPass  = '123456'
   const handleOKButtonClick = async () => {
-    console.log('클릭했쏘요~', password);
     const enterPass = password.join('');
     const Pass = enterPass === initPass;
   
@@ -64,13 +60,10 @@ export default function payPopup() {
   
         if (response.ok) {
           const responseData = await response.json();
-          console.log(responseData); 
           return responseData.success;  // 이 부분을 수정했습니다.
         } else {
-          console.log('Server responded with status:', response.status);
         }
       } catch (error) {
-        console.log('Failed to send request:', error);
       }
       return false;  // 실패 시 false 반환
     };
@@ -83,12 +76,10 @@ export default function payPopup() {
         const success = await sendPaymentInfo(transId, price, cardNum);  // success 받기
         window.opener.postMessage({ success }, '*');  // success 메시지 전달
       } else {
-        console.log('undefined cookie');
         window.opener.postMessage({ success: false }, '*');
       }
       window.close();
     } else {
-      console.log('False');
       window.opener.postMessage({ success: false }, '*');
       window.close();
     }
