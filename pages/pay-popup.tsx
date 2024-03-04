@@ -42,12 +42,12 @@ export default function payPopup() {
     }
   };
   const initPass  = '123456'
-  const handleOKButtonClick = () => {
-    console.log('클릭했쏘요~',password);
+  const handleOKButtonClick = async () => {
+    console.log('클릭했쏘요~', password);
     const enterPass = password.join('');
-    const Pass = enterPass===initPass
-
-    const sendPaymentInfo = async (transId: string, price:number, cardNum:string) => {
+    const Pass = enterPass === initPass;
+  
+    const sendPaymentInfo = async (transId: string, price: number, cardNum: string) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/PG/sendpayinfo`, {
           method: 'POST',
@@ -55,15 +55,15 @@ export default function payPopup() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            "key" : transId,
-            "cardNum": cardNum,
-            "productPrice":price 
+            key: transId,
+            cardNum: cardNum,
+            productPrice: price,
           }),
         });
-    
+  
         if (response.ok) {
           const responseData = await response.json();
-    
+  
           if (responseData.success) {
             console.log('Payment info sent successfully');
           } else {
@@ -76,30 +76,25 @@ export default function payPopup() {
         console.log('Failed to send request:', error);
       }
     };
-
+  
     const paymentInfo = Cookies.get('paymentInfo');
-
-    if(Pass){
-
-      if(paymentInfo){
+  
+    if (Pass) {
+      if (paymentInfo) {
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
-        sendPaymentInfo(transId, price, cardNum)
-
-      }else{
-        console.log('undefind cookie');
+        await sendPaymentInfo(transId, price, cardNum);
+      } else {
+        console.log('undefined cookie');
       }
-        
-
-      // 백엔드에 요청을 보내고 그 결과를 받는 코드가 필요합니다.
-      // 백엔드에서 success: True를 받으면
-      console.log("True");
+  
+      // 데이터를 저장한 후 창을 닫음
       window.opener.postMessage({ success: true }, '*');
+      window.close();
     } else {
-      console.log("False");
+      console.log('False');
       window.opener.postMessage({ success: false }, '*');
+      window.close();
     }
-
-    window.close();
   };
 
   useEffect(() => {
