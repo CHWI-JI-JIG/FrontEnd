@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css"
 import { getSessionData } from "@/utils/auth"
+import { numberWithCommas } from '@/utils/commonUtils';
 
 export default function PaymentPage() {
 
@@ -100,9 +101,7 @@ export default function PaymentPage() {
     }
 
     const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) =>{
-        console.log("Selected card number:", event.target.value); 
         setCardNum(event.target.value);
-        console.log("Current cardNum state:", cardNum); 
     }
 
     const handleUsePointsClick = async () => {
@@ -142,11 +141,10 @@ export default function PaymentPage() {
 
             const responseData = await response.json();
 
-            console.log(responseData.transId, responseData.succcess);
 
             Cookies.set('paymentInfo', JSON.stringify({
                 cardNum : cardNum,
-                price : productData.productPrice,
+                price : totalPrcie,
                 transId : responseData.transId
             }));
             
@@ -158,23 +156,22 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const handlePopupMessage = (event: MessageEvent) => {
-            if (event.data.success) {
-                //pg사의 post 요청
-                // 팝업에서 success: True를 받았을 때
+            if (event.data.success === true) {
+                // 팝업에서 success: true를 받았을 때
                 alert("결제가 완료되었습니다.")
-                // 5초 후에 페이지 이동
                 setTimeout(() => {
                     window.location.href = '/mypage';
-                }, 3000);
-            }else{
-                console.log("결제 실패. 메인으로 이동합니다.");
+                }, 2000);
+            } else if (event.data.success === false) {
+                alert("결제가 실패 했습니다.")
+                setTimeout(() => {
+                    window.location.href = '/main';
+                }, 2000);
             }
         };
-
-        // 메시지 이벤트 리스너 등록
+    
         window.addEventListener('message', handlePopupMessage);
-
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+    
         return () => {
             window.removeEventListener('message', handlePopupMessage);
         };
@@ -235,7 +232,7 @@ export default function PaymentPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>금액</Label>
-                                        <div>{totalPrcie}</div>
+                                        <div>{numberWithCommas(totalPrcie)}원</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -277,7 +274,7 @@ export default function PaymentPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <div>{totalPrcie}</div>
+                    <div>{numberWithCommas(totalPrcie)}</div>
                     <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>

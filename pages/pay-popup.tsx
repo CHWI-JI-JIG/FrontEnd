@@ -58,23 +58,21 @@ export default function payPopup() {
             key: transId,
             cardNum: cardNum,
             productPrice: price,
+            success: true
           }),
         });
   
         if (response.ok) {
           const responseData = await response.json();
-  
-          if (responseData.success) {
-            console.log('Payment info sent successfully');
-          } else {
-            console.log('Failed to send payment info');
-          }
+          console.log(responseData); 
+          return responseData.success;  // 이 부분을 수정했습니다.
         } else {
           console.log('Server responded with status:', response.status);
         }
       } catch (error) {
         console.log('Failed to send request:', error);
       }
+      return false;  // 실패 시 false 반환
     };
   
     const paymentInfo = Cookies.get('paymentInfo');
@@ -82,13 +80,12 @@ export default function payPopup() {
     if (Pass) {
       if (paymentInfo) {
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
-        await sendPaymentInfo(transId, price, cardNum);
+        const success = await sendPaymentInfo(transId, price, cardNum);  // success 받기
+        window.opener.postMessage({ success }, '*');  // success 메시지 전달
       } else {
         console.log('undefined cookie');
+        window.opener.postMessage({ success: false }, '*');
       }
-  
-      // 데이터를 저장한 후 창을 닫음
-      window.opener.postMessage({ success: true }, '*');
       window.close();
     } else {
       console.log('False');
