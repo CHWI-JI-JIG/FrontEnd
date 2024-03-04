@@ -201,7 +201,7 @@ export default function PaymentPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor="userId">구매자 아이디</Label>
-                                        <Input id="userId" placeholder="아이디" value={userData.userId} onChange={handleInputChange} />
+                                        <Input id="userId" placeholder="아이디" value={userData.userId} onChange={handleInputChange} readOnly/>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor="phone">전화번호</Label>
