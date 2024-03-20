@@ -33,8 +33,6 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
       // 선택된 파일명을 출력하여 확인
       setSelectedFileName(selectedFile.name);
     }
-    // 콘솔을 통해 선택된 파일 확인
-    console.log("selectedFile:", selectedFile);
   };
 
 
@@ -74,22 +72,16 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
           method: 'POST',
           body: formData,
         });
-        console.log('Response:', response);
         if (response.ok) {
-          console.log('상품 등록 성공');
           onClose();
           window.location.reload();
         } else {
-          console.error('상품 등록 실패');
           alert('상품 등록에 실패했습니다.');
         }
       } catch (error) {
-        console.error('상품 등록 중 오류 발생:', error);
         alert('상품 등록 중 오류가 발생했습니다.');
       }
     } else {
-      // 파일이 선택되지 않은 경우에 대한 처리
-      console.error('파일이 선택되지 않았습니다.');
     }
   };
 

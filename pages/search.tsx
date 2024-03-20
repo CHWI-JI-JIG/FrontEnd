@@ -41,7 +41,6 @@ export default function Search() {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching search results:', error);
       return { data: [], totalPage: 1 };
     }
   };
@@ -53,7 +52,6 @@ export default function Search() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchSearchResults();
-      console.log(data.data);
       setSearchResults(data.data);
       setTotalPages(data.totalPage);
     };

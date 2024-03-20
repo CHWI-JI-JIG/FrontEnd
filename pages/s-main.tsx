@@ -38,7 +38,6 @@ export default function Seller_main() {
     fetch(`${API_BASE_URL}/api/sproducts`, requestOptions)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        console.log('data', data);
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })

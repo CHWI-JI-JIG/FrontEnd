@@ -69,7 +69,6 @@ export default function Mypage() {
     fetch(`${API_BASE_URL}/api/order-history`, requestOptions)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
-        console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
       })
