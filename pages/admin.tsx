@@ -18,24 +18,24 @@ export default function Admin() {
   const { auth, certification, key, name } = getSessionData();
   const router = useRouter();
 
-  // //admin 페이지 접근통제(취약점 생성!!!)
-  // useEffect(() => {
-  //   if (auth !== 'ADMIN') {
-  //     let redirectTo = '/'; 
-  //     if (auth === 'SELLER') {
-  //       redirectTo = '/seller';
-  //     } else if (auth === 'BUYER') {
-  //       redirectTo = '/main';
-  //     }
+  //admin 페이지 접근통제(취약점 생성!!!)
+  useEffect(() => {
+    if (auth !== 'ADMIN') {
+      let redirectTo = '/'; 
+      if (auth === 'SELLER') {
+        redirectTo = '/seller';
+      } else if (auth === 'BUYER') {
+        redirectTo = '/main';
+      }
 
-  //     alert('접근 권한이 없습니다.');
-  //     router.push(redirectTo).then(() => {
-  //       // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //       window.location.href = redirectTo;
-  //     });
-  //   }
-  // }, [auth,router]);
-  // //admin 페이지 접근통제
+      alert('접근 권한이 없습니다.');
+      router.push(redirectTo).then(() => {
+        // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+        window.location.href = redirectTo;
+      });
+    }
+  }, [auth,router]);
+  //admin 페이지 접근통제
 
   const [userData, setUsers] = useState<User[]>([]);
   const [allUserData, setAllUsers] = useState<User[]>([]);
@@ -73,7 +73,6 @@ export default function Admin() {
       key: key,
       page: page,  // page를 body에 포함
     };
-    console.log('데이터 조회 시 Request key : ', key)
 
     // POST 요청 설정
     const requestOptions = {
@@ -88,7 +87,6 @@ export default function Admin() {
     fetch(`${API_BASE_URL}/api/admin`, requestOptions)
       .then(response => response.json())
       .then((data: PagedUserList) => {
-        console.log("admin:", data.data)
         setAllUsers(data.data); // 전체 데이터 업데이트
         setUsers(data.data);    // 현재 필터링된 데이터 업데이트
         setTotalPages(data.totalPage);
@@ -118,7 +116,6 @@ export default function Admin() {
       userKey: userKey,
       userAuth: selectedRoleIn,
     };
-    console.log('role change 전송 data:', requestData);
 
     // POST 요청 설정
     const requestOptions = {
@@ -133,7 +130,6 @@ export default function Admin() {
     fetch(`${API_BASE_URL}/api/user-role`, requestOptions)
       .then(response => response.json())
       .then((data) => {
-        console.log("user-role:", data.data)
         if (data.success) {
           alert('권한 변경 성공');
 

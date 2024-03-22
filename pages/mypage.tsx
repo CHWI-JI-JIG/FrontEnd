@@ -22,28 +22,29 @@ export default function Mypage() {
     await handleSearch(keyword, setKeyword, setSearchResults, router);
   };
 
-  // //mypage 접근통제(취약점 생성!!!)
-  //   useEffect(() => {
-  //     if (auth !== 'BUYER') {
-  //       let redirectTo = '/'; 
-  //       if (auth === 'SELLER') {
-  //         redirectTo = '/seller';
-  //       } else if (auth === 'ADMIN') {
-  //         redirectTo = '/admin';
-  //       }
+  //mypage 접근통제(취약점 생성!!!)
+    useEffect(() => {
+      if (auth !== 'BUYER') {
+        let redirectTo = '/'; 
+        if (auth === 'SELLER') {
+          redirectTo = '/seller';
+        } else if (auth === 'ADMIN') {
+          redirectTo = '/admin';
+        }
 
-  //       alert('접근 권한이 없습니다.');
-  //       router.push(redirectTo).then(() => {
-  //         // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //         window.location.href = redirectTo;
-  //       });
-  //     }
-  //   }, [auth,router]);
-  // //mypage 접근통제
+        alert('접근 권한이 없습니다.');
+        router.push(redirectTo).then(() => {
+          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+          window.location.href = redirectTo;
+        });
+      }
+    }, [auth,router]);
+  //mypage 접근통제
 
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(1);
 
   const handleLogoutClick = () => {
     handleLogout(router);
@@ -69,7 +70,6 @@ export default function Mypage() {
     fetch(`${API_BASE_URL}/api/order-history`, requestOptions)
       .then(response => response.json())
       .then((data: PagedOrderList) => {
-        console.log('data', data);
         setOrders(data.data);
         setTotalPages(data.totalPage);
       })
@@ -151,7 +151,7 @@ export default function Mypage() {
                   <div className="bg-white p-4">
                     <BoxIcon className="h-6 w-6 text-gray-500" />
                     <h4 className="mt-2 text-base font-medium text-gray-900">주문</h4>
-                    <p className="mt-1 text-sm text-gray-500">{orders.length}건</p>
+                    <p className="mt-1 text-sm text-gray-500">{totalCount}건</p>
                   </div>
                   <div className="bg-white p-4">
                     <MessageCircleIcon className="h-6 w-6 text-gray-500" />
