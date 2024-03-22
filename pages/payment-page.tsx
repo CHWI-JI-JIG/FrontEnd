@@ -193,10 +193,6 @@ export default function PaymentPage() {
                                         <Input id="name" placeholder="이름" value={userData.userName} onChange={handleInputChange} />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label htmlFor="userId">구매자 아이디</Label>
-                                        <Input id="userId" placeholder="아이디" value={userData.userId} onChange={handleInputChange} readOnly/>
-                                    </div>
-                                    <div className="space-y-1.5">
                                         <Label htmlFor="phone">전화번호</Label>
                                         <Input id="phone" placeholder="휴대폰 번호" value={userData.userPhone} onChange={handleInputChange} />
                                     </div>
