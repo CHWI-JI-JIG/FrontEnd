@@ -29,7 +29,6 @@ export default function SignUp() {
         alert("사용 가능한 아이디입니다.");
       }
     } catch (error) {
-      console.error(error);
     }
   };
 
@@ -81,7 +80,6 @@ export default function SignUp() {
         alert("회원가입에 실패하였습니다.");
       }
     } catch (error) {
-      console.error(error);
     }
   };
 

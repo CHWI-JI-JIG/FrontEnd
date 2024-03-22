@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import { API_BASE_URL } from '@/config/apiConfig';
 import "@/app/globals.css"
 import { getSessionData } from "@/utils/auth"
+import { numberWithCommas } from '@/utils/commonUtils';
 
 export default function PaymentPage() {
 
@@ -37,7 +38,6 @@ export default function PaymentPage() {
             const sessionKey = getSessionData().key;
             const result = await axios.post(`${API_BASE_URL}/api/c-user`, {key : sessionKey});
             setUserData(result.data);
-            console.log(result.data)
         };
 
         fetchUserData();
@@ -51,7 +51,6 @@ export default function PaymentPage() {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
         } else {
-            console.log('No purchaseData cookie found');
         }
 
     }, []);
@@ -64,7 +63,6 @@ export default function PaymentPage() {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
         } else {
-            console.log('No purchaseData cookie found');
         }
 
     }, []);
@@ -100,9 +98,7 @@ export default function PaymentPage() {
     }
 
     const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) =>{
-        console.log("Selected card number:", event.target.value); 
         setCardNum(event.target.value);
-        console.log("Current cardNum state:", cardNum); 
     }
 
     const handleUsePointsClick = async () => {
@@ -138,21 +134,17 @@ export default function PaymentPage() {
                 body: JSON.stringify(UserAndProductInfo)
             });
 
-            console.log("response = " + JSON.stringify(response))
-
             const responseData = await response.json();
 
-            console.log(responseData.transId, responseData.succcess);
 
             Cookies.set('paymentInfo', JSON.stringify({
                 cardNum : cardNum,
-                price : productData.productPrice,
+                price : totalPrcie,
                 transId : responseData.transId
             }));
             
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
-            console.log('API call error');
         }
     };
 
@@ -235,7 +227,7 @@ export default function PaymentPage() {
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label>금액</Label>
-                                        <div>{totalPrcie}</div>
+                                        <div>{numberWithCommas(totalPrcie)}원</div>
                                     </div>
                                 </div>
                             </CardContent>
@@ -277,7 +269,7 @@ export default function PaymentPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <div>{totalPrcie}</div>
+                    <div>{numberWithCommas(totalPrcie)}</div>
                     <Button className="ml-auto" onClick={openPopup}>Pay</Button>
                 </CardFooter>
             </Card>

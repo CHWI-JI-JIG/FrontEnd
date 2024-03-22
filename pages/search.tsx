@@ -12,17 +12,17 @@ import { API_BASE_URL } from '@/config/apiConfig';
 import { handleNextPage, handlePrevPage, numberWithCommas } from '@/utils/commonUtils';
 
 export default function Search() {
-  // //search 페이지 접근통제(취약점 생성!!!)
-  // useEffect(() => {
-  //   if (auth === 'ADMIN') {
-  //       // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
-  //       alert('접근 권한이 없습니다.');
-  //       router.push('/admin').then(() => {
-  //           // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //           window.location.href = '/admin';
-  //       });
-  //   }
-  // }, []);
+  //search 페이지 접근통제(취약점 생성!!!)
+  useEffect(() => {
+    if (auth === 'ADMIN') {
+        // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+        alert('접근 권한이 없습니다.');
+        router.push('/admin').then(() => {
+            // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+            window.location.href = '/admin';
+        });
+    }
+  }, []);
 
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
@@ -41,7 +41,6 @@ export default function Search() {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching search results:', error);
       return { data: [], totalPage: 1 };
     }
   };
@@ -53,7 +52,6 @@ export default function Search() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchSearchResults();
-      console.log(data.data);
       setSearchResults(data.data);
       setTotalPages(data.totalPage);
     };

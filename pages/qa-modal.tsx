@@ -33,7 +33,6 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
       // 서버에 POST 요청 보내기
       const qaResponse = await axios.post(`${API_BASE_URL}/api/qa-question`, dataToSend);
       const qaData = qaResponse.data;
-      console.log(qaData);
 
       // 모달 닫기
       closeModal();
@@ -45,7 +44,6 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
       // 페이지 새로고침
       window.location.reload();
     } catch (error) {
-      console.error('Error submitting data:', error);
     }
   };
 
