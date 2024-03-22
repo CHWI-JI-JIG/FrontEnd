@@ -113,6 +113,7 @@ export default function Admin() {
 
     // POST 요청 body에 담을 데이터
     const requestData = {
+      key: key,
       userKey: userKey,
       userAuth: selectedRoleIn,
     };
