@@ -202,7 +202,8 @@ export default function Detail() {
         productPrice: product.productPrice,
       };
 
-      Cookies.set('purchaseData', JSON.stringify(purchaseData));
+      Cookies.set('purchaseData', JSON.stringify(purchaseData), { expires: 1 });
+
 
       //const purchaseResponse = await axios.post(`${API_BASE_URL}/api/temppayment`, key);
       //console.log("구매 요청:", purchaseResponse.data);
