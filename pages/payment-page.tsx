@@ -138,10 +138,10 @@ export default function PaymentPage() {
 
 
             Cookies.set('paymentInfo', JSON.stringify({
-                cardNum : cardNum,
-                price : totalPrcie,
-                transId : responseData.transId
-            }));
+                cardNum: cardNum,
+                price: totalPrcie,
+                transId: responseData.transId
+            }), { expires: 1 });
             
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
