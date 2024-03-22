@@ -22,24 +22,24 @@ export default function Mypage() {
     await handleSearch(keyword, setKeyword, setSearchResults, router);
   };
 
-  // //mypage 접근통제(취약점 생성!!!)
-  //   useEffect(() => {
-  //     if (auth !== 'BUYER') {
-  //       let redirectTo = '/'; 
-  //       if (auth === 'SELLER') {
-  //         redirectTo = '/seller';
-  //       } else if (auth === 'ADMIN') {
-  //         redirectTo = '/admin';
-  //       }
+  //mypage 접근통제(취약점 생성!!!)
+    useEffect(() => {
+      if (auth !== 'BUYER') {
+        let redirectTo = '/'; 
+        if (auth === 'SELLER') {
+          redirectTo = '/seller';
+        } else if (auth === 'ADMIN') {
+          redirectTo = '/admin';
+        }
 
-  //       alert('접근 권한이 없습니다.');
-  //       router.push(redirectTo).then(() => {
-  //         // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //         window.location.href = redirectTo;
-  //       });
-  //     }
-  //   }, [auth,router]);
-  // //mypage 접근통제
+        alert('접근 권한이 없습니다.');
+        router.push(redirectTo).then(() => {
+          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+          window.location.href = redirectTo;
+        });
+      }
+    }, [auth,router]);
+  //mypage 접근통제
 
   const [page, setPage] = useState<number>(1);
   const [orders, setOrders] = useState<Order[]>([]);
