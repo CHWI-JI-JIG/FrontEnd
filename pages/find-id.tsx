@@ -13,18 +13,18 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
 
 
-  // 아이디 중복 검사
-  const checkId = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/find-email?id=${email}`);
-      if (response.data.duplicated) {
-        alert("메일을 확인해 주시기 바립니다..");
-      } else {
-        alert("이 메일로 계정이 등록되지 않았습니다.");
-      }
-    } catch (error) {
-    }
-  };
+  // //아이디 중복 검사
+  // const checkId = async () => {
+  //   try {
+  //     const response = await axios.get(`${API_BASE_URL}/api/find-email?id=${email}`);
+  //     if (response.data.duplicated) {
+  //       alert("메일을 확인해 주시기 바립니다..");
+  //     } else {
+  //       alert("이 메일로 계정이 등록되지 않았습니다.");
+  //     }
+  //   } catch (error) {
+  //   }
+  // };
 
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -54,7 +54,6 @@ export default function SignUp() {
     } catch (error) {
     }
   };
-
 
   return (
     <div className="mx-auto max-w-[350px] space-y-6">
