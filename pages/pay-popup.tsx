@@ -60,6 +60,7 @@ export default function payPopup() {
   
         if (response.ok) {
           const responseData = await response.json();
+          console.log(responseData); 
           return responseData.success;  // 이 부분을 수정했습니다.
         } else {
         }
@@ -76,12 +77,16 @@ export default function payPopup() {
         const success = await sendPaymentInfo(transId, price, cardNum);  // success 받기
         window.opener.postMessage({ success }, '*');  // success 메시지 전달
       } else {
+        console.log('undefined cookie');
         window.opener.postMessage({ success: false }, '*');
       }
+  
+      // 데이터를 저장한 후 창을 닫음
+      window.opener.postMessage({ success: true }, '*');
       window.close();
     } else {
       window.opener.postMessage({ success: false }, '*');
-      window.close();
+      //window.close();
     }
   };
 

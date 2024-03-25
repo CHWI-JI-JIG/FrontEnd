@@ -138,10 +138,10 @@ export default function PaymentPage() {
 
 
             Cookies.set('paymentInfo', JSON.stringify({
-                cardNum : cardNum,
-                price : totalPrcie,
-                transId : responseData.transId
-            }));
+                cardNum: cardNum,
+                price: totalPrcie,
+                transId: responseData.transId
+            }), { expires: 1 });
             
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         }catch{
@@ -155,12 +155,13 @@ export default function PaymentPage() {
                 alert("결제가 완료되었습니다.")
                 setTimeout(() => {
                     window.location.href = '/mypage';
-                }, 2000);
+                }, 3000);
             } else if (event.data.success === false) {
                 alert("결제가 실패 했습니다.")
                 setTimeout(() => {
                     window.location.href = '/main';
-                }, 2000);
+                }, 3000);
+                console.log("결제 실패. 메인으로 이동합니다.");
             }
         };
     
@@ -190,10 +191,6 @@ export default function PaymentPage() {
                                     <div className="space-y-1.5">
                                         <Label htmlFor="name">수취인</Label>
                                         <Input id="name" placeholder="이름" value={userData.userName} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label htmlFor="userId">구매자 아이디</Label>
-                                        <Input id="userId" placeholder="아이디" value={userData.userId} onChange={handleInputChange} readOnly/>
                                     </div>
                                     <div className="space-y-1.5">
                                         <Label htmlFor="phone">전화번호</Label>
