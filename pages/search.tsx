@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import { API_BASE_URL } from '@/config/apiConfig';
 import { handleNextPage, handlePrevPage, numberWithCommas } from '@/utils/commonUtils';
 
+import axios from 'axios';
+
 export default function Search() {
   // //search 페이지 접근통제(취약점 생성!!!)
   // useEffect(() => {
@@ -31,8 +33,20 @@ export default function Search() {
   const [page, setPage] = useState<number>(parseInt(queryPage as string, 10) || 1); // 초기 페이지 설정
 
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     handleLogout(router);
+  
+    try {
+      // 세션 종료 요청
+      await axios.post(`${API_BASE_URL}/api/logout`, {
+        "key" : key
+      });
+  
+      // 로그아웃 후 로그인 페이지로 이동
+      router.push('/login');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
   };
 
   const fetchSearchResults = async () => {

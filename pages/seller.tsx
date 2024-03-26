@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/MA_input";
 import axios from 'axios';
 import { getSessionData, handleLogout } from '@/utils/auth';
 
+import { API_BASE_URL } from '@/config/apiConfig';
+
 export default function Seller() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
@@ -32,8 +34,20 @@ export default function Seller() {
   //   }, [auth,router]);
   //   //seller 페이지 접근통제
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     handleLogout(router);
+  
+    try {
+      // 세션 종료 요청
+      await axios.post(`${API_BASE_URL}/api/logout`, {
+        "key" : key
+      });
+  
+      // 로그아웃 후 로그인 페이지로 이동
+      router.push('/login');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
   };
 
   const [selectedSection, setSelectedSection] = useState<string>('s-main');

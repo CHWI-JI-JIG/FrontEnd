@@ -13,6 +13,8 @@ import { API_BASE_URL } from '@/config/apiConfig';
 import { useRouter } from 'next/router';
 import { handleNextPage, handlePrevPage } from '@/utils/commonUtils';
 
+import axios from "axios";
+
 export default function Admin() {
   // 세션 데이터 가져오기
   const { auth, certification, key, name } = getSessionData();
@@ -63,8 +65,20 @@ export default function Admin() {
     setUsers(filteredUserData);
   };
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     handleLogout(router);
+  
+    try {
+      // 세션 종료 요청
+      await axios.post(`${API_BASE_URL}/api/logout`, {
+        "key" : key
+      });
+  
+      // 로그아웃 후 로그인 페이지로 이동
+      router.push('/login');
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
   };
 
   useEffect(() => {
