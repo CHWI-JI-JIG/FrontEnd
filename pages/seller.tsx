@@ -15,24 +15,24 @@ export default function Seller() {
   const { auth, certification, key, name } = getSessionData();
   const router = useRouter();
 
-  // //seller 페이지 접근통제(취약점 생성!!!)
-  // useEffect(() => {
-  //     if (auth !== 'SELLER') {
-  //       let redirectTo = '/'; 
-  //       if (auth === 'ADMIN') {
-  //         redirectTo = '/admin';
-  //       } else if (auth === 'BUYER') {
-  //         redirectTo = '/main';
-  //       }
+  //seller 페이지 접근통제(취약점 생성!!!)
+  useEffect(() => {
+      if (auth !== 'SELLER') {
+        let redirectTo = '/'; 
+        if (auth === 'ADMIN') {
+          redirectTo = '/admin';
+        } else if (auth === 'BUYER') {
+          redirectTo = '/main';
+        }
 
-  //       alert('접근 권한이 없습니다.');
-  //       router.push(redirectTo).then(() => {
-  //         // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //         window.location.href = redirectTo;
-  //       });
-  //     }
-  //   }, [auth,router]);
-  //   //seller 페이지 접근통제
+        alert('접근 권한이 없습니다.');
+        router.push(redirectTo).then(() => {
+          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+          window.location.href = redirectTo;
+        });
+      }
+    }, [auth,router]);
+    //seller 페이지 접근통제
 
   const handleLogoutClick = async () => {
     handleLogout(router);

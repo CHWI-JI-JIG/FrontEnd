@@ -36,17 +36,17 @@ export default function Main() {
     }
   };
 
-  // //main 페이지 접근통제(취약점 생성!!!)
-  // useEffect(() => {
-  //   if (auth === 'ADMIN') {
-  //       // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
-  //       alert('접근 권한이 없습니다.');
-  //       router.push('/admin').then(() => {
-  //           // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-  //           window.location.href = '/admin';
-  //       });
-  //   }
-  // }, []);
+  //main 페이지 접근통제(취약점 생성!!!)
+  useEffect(() => {
+    if (auth === 'ADMIN') {
+        // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+        alert('접근 권한이 없습니다.');
+        router.push('/admin').then(() => {
+            // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+            window.location.href = '/admin';
+        });
+    }
+  }, []);
 
   // 상품정보 받는 중
   const [page, setPage] = useState<number>(1);
@@ -57,10 +57,7 @@ export default function Main() {
     fetch(`${API_BASE_URL}/api/products?page=${page}`)
       .then(response => response.json())
       .then((data: PagedProductList) => {
-        console.log('Search Results:', data.data);
-        if (data.data.length > 0) {
-          console.log('First product image URL:', data.data[0].productImageUrl);
-        }
+
         setProducts(data.data);
         setTotalPages(data.totalPage);
       })
