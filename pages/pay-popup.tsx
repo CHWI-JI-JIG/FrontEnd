@@ -42,6 +42,7 @@ export default function payPopup() {
   const handleOKButtonClick = async () => {
     const enterPass = password.join('');
     const Pass = enterPass === initPass;
+    var buyinfo = true
 
     const sendPaymentInfo = async (transId: string, price: number, cardNum: string) => {
       try {
@@ -54,21 +55,33 @@ export default function payPopup() {
             key: transId,
             cardNum: cardNum,
             productPrice: price,
-            success: true
+            paymentVerification: true
           }),
         });
 
         if (response.ok) {
           const responseData = await response.json();
-          console.log(responseData);
+          if(responseData.success === false){
+            if(responseData.nomoney){
+              alert(responseData.message);
+              buyinfo = false;
+            }else{
+              alert(responseData.message);
+              buyinfo = false;
+            }
+          }
           return responseData.success;  // 이 부분을 수정했습니다.
         } else {
           alert("결제 오류가 발생했습니다.")
+          buyinfo = false;
+          return false;
         }
       } catch (error) {
-        alert("잠시후 다시 시도해주시기 바랍니다.")
+        alert("잠시후 다시 시도해주시기 바랍니다.");
+        buyinfo = false;
+        return false;
       }
-      return false;  // 실패 시 false 반환
+      //return false;  // 실패 시 false 반환
     };
 
     const paymentInfo = Cookies.get('paymentInfo');
@@ -77,19 +90,25 @@ export default function payPopup() {
       if (paymentInfo) {
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
         const success = await sendPaymentInfo(transId, price, cardNum);  // success 받기
-        window.opener.postMessage({ success }, '*');  // success 메시지 전달
+        if (!buyinfo) { // buyinfo가 false면 실패로 간주
+          window.opener.postMessage({ success: false }, '*');
+        } else {
+          window.opener.postMessage({ success }, '*');  // success 메시지 전달
+        }
       } else {
         console.log('undefined cookie');
         window.opener.postMessage({ success: false }, '*');
       }
-
-      // 데이터를 저장한 후 창을 닫음
-      window.opener.postMessage({ success: true }, '*');
-      window.close();
+  
+      // buyinfo가 true일 때만 창을 닫음
+      if (buyinfo) {
+        window.opener.postMessage({ success: true }, '*');
+      }
     } else {
       window.opener.postMessage({ success: false }, '*');
-      //window.close();
-    }
+    }        
+    window.close();
+
   };
 
   useEffect(() => {
