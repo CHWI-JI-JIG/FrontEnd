@@ -17,7 +17,6 @@ export default function SignUp() {
   const [newpasswd, setNewPasswd] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
-
   // 회원가입 로직
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

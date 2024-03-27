@@ -77,7 +77,7 @@ export default function Login() {
             Google로 로그인하기(개발중)
           </Button>
           <div className="flex justify-center">
-            <Link href="/sign-up">
+            <Link href="/privacy-policy">
               <a className="text-center text-sm text-gray-500 dark:text-gray-400 underline">
                 회원가입
               </a>
