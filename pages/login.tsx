@@ -28,18 +28,22 @@ export default function Login() {
         alert("로그인에 성공하였습니다.");
 
         // 로그인 성공 후 처리 로직(예: 페이지 이동)을 추가할 수 있습니다.
-        const { auth, certification, name, key } = response.data;
+        const { auth, certification, name, key, changePw } = response.data;
         setSessionData({ auth, certification, key, name });
 
-        //auth에 따른 페이지 이동
-        if (auth === 'BUYER') {
-          router.push('/main');
-        } else if (auth === 'SELLER') {
-          router.push('/seller');
-        } else if (auth === 'ADMIN') {
-          router.push('/admin');
+        if (changePw) {
+          router.push('/policy-cp');
+          //auth에 따른 페이지 이동
         } else {
-          alert("알 수 없는 권한입니다.");
+          if (auth === 'BUYER') {
+            router.push('/main');
+          } else if (auth === 'SELLER') {
+            router.push('/seller');
+          } else if (auth === 'ADMIN') {
+            router.push('/admin');
+          } else {
+            alert("알 수 없는 권한입니다.");
+          }
         }
       } else {
         alert("로그인에 실패하였습니다.");
@@ -73,7 +77,7 @@ export default function Login() {
             Google로 로그인하기(개발중)
           </Button>
           <div className="flex justify-center">
-            <Link href="/sign-up">
+            <Link href="/privacy-policy">
               <a className="text-center text-sm text-gray-500 dark:text-gray-400 underline">
                 회원가입
               </a>
