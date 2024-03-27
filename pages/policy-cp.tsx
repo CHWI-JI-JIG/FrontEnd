@@ -53,11 +53,12 @@ export default function SignUp() {
           router.push('/admin');
         } else {
           alert("알 수 없는 권한입니다.");
-        }        
+        }
       } else {
         alert("변경에 실패했습니다.");
       }
     } catch (error) {
+      alert("잠시후 다시 시도해주시기 바랍니다.")
     }
   };
 
@@ -81,7 +82,7 @@ export default function SignUp() {
         <h1 className="text-3xl font-bold">비밀번호 변경</h1>
         <p className="text-gray-500 dark:text-gray-400">취지직은 당신의 개인정보를 소중하게 생각합니다. 비밀번호 변경 기간입니다.</p>
       </div>
-      <div className="space-y-4">      
+      <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password">현재 비밀번호</Label>
           <Input id="password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -99,8 +100,8 @@ export default function SignUp() {
         </Button>
         <Button className="w-full" variant="outline" onClick={handleNextChange}>
           다음에 변경하기
-        </Button>                  
+        </Button>
       </div>
-    </div>    
+    </div>
   )
 }

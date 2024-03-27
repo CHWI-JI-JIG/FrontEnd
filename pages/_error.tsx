@@ -34,7 +34,7 @@ export default function _ERR() {
 }
 
 
-function HomeIcon(props: SVGProps <SVGSVGElement>) {
+function HomeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -55,7 +55,7 @@ function HomeIcon(props: SVGProps <SVGSVGElement>) {
 }
 
 
-function FileWarningIcon(prop: SVGProps <SVGSVGElement>) {
+function FileWarningIcon(prop: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...prop}

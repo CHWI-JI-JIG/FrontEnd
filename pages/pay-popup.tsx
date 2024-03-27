@@ -1,5 +1,5 @@
 import "@/app/globals.css"
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { SVGProps } from "react"
 import { Key } from "lucide-react";
@@ -25,24 +25,24 @@ export default function payPopup() {
   const handleDeleteButtonClick = () => {
     const nextPassword = [...password];
     let lastNotEmptyIndex = -1;
-  
+
     for (let i = nextPassword.length - 1; i >= 0; i--) {
       if (nextPassword[i] !== null) {
         lastNotEmptyIndex = i;
         break;
       }
     }
-  
+
     if (lastNotEmptyIndex !== -1) {
       nextPassword[lastNotEmptyIndex] = null;
       setPassword(nextPassword);
     }
   };
-  const initPass  = '123456'
+  const initPass = '123456'
   const handleOKButtonClick = async () => {
     const enterPass = password.join('');
     const Pass = enterPass === initPass;
-  
+
     const sendPaymentInfo = async (transId: string, price: number, cardNum: string) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/PG/sendpayinfo`, {
@@ -57,20 +57,22 @@ export default function payPopup() {
             success: true
           }),
         });
-  
+
         if (response.ok) {
           const responseData = await response.json();
-          console.log(responseData); 
+          console.log(responseData);
           return responseData.success;  // 이 부분을 수정했습니다.
         } else {
+          alert("결제 오류가 발생했습니다.")
         }
       } catch (error) {
+        alert("잠시후 다시 시도해주시기 바랍니다.")
       }
       return false;  // 실패 시 false 반환
     };
-  
+
     const paymentInfo = Cookies.get('paymentInfo');
-  
+
     if (Pass) {
       if (paymentInfo) {
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
@@ -80,7 +82,7 @@ export default function payPopup() {
         console.log('undefined cookie');
         window.opener.postMessage({ success: false }, '*');
       }
-  
+
       // 데이터를 저장한 후 창을 닫음
       window.opener.postMessage({ success: true }, '*');
       window.close();
@@ -124,9 +126,8 @@ export default function payPopup() {
             <button
               key={num}
               onClick={() => handleNumButtonClick(num)}
-              className={`text-white text-2xl font-semibold border border-solid border-gray-300 ${
-                isButtonEnabled ? 'hover:bg-gray-700' : ''
-              }`}>
+              className={`text-white text-2xl font-semibold border border-solid border-gray-300 ${isButtonEnabled ? 'hover:bg-gray-700' : ''
+                }`}>
               {num}
             </button>
           ))}
@@ -140,8 +141,8 @@ export default function payPopup() {
             0
           </button>
           <button onClick={handleDeleteButtonClick} className="text-white text-2xl font-semibold border border-solid border-gray-300 hover:bg-gray-700">
-              <DeleteIcon className="h-6 w-6" />
-         </button>
+            <DeleteIcon className="h-6 w-6" />
+          </button>
         </div>
 
       </div>
@@ -171,7 +172,7 @@ function FlagIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 
-function PanelTopCloseIcon(props:SVGProps<SVGSVGElement>) {
+function PanelTopCloseIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -192,7 +193,7 @@ function PanelTopCloseIcon(props:SVGProps<SVGSVGElement>) {
   )
 }
 
-function DeleteIcon(props:SVGProps<SVGSVGElement>) {
+function DeleteIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

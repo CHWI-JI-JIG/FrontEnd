@@ -49,6 +49,7 @@ export default function Login() {
         alert("로그인에 실패하였습니다.");
       }
     } catch (error) {
+      alert("잠시후 다시 시도해주시기 바립니다.");
     }
   };
 
