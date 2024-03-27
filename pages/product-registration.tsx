@@ -82,6 +82,7 @@ export default function ProductRegistration({ onClose }: ProductRegistrationProp
         alert('상품 등록 중 오류가 발생했습니다.');
       }
     } else {
+      alert("잠시후 다시 시도해주시기 바랍니다.")
     }
   };
 

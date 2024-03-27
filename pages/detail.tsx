@@ -12,7 +12,7 @@ import { getSessionData, handleLogout } from '@/utils/auth'
 import { API_BASE_URL } from '@/config/apiConfig';
 import Cookies from 'js-cookie'
 import { SearchIcon } from 'lucide-react';
-import { handleSearch, searchProduct} from '@/utils/search';
+import { handleSearch, searchProduct } from '@/utils/search';
 import { handleNextPage, handlePrevPage, numberWithCommas } from '@/utils/commonUtils';
 
 interface Product {
@@ -40,14 +40,14 @@ interface QA {
 export default function Detail() {
   //detail 페이지 접근통제(취약점 생성!!!)
   useEffect(() => {
-      if (auth === 'ADMIN') {
-          // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
-          alert('접근 권한이 없습니다.');
-          router.push('/admin').then(() => {
-              // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-              window.location.href = '/admin';
-          });
-      }
+    if (auth === 'ADMIN') {
+      // 세션이 인증되지 않았거나 판매자가 아닌 경우 알림 표시 후 서버에서 메인 페이지로 리디렉션
+      alert('접근 권한이 없습니다.');
+      router.push('/admin').then(() => {
+        // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+        window.location.href = '/admin';
+      });
+    }
   }, []);
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -170,6 +170,7 @@ export default function Detail() {
         setCurrentPage(page);
         setTotalPage(qa.totalPage); // 총 페이지 설정
       } catch (error) {
+        alert("잠시후 다시 시도해주시기 바립니다.");
       }
     };
 
@@ -189,6 +190,7 @@ export default function Detail() {
       setTotalPage(qa.totalPage); // 총 페이지 설정
       setCurrentPage(page); // 현재 페이지 설정
     } catch (error) {
+      alert("잠시후 다시 시도해주세요.");
     }
   };
 
@@ -242,11 +244,17 @@ export default function Detail() {
         key: key
       });
       // 답변 작성이 성공했을 때의 로직 처리
-
+      if (response.data.success) {
+        alert("글작성이 성공했습니다.")
+      }
+      else {
+        alert(response.data.message)
+      }
       // 성공적으로 답변을 작성했으므로, 화면을 다시 로드합니다.
       window.location.reload(); // 화면 새로고침
 
     } catch (error) {
+      alert("잠시후 다시 시도해주시기 바립니다.")
     }
   };
 
@@ -281,15 +289,15 @@ export default function Detail() {
               router.push('/');
             }
           }} />
-          
-          {/* 검색창 테스트 */}
-          <div className="flex items-center space-x-2">
-            <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
-              value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-            <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
-              <SearchIcon className="text-gray-700" />
-            </Button>
-          </div>
+
+        {/* 검색창 테스트 */}
+        <div className="flex items-center space-x-2">
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+            value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
+            <SearchIcon className="text-gray-700" />
+          </Button>
+        </div>
 
         <div className="flex space-x-4">
           {certification ? (
@@ -355,9 +363,9 @@ export default function Detail() {
                     </Link>
                   ) : (
                     <Link href="/login">
-                        <Button size="lg" style={{ width: '100%', display: 'block' }}>
-                          구매하기
-                        </Button>
+                      <Button size="lg" style={{ width: '100%', display: 'block' }}>
+                        구매하기
+                      </Button>
                     </Link>
                   )
                 )}

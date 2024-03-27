@@ -49,6 +49,7 @@ export default function Login() {
         alert("로그인에 실패하였습니다.");
       }
     } catch (error) {
+      alert("잠시후 다시 시도해주시기 바립니다.");
     }
   };
 
@@ -77,7 +78,7 @@ export default function Login() {
             Google로 로그인하기(개발중)
           </Button>
           <div className="flex justify-center">
-            <Link href="/sign-up">
+            <Link href="/privacy-policy">
               <a className="text-center text-sm text-gray-500 dark:text-gray-400 underline">
                 회원가입
               </a>

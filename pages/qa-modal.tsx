@@ -36,14 +36,18 @@ const QaModal: React.FC<QaModalProps> = ({ closeModal, productId }) => {
 
       // 모달 닫기
       closeModal();
-
-      // 요청이 성공적으로 처리되면 상태 초기화 또는 필요한 동작 수행
-      setQuestion('');
-      setErrorMessage('');
-
+      if (qaResponse.data.success) {
+        // 요청이 성공적으로 처리되면 상태 초기화 또는 필요한 동작 수행
+        setQuestion('');
+        setErrorMessage('');
+      }
+      else {
+        alert("글작성이 실패했습니다.")
+      }
       // 페이지 새로고침
       window.location.reload();
     } catch (error) {
+      alert("잠시후 다시 시도해주시기 바랍니다.")
     }
   };
 

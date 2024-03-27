@@ -80,6 +80,7 @@ export default function SignUp() {
         alert("회원가입에 실패하였습니다.");
       }
     } catch (error) {
+      alert("잠시후 다시 시도해 주시기 바랍니다.")
     }
   };
 

@@ -22,23 +22,22 @@ export default function Mypage() {
     await handleSearch(keyword, setKeyword, setSearchResults, router);
   };
 
-  //mypage 접근통제(취약점 생성!!!)
-    useEffect(() => {
-      if (auth !== 'BUYER') {
-        let redirectTo = '/'; 
-        if (auth === 'SELLER') {
-          redirectTo = '/seller';
-        } else if (auth === 'ADMIN') {
-          redirectTo = '/admin';
-        }
-
-        alert('접근 권한이 없습니다.');
-        router.push(redirectTo).then(() => {
-          // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
-          window.location.href = redirectTo;
-        });
+  useEffect(() => {
+    if (auth !== 'BUYER') {
+      let redirectTo = '/';
+      if (auth === 'SELLER') {
+        redirectTo = '/seller';
+      } else if (auth === 'ADMIN') {
+        redirectTo = '/admin';
       }
-    }, [auth,router]);
+
+      alert('접근 권한이 없습니다.');
+      router.push(redirectTo).then(() => {
+        // 새로고침을 방지하려면 페이지 리디렉션이 완료된 후에 새로고침
+        window.location.href = redirectTo;
+      });
+    }
+  }, [auth, router]);
   //mypage 접근통제
 
   const [page, setPage] = useState<number>(1);
@@ -99,11 +98,11 @@ export default function Mypage() {
 
         {/* 검색창 테스트 */}
         <div className="flex items-center space-x-2">
-            <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
-              value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-            <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
-              <SearchIcon className="text-gray-700" />
-            </Button>
+          <Input className="w-96 border rounded-md text-black" placeholder="검색어를 입력해주세요"
+            value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+          <Button type="submit" className="text-gray-700 bg-[#F1F5F9]" variant="ghost" onClick={onSearch}>
+            <SearchIcon className="text-gray-700" />
+          </Button>
         </div>
 
         <div className="flex space-x-4">

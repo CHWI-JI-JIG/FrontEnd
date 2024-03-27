@@ -24,7 +24,7 @@ export default function PaymentPage() {
     });
 
     const [productData, setProductData] = useState({
-        productId:'',
+        productId: '',
         productName: '',
         productCount: 0,
         productPrice: 0,
@@ -36,7 +36,7 @@ export default function PaymentPage() {
     useEffect(() => {
         const fetchUserData = async () => {
             const sessionKey = getSessionData().key;
-            const result = await axios.post(`${API_BASE_URL}/api/c-user`, {key : sessionKey});
+            const result = await axios.post(`${API_BASE_URL}/api/c-user`, { key: sessionKey });
             setUserData(result.data);
         };
 
@@ -46,7 +46,7 @@ export default function PaymentPage() {
 
     useEffect(() => {
         const purchaseDataCookie = Cookies.get('purchaseData')
-        
+
         if (purchaseDataCookie) {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
@@ -54,11 +54,11 @@ export default function PaymentPage() {
         }
 
     }, []);
-    
+
 
     useEffect(() => {
         const purchaseDataCookie = Cookies.get('purchaseData')
-        
+
         if (purchaseDataCookie) {
             const purchaseData = JSON.parse(purchaseDataCookie);
             setProductData(purchaseData);
@@ -66,7 +66,7 @@ export default function PaymentPage() {
         }
 
     }, []);
-    
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { id, value } = event.target;
 
@@ -97,7 +97,7 @@ export default function PaymentPage() {
         setUsePoints(value);
     }
 
-    const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) =>{
+    const handleCardNumChange = (event: ChangeEvent<HTMLSelectElement>) => {
         setCardNum(event.target.value);
     }
 
@@ -113,23 +113,23 @@ export default function PaymentPage() {
 
         setFinalPrice(price - points); // Update final price
     }
-    const openPopup = async() => {
+    const openPopup = async () => {
         try {
             const UserAndProductInfo = {
-                key : getSessionData().key,//id // uuid
-                userName : userData.userName,
-                userPhone : userData.userPhone,
-                userAddr : userData.userAddr,
-                productId : productData.productId,
-                productName : productData.productName,
-                productCount : productData.productCount,
-                productPrice : productData.productPrice
+                key: getSessionData().key,//id // uuid
+                userName: userData.userName,
+                userPhone: userData.userPhone,
+                userAddr: userData.userAddr,
+                productId: productData.productId,
+                productName: productData.productName,
+                productCount: productData.productCount,
+                productPrice: productData.productPrice
             };
 
-            const response = await fetch(`${API_BASE_URL}/api/userproductinfo`,{
+            const response = await fetch(`${API_BASE_URL}/api/userproductinfo`, {
                 method: 'POST',
-                headers : {
-                    'Content-Type' : 'application/json'
+                headers: {
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(UserAndProductInfo)
             });
@@ -142,9 +142,9 @@ export default function PaymentPage() {
                 price: totalPrcie,
                 transId: responseData.transId
             }), { expires: 1 });
-            
+
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
-        }catch{
+        } catch {
         }
     };
 
@@ -164,9 +164,9 @@ export default function PaymentPage() {
                 console.log("결제 실패. 메인으로 이동합니다.");
             }
         };
-    
+
         window.addEventListener('message', handlePopupMessage);
-    
+
         return () => {
             window.removeEventListener('message', handlePopupMessage);
         };
@@ -242,7 +242,7 @@ export default function PaymentPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="space-y-1.5">
                                         <Label htmlFor="number">카드 번호</Label>
-                                        <select id="number" value = {cardNum} onChange={handleCardNumChange}>
+                                        <select id="number" value={cardNum} onChange={handleCardNumChange}>
                                             <option value="1111-1111-1111-1111">1111-1111-1111-1111</option>
                                             <option value="2222-2222-2222-2222">2222-2222-2222-2222</option>
                                         </select>
