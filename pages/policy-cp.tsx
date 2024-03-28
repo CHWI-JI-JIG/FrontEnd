@@ -55,7 +55,13 @@ export default function SignUp() {
           alert("알 수 없는 권한입니다.");
         }
       } else {
-        alert("변경에 실패했습니다.");
+        if(response.data.timeout){
+          alert(response.data.message);
+        }
+        else{
+          alert("변경에 실패했습니다.");
+        }
+
       }
     } catch (error) {
       alert("잠시후 다시 시도해주시기 바랍니다.")

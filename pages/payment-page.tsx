@@ -37,6 +37,13 @@ export default function PaymentPage() {
         const fetchUserData = async () => {
             const sessionKey = getSessionData().key;
             const result = await axios.post(`${API_BASE_URL}/api/c-user`, { key: sessionKey });
+            if(result.data.success === false){
+                if(result.data.timeout){
+                    alert(result.data.message);
+                }else{
+                    alert(result.data.message);
+                }
+            }
             setUserData(result.data);
         };
 
@@ -135,14 +142,23 @@ export default function PaymentPage() {
             });
 
             const responseData = await response.json();
+            console.log(`test1 :${responseData.success}`);
+            if(responseData.success){
+                Cookies.set('paymentInfo', JSON.stringify({
+                    cardNum: cardNum,
+                    price: totalPrcie,
+                    transId: responseData.transId
+                }), { expires: 1 });
+            }else{
+                if(responseData.timeout){
+                    alert(responseData.message);
+                    sessionStorage.clear();
+                }else{
+                    alert(responseData.message);
+                }
+            }
 
-
-            Cookies.set('paymentInfo', JSON.stringify({
-                cardNum: cardNum,
-                price: totalPrcie,
-                transId: responseData.transId
-            }), { expires: 1 });
-
+            console.log(`test2 :${responseData.success}`);
             window.open('/pay-popup', '_blank', 'menubar=no,toolbar=no,location=no, width=500, height=500');
         } catch {
         }
@@ -157,6 +173,9 @@ export default function PaymentPage() {
                     window.location.href = '/mypage';
                 }, 3000);
             } else if (event.data.success === false) {
+                if(event.data.errorType == 'timeout'){
+                    sessionStorage.clear();
+                }
                 alert("결제가 실패 했습니다.")
                 setTimeout(() => {
                     window.location.href = '/main';
