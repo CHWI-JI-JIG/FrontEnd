@@ -39,10 +39,18 @@ export default function payPopup() {
     }
   };
   const initPass = '123456'
+
+  type PaymentStatus = {
+    success: boolean;
+    errorType: 'nomoney' | 'timeout' | 'other' | 'paymentError' | 'networkError' | 'noCookie' | 'passwordMismatch' | null;
+  };
+
   const handleOKButtonClick = async () => {
     const enterPass = password.join('');
     const Pass = enterPass === initPass;
     var buyinfo = true
+    let paymentStatus: PaymentStatus = { success: true, errorType: null };
+
 
     const sendPaymentInfo = async (transId: string, price: number, cardNum: string) => {
       try {
@@ -64,15 +72,25 @@ export default function payPopup() {
           if(responseData.success === false){
             if(responseData.nomoney){
               alert(responseData.message);
+              paymentStatus.errorType = 'nomoney';
               buyinfo = false;
-            }else{
+            }
+            else if(responseData.timeout){
+              alert(responseData.message)
+              sessionStorage.clear();
+              paymentStatus.errorType = 'timeout';
+              buyinfo = false;
+            }
+            else{
               alert(responseData.message);
+              paymentStatus.errorType = 'other';
               buyinfo = false;
             }
           }
           return responseData.success;  // 이 부분을 수정했습니다.
         } else {
           alert("결제 오류가 발생했습니다.")
+          paymentStatus = { success: false, errorType: 'paymentError' };
           buyinfo = false;
           return false;
         }
@@ -81,7 +99,6 @@ export default function payPopup() {
         buyinfo = false;
         return false;
       }
-      //return false;  // 실패 시 false 반환
     };
 
     const paymentInfo = Cookies.get('paymentInfo');
@@ -91,7 +108,7 @@ export default function payPopup() {
         const { cardNum, price, transId } = JSON.parse(paymentInfo);
         const success = await sendPaymentInfo(transId, price, cardNum);  // success 받기
         if (!buyinfo) { // buyinfo가 false면 실패로 간주
-          window.opener.postMessage({ success: false }, '*');
+          window.opener.postMessage({ success: false ,errorType: paymentStatus.errorType}, '*');
         } else {
           window.opener.postMessage({ success }, '*');  // success 메시지 전달
         }

@@ -152,6 +152,7 @@ export default function PaymentPage() {
             }else{
                 if(responseData.timeout){
                     alert(responseData.message);
+                    sessionStorage.clear();
                 }else{
                     alert(responseData.message);
                 }
@@ -172,6 +173,9 @@ export default function PaymentPage() {
                     window.location.href = '/mypage';
                 }, 3000);
             } else if (event.data.success === false) {
+                if(event.data.errorType == 'timeout'){
+                    sessionStorage.clear();
+                }
                 alert("결제가 실패 했습니다.")
                 setTimeout(() => {
                     window.location.href = '/main';
